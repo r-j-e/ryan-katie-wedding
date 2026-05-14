@@ -21,3 +21,7 @@ npm-debug.log*
 # Build artifacts (none right now, but future-proof)
 dist/
 build/
+
+# Design artifacts — kept local only, not part of the deployed site
+project/
+chats/
