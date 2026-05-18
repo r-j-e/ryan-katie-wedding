@@ -82,12 +82,15 @@
     background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
-    /* The ampersand's flourishes extend well past the inherited
-       line-height:0.95 — relax it so background-clip:text doesn't
-       chop the top and bottom of the glyph. */
+    /* The Amoresa ampersand has wild swash flourishes that extend
+       far above and below the em-box. background-clip:text only
+       paints inside the element's padding box, so we need a very
+       generous line-height + vertical padding to keep the gradient
+       from chopping the top loop and bottom tail. */
     display: inline-block;
-    line-height: 1.25;
-    padding: 0.1em 0;
+    line-height: 1.8;
+    padding: 0.35em 0.2em;
+    vertical-align: middle;
     /* Generous breathing room around the ampersand on the inline lockup. */
     margin: 0 0.32em;
   }
