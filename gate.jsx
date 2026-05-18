@@ -44,6 +44,7 @@ const GUEST_CODES = {
   'morgan2027':    { household: 'The Morgan Family',   party: 4 },
   'bell2027':      { household: 'The Bells',           party: 2 },
   // — Demo / preview codes for testing —
+  'elliott2027':   { household: 'Preview',             party: 2 },
   'katie2027':     { household: 'Preview',             party: 2 },
   'ryan2027':      { household: 'Preview',             party: 2 },
 };
