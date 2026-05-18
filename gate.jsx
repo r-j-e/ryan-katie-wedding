@@ -97,15 +97,21 @@ const Gate = ({ onUnlock }) => {
           {/* Flourish divider — hairlines flanking a small botanical motif */}
           <div className="gate-flourish" aria-hidden="true">
             <span className="gate-flourish-line" />
-            <svg width="44" height="14" viewBox="0 0 44 14" fill="none" stroke="currentColor" strokeWidth="0.7">
-              <path d="M 22 7 Q 15 1 8 7 Q 15 13 22 7 Q 29 1 36 7 Q 29 13 22 7" strokeLinecap="round" />
-              <circle cx="22" cy="7" r="1.3" fill="currentColor" stroke="none" />
+            <svg width="44" height="14" viewBox="0 0 44 14" fill="none" strokeWidth="0.7">
+              <defs>
+                <linearGradient id="gateFlourishGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="var(--burgundy)" />
+                  <stop offset="100%" stopColor="var(--magenta)" />
+                </linearGradient>
+              </defs>
+              <path d="M 22 7 Q 15 1 8 7 Q 15 13 22 7 Q 29 1 36 7 Q 29 13 22 7" strokeLinecap="round" stroke="url(#gateFlourishGrad)" />
+              <circle cx="22" cy="7" r="1.3" fill="url(#gateFlourishGrad)" />
             </svg>
             <span className="gate-flourish-line" />
           </div>
 
           {/* Date written out, then venue in tracked caps */}
-          <p className="gate-date">2nd July 2027</p>
+          <p className="gate-date accent-gradient">2nd July 2027</p>
           <p className="gate-venue">St Audries Park &middot; Somerset</p>
 
           <form onSubmit={submit} className="gate-form">
@@ -274,15 +280,16 @@ const Gate = ({ onUnlock }) => {
           width:100%;
           padding:16px 24px;
           background:var(--ink); color:var(--cream);
+          background-image: linear-gradient(135deg, var(--ink), var(--ink));
           border:none; cursor:pointer;
           font-family:'Cinzel', Georgia, serif;
           font-size:11px; font-weight:500;
           letter-spacing:0.4em; text-transform:uppercase;
           text-indent:0.4em;
-          transition: background 0.3s ease, letter-spacing 0.3s ease;
+          transition: background-image 0.4s ease, letter-spacing 0.3s ease;
         }
         .gate-btn:hover{
-          background:var(--burgundy);
+          background-image: var(--accent-gradient);
           letter-spacing:0.5em;
           text-indent:0.5em;
         }

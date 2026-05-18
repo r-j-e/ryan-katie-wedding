@@ -521,10 +521,9 @@ const Schedule = () => (
           borderBottom: i < SCHEDULE.length - 1 ? '1px solid var(--rule)' : 'none',
           position: 'relative',
         }} className="schedule-row">
-          <div style={{
+          <div className="accent-gradient" style={{
             fontFamily: 'Cinzel, Georgia, serif',
             fontSize: 'clamp(15px, 1.7vw, 18px)', fontWeight: 500,
-            color: 'var(--burgundy)',
             letterSpacing: '0.04em', textAlign: 'right', paddingTop: 8,
             fontVariantNumeric: 'tabular-nums',
           }}>{item.time}</div>
@@ -534,7 +533,7 @@ const Schedule = () => (
             border: '1px solid var(--rule)', borderRadius: '50%',
             background: 'var(--cream)', position: 'relative', zIndex: 1,
           }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--burgundy)' }} />
+            <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundImage: 'var(--accent-gradient)' }} />
           </div>
           <div style={{ textAlign: 'left' }}>
             <h3 style={{
@@ -767,9 +766,9 @@ const PartyGroup = ({ label, people }) => (
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             margin: '0 auto 22px',
             fontFamily: '"Cormorant Garamond", Georgia, serif',
-            color: 'var(--burgundy)', fontSize: 36, fontWeight: 400, fontStyle: 'italic',
+            fontSize: 36, fontWeight: 400, fontStyle: 'italic',
             letterSpacing: '0.02em',
-          }}>{p.initials}</div>
+          }}><span className="accent-gradient">{p.initials}</span></div>
           <div style={{
             fontFamily: 'Cinzel, Georgia, serif',
             fontSize: 10, fontWeight: 400,

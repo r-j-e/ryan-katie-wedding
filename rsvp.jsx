@@ -447,10 +447,10 @@ const RSVPThanks = ({ onReset, attending }) => (
   <Section id="rsvp" narrow padTop={180} padBottom={180}>
     <div style={{ textAlign:'center' }}>
       <div className="label" style={{ color:'var(--burgundy)', marginBottom:22 }}>Reply received</div>
-      <h2 className="serif" style={{
-        margin:0,
+      <h2 className="serif accent-gradient" style={{
+        margin:0, display:'inline-block',
         fontSize:'clamp(48px, 7vw, 76px)', fontWeight:300, lineHeight:1.05,
-        color:'var(--burgundy)', letterSpacing:'-0.015em', fontStyle:'italic',
+        letterSpacing:'-0.015em', fontStyle:'italic',
       }}>
         {attending ? 'See you in July.' : 'We\u2019ll miss you.'}
       </h2>
