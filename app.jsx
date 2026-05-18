@@ -2,7 +2,7 @@
 // Guest is an object { code, household, party } or null.
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-  "palette": "deep-forest",
+  "palette": "burgundy",
   "bypassGate": false,
   "showCountdown": true
 }/*EDITMODE-END*/;

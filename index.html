@@ -22,6 +22,7 @@
   :root{
     --burgundy:#4A1A2C;
     --burgundy-soft:#6B3147;
+    --magenta:#A8326B;
     --blush:#D4A5A5;
     --cream:#F4EDE4;
     --cream-deep:#EDE3D4;
@@ -31,6 +32,16 @@
     --ink-mute:rgba(26,20,22,0.55);
     --rule:rgba(26,20,22,0.14);
     --rule-soft:rgba(26,20,22,0.08);
+    /* Aubergine→magenta gradient pulled from the calla-lily bouquet —
+       used as a text fill on the most decorative burgundy accents. */
+    --accent-gradient: linear-gradient(135deg, var(--burgundy) 0%, var(--magenta) 100%);
+  }
+  .accent-gradient{
+    background-image: var(--accent-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
   }
   *{ box-sizing:border-box; -webkit-font-smoothing:antialiased; }
   html,body{
@@ -64,8 +75,13 @@
     color: inherit;
   }
   .script.amp{
-    /* Burgundy ampersand — the only accent in the wordmark. */
-    color: var(--burgundy);
+    /* Aubergine→magenta gradient ampersand — the only accent in the wordmark.
+       Pulled from the calla-lily bouquet (deep burgundy through to fuchsia). */
+    background-image: var(--accent-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
     /* Generous breathing room around the ampersand on the inline lockup. */
     margin: 0 0.32em;
   }

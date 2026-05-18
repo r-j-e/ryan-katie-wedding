@@ -462,9 +462,8 @@ const DateBand = ({ className }) =>
       textIndent: '0.32em',
       lineHeight: 0.72
     }}>Jul</span>
-      <span className="serif" style={{
+      <span className="serif accent-gradient" style={{
       fontWeight: 400,
-      color: 'var(--burgundy)',
       fontVariantNumeric: 'tabular-nums',
       lineHeight: 0.72, fontSize: "46.5px"
     }}>02</span>
