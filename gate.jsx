@@ -133,14 +133,9 @@ const Gate = ({ onUnlock }) => {
           </form>
 
           <p className="gate-help">
-            Lost your invitation? <a href="mailto:hello@ryanandkatie.co">Write to us</a>
+            Lost your invitation? <a href="mailto:hello@ryanandkatie.co">Reach out to Katie or Ryan</a>.
           </p>
         </div>
-      </div>
-
-      {/* Preview hint — bottom of page, very faint */}
-      <div className="gate-preview-hint">
-        Preview &middot; try <em>katie2027</em> or <em>smith2027</em>
       </div>
 
       <style>{`
@@ -306,14 +301,6 @@ const Gate = ({ onUnlock }) => {
           transition: border-color 0.3s ease;
         }
         .gate-help a:hover{ border-color:var(--burgundy); }
-
-        .gate-preview-hint{
-          position:absolute; bottom:24px; left:0; right:0;
-          z-index:2; text-align:center;
-          font-family:'Cormorant Garamond', Georgia, serif;
-          font-size:12px; font-style:italic; font-weight:300;
-          color:var(--ink-mute); opacity:0.55;
-        }
 
         @keyframes gate-rise {
           from { opacity:0; transform:translateY(20px); }
