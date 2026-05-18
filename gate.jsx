@@ -78,122 +78,264 @@ const Gate = ({ onUnlock }) => {
   };
 
   return (
-    <div style={{
-      minHeight:'100vh', background:'var(--cream)', color:'var(--ink)',
-      display:'grid', placeItems:'center', padding:'48px 24px',
-      position:'relative',
-    }}>
-      <div className="gate-card" style={{
-        width:'100%', maxWidth:440,
-        background:'var(--paper)',
-        border:'1px solid var(--rule)',
-        padding:'48px 40px 56px',
-        textAlign:'center',
-        animation: shake ? 'shake 0.45s' : 'fadeUp 0.9s ease-out',
-        boxShadow:'0 1px 0 rgba(26,20,22,0.02), 0 30px 60px -30px rgba(26,20,22,0.18)',
-      }}>
-        {/* Names lockup — Amoresa script + Cinzel caps, sized to the card */}
-        <div style={{
-          fontSize:'clamp(20px, 2.2vw, 24px)',
-          lineHeight:1, color:'var(--ink)',
-        }}>
-          <Names />
-        </div>
+    <div className="gate-page">
+      {/* Subtle paper grain overlay — fixed, behind everything but the card */}
+      <div aria-hidden="true" className="gate-grain" />
 
-        {/* Hairline rule */}
-        <div aria-hidden="true" style={{
-          width:40, height:1, background:'var(--rule)',
-          margin:'32px auto 24px',
-        }} />
+      <div className={`gate-card ${shake ? 'gate-shake' : ''}`}>
+        {/* Inner hairline border — gives the card a printed-stationery feel */}
+        <div aria-hidden="true" className="gate-card-inner" />
 
-        {/* Date — smaller, demoted below the names */}
-        <div style={{
-          fontFamily:"'Cormorant Garamond', Georgia, serif",
-          fontSize:'clamp(15px, 1.6vw, 17px)',
-          fontWeight:400, fontStyle:'italic',
-          color:'var(--burgundy)',
-          letterSpacing:'0.08em',
-          fontVariantNumeric:'tabular-nums',
-        }}>02 &middot; VII &middot; 2027</div>
+        <div className="gate-stack">
+          <p className="gate-eyebrow">You are cordially invited</p>
 
-        <form onSubmit={submit} style={{ marginTop:44 }}>
-          <label htmlFor="gate-code" className="visually-hidden">
-            Your invitation code
-          </label>
-          <input
-            id="gate-code"
-            ref={inputRef}
-            type="text"
-            value={val}
-            onChange={(e) => { setVal(e.target.value); setErr(false); }}
-            placeholder="your code"
-            autoComplete="off"
-            spellCheck="false"
-            aria-label="Your invitation code"
-            style={{
-              width:'100%',
-              background:'transparent', border:'none',
-              borderBottom:`1px solid ${err ? 'var(--burgundy)' : 'var(--rule)'}`,
-              color:'var(--ink)',
-              fontFamily:"'Cormorant Garamond', Georgia, serif",
-              fontSize:20, fontWeight:400, fontStyle:'italic',
-              textAlign:'center',
-              padding:'10px 0', outline:'none', letterSpacing:'0.06em', textTransform:'lowercase',
-              transition:'border-color 0.2s',
-            }}
-          />
-
-          <button type="submit" className="gate-enter" style={{
-            marginTop:28,
-            background:'none', border:'none', cursor:'pointer', padding:'4px 0',
-            fontFamily:"'Cinzel', Georgia, serif",
-            fontSize:11, fontWeight:400,
-            letterSpacing:'0.32em', textTransform:'uppercase', textIndent:'0.32em',
-            color:'var(--burgundy)',
-            display:'inline-flex', alignItems:'center', gap:8,
-            transition:'gap 0.2s',
-          }}>
-            <span>Enter</span>
-            <span aria-hidden="true" style={{ letterSpacing:0, textIndent:0 }}>&rarr;</span>
-          </button>
-
-          <div role="status" aria-live="polite" style={{
-            minHeight:18, marginTop:18,
-            fontFamily:"'Cormorant Garamond', Georgia, serif",
-            fontSize:13, fontStyle:'italic',
-            color:'var(--burgundy)',
-            opacity: err ? 1 : 0,
-            transition:'opacity 0.2s',
-          }}>
-            {err ? 'We couldn’t find that code.' : ' '}
+          {/* Names lockup — Amoresa script + Cinzel caps, sized to the card */}
+          <div className="gate-names">
+            <Names />
           </div>
-        </form>
+
+          {/* Flourish divider — hairlines flanking a small botanical motif */}
+          <div className="gate-flourish" aria-hidden="true">
+            <span className="gate-flourish-line" />
+            <svg width="44" height="14" viewBox="0 0 44 14" fill="none" stroke="currentColor" strokeWidth="0.7">
+              <path d="M 22 7 Q 15 1 8 7 Q 15 13 22 7 Q 29 1 36 7 Q 29 13 22 7" strokeLinecap="round" />
+              <circle cx="22" cy="7" r="1.3" fill="currentColor" stroke="none" />
+            </svg>
+            <span className="gate-flourish-line" />
+          </div>
+
+          {/* Date written out, then venue in tracked caps */}
+          <p className="gate-date">the second of july, two thousand twenty&#8209;seven</p>
+          <p className="gate-venue">St Audries Park &middot; Somerset</p>
+
+          <form onSubmit={submit} className="gate-form">
+            <div className="gate-field">
+              <label htmlFor="gate-code" className="gate-label">Invitation code</label>
+              <input
+                id="gate-code"
+                ref={inputRef}
+                type="text"
+                value={val}
+                onChange={(e) => { setVal(e.target.value); setErr(false); }}
+                placeholder="&mdash;"
+                autoComplete="off"
+                spellCheck="false"
+                aria-describedby="gate-error"
+                className={`gate-input ${err ? 'is-error' : ''}`}
+              />
+            </div>
+
+            <div id="gate-error" role="status" aria-live="polite" className={`gate-error ${err ? 'is-shown' : ''}`}>
+              {err ? 'That code doesn’t look quite right. Please try again.' : ' '}
+            </div>
+
+            <button type="submit" className="gate-btn">Enter</button>
+          </form>
+
+          <p className="gate-help">
+            Lost your invitation? <a href="mailto:hello@ryanandkatie.co">Write to us</a>
+          </p>
+        </div>
       </div>
 
-      {/* Preview hint — outside the card, very faint */}
-      <div style={{
-        position:'absolute', bottom:24, left:0, right:0, textAlign:'center',
-        fontFamily:"'Cormorant Garamond', Georgia, serif",
-        fontSize:12, fontStyle:'italic', fontWeight:300,
-        color:'var(--ink-mute)', opacity:0.6,
-      }}>
+      {/* Preview hint — bottom of page, very faint */}
+      <div className="gate-preview-hint">
         Preview &middot; try <em>katie2027</em> or <em>smith2027</em>
       </div>
 
       <style>{`
-        .visually-hidden{
-          position:absolute; width:1px; height:1px; padding:0; margin:-1px;
-          overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+        .gate-page{
+          min-height:100vh;
+          background:var(--cream);
+          background-image:
+            radial-gradient(ellipse at top left, rgba(74,26,44,0.04) 0%, transparent 50%),
+            radial-gradient(ellipse at bottom right, rgba(26,20,22,0.05) 0%, transparent 50%),
+            radial-gradient(circle at 20% 80%, rgba(74,26,44,0.03) 0%, transparent 40%),
+            radial-gradient(circle at 80% 20%, rgba(26,20,22,0.03) 0%, transparent 40%);
+          background-attachment:fixed;
+          color:var(--ink);
+          display:grid; place-items:center;
+          padding:48px 24px;
+          position:relative;
         }
-        .gate-enter:hover{ gap:14px !important; }
-        @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
-        @keyframes shake {
+        .gate-grain{
+          position:fixed; inset:0; pointer-events:none;
+          opacity:0.28; z-index:1;
+          background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.13 0 0 0 0 0.14 0 0 0 0.18 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .gate-card{
+          position:relative; z-index:2;
+          width:100%; max-width:460px;
+          background:linear-gradient(180deg, var(--paper) 0%, var(--cream-deep) 100%);
+          border:1px solid var(--rule);
+          padding:56px 48px 44px;
+          text-align:center;
+          box-shadow:
+            0 1px 0 rgba(255,255,255,0.5) inset,
+            0 30px 60px -20px rgba(26,20,22,0.18),
+            0 10px 30px -10px rgba(26,20,22,0.12);
+          animation: gate-rise 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .gate-card-inner{
+          position:absolute; inset:12px;
+          border:1px solid var(--rule);
+          pointer-events:none; opacity:0.55;
+        }
+        .gate-shake{ animation: gate-shake 0.45s !important; }
+
+        .gate-stack > *{
+          opacity:0;
+          animation: gate-fade-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .gate-stack > *:nth-child(1){ animation-delay:0.25s; }
+        .gate-stack > *:nth-child(2){ animation-delay:0.40s; }
+        .gate-stack > *:nth-child(3){ animation-delay:0.55s; }
+        .gate-stack > *:nth-child(4){ animation-delay:0.65s; }
+        .gate-stack > *:nth-child(5){ animation-delay:0.75s; }
+        .gate-stack > *:nth-child(6){ animation-delay:0.90s; }
+        .gate-stack > *:nth-child(7){ animation-delay:1.05s; }
+
+        .gate-eyebrow{
+          margin:0 0 28px;
+          font-family:'Cinzel', Georgia, serif;
+          font-size:11px; font-weight:400;
+          letter-spacing:0.42em; text-transform:uppercase;
+          color:var(--burgundy);
+          text-indent:0.42em;
+        }
+
+        .gate-names{
+          font-size:clamp(22px, 2.4vw, 26px);
+          line-height:1; color:var(--ink);
+        }
+
+        .gate-flourish{
+          display:flex; align-items:center; justify-content:center;
+          gap:12px; margin:28px 0 22px;
+          color:var(--burgundy); opacity:0.75;
+        }
+        .gate-flourish-line{
+          height:1px; width:60px;
+          background:linear-gradient(90deg, transparent, var(--rule), transparent);
+        }
+
+        .gate-date{
+          margin:0 0 8px;
+          font-family:'Cormorant Garamond', Georgia, serif;
+          font-size:clamp(14px, 1.5vw, 16px);
+          font-style:italic; font-weight:400;
+          color:var(--ink-soft);
+          letterSpacing:0.02em;
+        }
+        .gate-venue{
+          margin:0;
+          font-family:'Cinzel', Georgia, serif;
+          font-size:10px; font-weight:400;
+          letter-spacing:0.34em; text-transform:uppercase;
+          color:var(--burgundy);
+          text-indent:0.34em;
+        }
+
+        .gate-form{ margin-top:36px; }
+        .gate-field{ display:block; }
+        .gate-label{
+          display:block; margin-bottom:10px;
+          font-family:'Cinzel', Georgia, serif;
+          font-size:10px; font-weight:400;
+          letter-spacing:0.34em; text-transform:uppercase;
+          color:var(--burgundy);
+          text-indent:0.34em;
+        }
+        .gate-input{
+          width:100%;
+          background:transparent; border:none;
+          border-bottom:1px solid var(--rule);
+          color:var(--ink);
+          font-family:'Cormorant Garamond', Georgia, serif;
+          font-size:20px; font-weight:400; font-style:italic;
+          text-align:center; letter-spacing:0.06em;
+          padding:10px 0; outline:none;
+          transition: border-color 0.3s ease, background 0.3s ease;
+        }
+        .gate-input:focus{
+          border-bottom-color:var(--burgundy);
+          background:rgba(255,255,255,0.3);
+        }
+        .gate-input.is-error{ border-bottom-color:var(--burgundy); }
+        .gate-input::placeholder{ color:var(--rule); font-style:italic; }
+
+        .gate-error{
+          min-height:18px; margin-top:12px;
+          font-family:'Cormorant Garamond', Georgia, serif;
+          font-size:13px; font-style:italic;
+          color:var(--burgundy);
+          opacity:0; transition:opacity 0.2s;
+        }
+        .gate-error.is-shown{ opacity:1; }
+
+        .gate-btn{
+          margin-top:20px;
+          width:100%;
+          padding:16px 24px;
+          background:var(--ink); color:var(--cream);
+          border:none; cursor:pointer;
+          font-family:'Cinzel', Georgia, serif;
+          font-size:11px; font-weight:500;
+          letter-spacing:0.4em; text-transform:uppercase;
+          text-indent:0.4em;
+          transition: background 0.3s ease, letter-spacing 0.3s ease;
+        }
+        .gate-btn:hover{
+          background:var(--burgundy);
+          letter-spacing:0.5em;
+          text-indent:0.5em;
+        }
+        .gate-btn:active{ transform:translateY(1px); }
+
+        .gate-help{
+          margin:28px 0 0;
+          font-family:'Cormorant Garamond', Georgia, serif;
+          font-size:14px; font-style:italic;
+          color:var(--ink-mute);
+        }
+        .gate-help a{
+          color:var(--burgundy); text-decoration:none;
+          border-bottom:1px solid var(--rule);
+          padding-bottom:1px;
+          transition: border-color 0.3s ease;
+        }
+        .gate-help a:hover{ border-color:var(--burgundy); }
+
+        .gate-preview-hint{
+          position:absolute; bottom:24px; left:0; right:0;
+          z-index:2; text-align:center;
+          font-family:'Cormorant Garamond', Georgia, serif;
+          font-size:12px; font-style:italic; font-weight:300;
+          color:var(--ink-mute); opacity:0.55;
+        }
+
+        @keyframes gate-rise {
+          from { opacity:0; transform:translateY(20px); }
+          to   { opacity:1; transform:translateY(0); }
+        }
+        @keyframes gate-fade-in {
+          from { opacity:0; transform:translateY(8px); }
+          to   { opacity:1; transform:translateY(0); }
+        }
+        @keyframes gate-shake {
           0%,100%{ transform:translateX(0); }
           20%,60%{ transform:translateX(-4px); }
           40%,80%{ transform:translateX(4px); }
         }
+
         @media (max-width: 480px){
-          .gate-card{ padding:44px 28px !important; }
+          .gate-card{ padding:44px 28px 36px; }
+          .gate-eyebrow{ letter-spacing:0.32em; text-indent:0.32em; }
+          .gate-flourish-line{ width:40px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .gate-card, .gate-stack > *{ animation:none !important; opacity:1 !important; }
         }
       `}</style>
     </div>
