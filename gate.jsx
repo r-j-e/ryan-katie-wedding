@@ -114,20 +114,9 @@ const Gate = ({ onUnlock }) => {
           color:'var(--burgundy)',
           letterSpacing:'0.08em',
           fontVariantNumeric:'tabular-nums',
-          marginBottom:24,
         }}>02 &middot; VII &middot; 2027</div>
 
-        {/* Single line of body copy */}
-        <p style={{
-          margin:0,
-          fontFamily:"'Cormorant Garamond', Georgia, serif",
-          fontSize:'clamp(15px, 1.5vw, 17px)', fontStyle:'italic', fontWeight:300,
-          color:'var(--ink-soft)', lineHeight:1.55,
-        }}>
-          The doors open with the code<br/>on your invitation.
-        </p>
-
-        <form onSubmit={submit} style={{ marginTop:40 }}>
+        <form onSubmit={submit} style={{ marginTop:44 }}>
           <label htmlFor="gate-code" className="visually-hidden">
             Your invitation code
           </label>
