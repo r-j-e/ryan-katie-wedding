@@ -25,3 +25,9 @@ build/
 # Design artifacts — kept local only, not part of the deployed site
 project/
 chats/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
