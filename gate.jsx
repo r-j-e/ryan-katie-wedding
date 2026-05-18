@@ -1,12 +1,64 @@
-// Gate — a small announcement card on cream paper. Demo password: "calla".
+// Per-guest login. Each invitation card carries a unique code (e.g. 'smith2027').
+// The code maps to a household — we use that to personalise the welcome and to
+// pre-fill the RSVP form. Token persists in localStorage so guests don't have to
+// re-enter on return visits.
+//
+// In production these should live on the server (and ideally each code should
+// be one-shot or rate-limited) — but for a wedding website, a static map is fine.
+// The point is keeping the URL out of search engines and casual visitors, not
+// defending against motivated attackers.
 
-const PASSWORD = 'calla';
-const TOKEN_KEY = 'rk_gate_token_v3';
+const TOKEN_KEY = 'rk_guest_v1';
+
+const GUEST_CODES = {
+  // — Family —
+  'smith2027':     { household: 'The Smith Family',    party: 4 },
+  'jones2027':     { household: 'The Jones Family',    party: 2 },
+  'williams2027':  { household: 'The Williams',        party: 2 },
+  'brown2027':     { household: 'The Browns',          party: 3 },
+  'taylor2027':    { household: 'The Taylor Family',   party: 4 },
+  'davies2027':    { household: 'The Davies',          party: 2 },
+  'wilson2027':    { household: 'The Wilson Family',   party: 3 },
+  'evans2027':     { household: 'The Evans',           party: 2 },
+  'thomas2027':    { household: 'The Thomas Family',   party: 4 },
+  'roberts2027':   { household: 'The Roberts',         party: 2 },
+  // — Friends —
+  'johnson2027':   { household: 'The Johnsons',        party: 3 },
+  'walker2027':    { household: 'The Walker Family',   party: 4 },
+  'white2027':     { household: 'The Whites',          party: 2 },
+  'green2027':     { household: 'The Green Family',    party: 2 },
+  'hall2027':      { household: 'The Halls',           party: 3 },
+  'wood2027':      { household: 'The Wood Family',     party: 4 },
+  'harris2027':    { household: 'The Harris',          party: 2 },
+  'clarke2027':    { household: 'The Clarkes',         party: 2 },
+  'lewis2027':     { household: 'The Lewis Family',    party: 3 },
+  'young2027':     { household: 'The Youngs',          party: 2 },
+  'king2027':      { household: 'The King Family',     party: 4 },
+  'wright2027':    { household: 'The Wrights',         party: 2 },
+  'scott2027':     { household: 'The Scott Family',    party: 3 },
+  'cooper2027':    { household: 'The Coopers',         party: 2 },
+  'ward2027':      { household: 'The Ward Family',     party: 4 },
+  'hughes2027':    { household: 'The Hughes',          party: 2 },
+  'morris2027':    { household: 'The Morris Family',   party: 3 },
+  'cook2027':      { household: 'The Cooks',           party: 2 },
+  'morgan2027':    { household: 'The Morgan Family',   party: 4 },
+  'bell2027':      { household: 'The Bells',           party: 2 },
+  // — Demo / preview codes for testing —
+  'katie2027':     { household: 'Preview',             party: 2 },
+  'ryan2027':      { household: 'Preview',             party: 2 },
+};
+
+const lookupGuest = (raw) => {
+  if (!raw) return null;
+  const key = raw.trim().toLowerCase();
+  const found = GUEST_CODES[key];
+  return found ? { code: key, ...found } : null;
+};
 
 const Gate = ({ onUnlock }) => {
   const [val, setVal] = React.useState('');
   const [err, setErr] = React.useState(false);
-  const [shaking, setShaking] = React.useState(false);
+  const [shake, setShake] = React.useState(false);
   const inputRef = React.useRef(null);
 
   React.useEffect(() => {
@@ -15,147 +67,152 @@ const Gate = ({ onUnlock }) => {
 
   const submit = (e) => {
     if (e) e.preventDefault();
-    if (val.trim().toLowerCase() === PASSWORD) {
-      try { localStorage.setItem(TOKEN_KEY, '1'); } catch(e){}
-      onUnlock();
+    const guest = lookupGuest(val);
+    if (guest) {
+      try { localStorage.setItem(TOKEN_KEY, JSON.stringify(guest)); } catch(e){}
+      onUnlock(guest);
     } else {
-      setErr(true); setShaking(true);
-      setTimeout(() => setShaking(false), 500);
+      setErr(true); setShake(true);
+      setTimeout(() => setShake(false), 450);
     }
   };
 
   return (
     <div style={{
-      minHeight:'100vh',
-      background:'var(--cream)',
+      minHeight:'100vh', background:'var(--cream)', color:'var(--ink)',
       display:'grid', placeItems:'center', padding:'48px 24px',
       position:'relative',
     }}>
-      {/* Page corner marks */}
-      <CornerMark style={{ top:24, left:24 }} />
-      <CornerMark style={{ top:24, right:24, transform:'rotate(90deg)' }} />
-      <CornerMark style={{ bottom:24, right:24, transform:'rotate(180deg)' }} />
-      <CornerMark style={{ bottom:24, left:24, transform:'rotate(270deg)' }} />
-
       <div style={{
-        position:'absolute', top:34, left:'50%', transform:'translateX(-50%)',
-        color:'var(--ink-soft)', opacity:0.55,
+        width:'100%', maxWidth:560, textAlign:'center',
+        animation:'fadeUp 0.9s ease-out',
+        overflow:'hidden',
       }}>
-        <span className="mono-eyebrow" style={{ fontSize:10 }}>02 · 07 · 2027</span>
-      </div>
+        <div style={{
+          fontFamily:'Cinzel, Georgia, serif',
+          fontSize:11, fontWeight:400,
+          letterSpacing:'0.36em', textTransform:'uppercase',
+          color:'var(--ink-mute)', textIndent:'0.36em',
+        }}>By invitation only</div>
 
-      <div style={{
-        maxWidth:520, width:'100%', textAlign:'center',
-        padding:'72px 60px',
-        border:'1px solid var(--ink)',
-        outline:'1px solid var(--ink)',
-        outlineOffset:'6px',
-        animation:'cardIn 0.9s ease-out',
-        background:'var(--cream)',
-      }} className="gate-card">
-
-        <div className="mono-eyebrow" style={{ color:'var(--ink-soft)', marginBottom:36 }}>
-          Private
-        </div>
-
-        <h1 className="serif" style={{
-          margin:0, fontSize:'clamp(40px, 6vw, 60px)', fontWeight:300, lineHeight:1.05,
-          color:'var(--ink)', letterSpacing:'0.01em',
+        <h1 style={{
+          margin:'80px 0 0',
+          fontSize:'clamp(18px, 2.8vw, 30px)',
+          fontWeight:400, lineHeight:1.8, letterSpacing:'-0.005em',
+          color:'var(--ink)',
+          padding:'0 16px',
         }}>
-          The wedding of<br/>
-          Ryan <em style={{ color:'var(--burgundy)', fontStyle:'italic', fontWeight:400 }}>&amp;</em> Katie
+          <Names />
         </h1>
 
-        <RuleOrnament style={{ margin:'32px auto' }} />
-
-        <p className="serif" style={{
-          margin:0, fontSize:17, lineHeight:1.7, fontStyle:'italic', fontWeight:300,
-          color:'var(--ink-soft)',
+        <p style={{
+          margin:'32px auto 0', maxWidth:380,
+          fontFamily:'Cinzel, Georgia, serif',
+          fontSize:'clamp(14px, 1.6vw, 16px)', fontStyle:'italic', fontWeight:300,
+          color:'var(--ink-mute)', lineHeight:1.7,
         }}>
-          The word printed on your invitation<br/>will open the doors.
+          The code printed on your invitation will open the doors.
         </p>
 
         <form onSubmit={submit} style={{
-          marginTop:40, animation: shaking ? 'shake 0.45s' : 'none',
+          marginTop:56, animation: shake ? 'shake 0.45s' : 'none',
         }}>
+          <label htmlFor="gate-code" style={{
+            display:'block', marginBottom:14,
+            fontFamily:'Cinzel, Georgia, serif',
+            fontSize:10, fontWeight:400,
+            letterSpacing:'0.34em', textTransform:'uppercase',
+            color:'var(--ink-mute)', textIndent:'0.34em',
+          }}>Your code</label>
           <input
+            id="gate-code"
             ref={inputRef}
-            type="password"
+            type="text"
             value={val}
             onChange={(e) => { setVal(e.target.value); setErr(false); }}
-            placeholder="·   ·   ·   ·   ·"
+            placeholder="—"
             autoComplete="off"
             spellCheck="false"
-            aria-label="Password"
+            aria-label="Your invitation code"
             style={{
               width:'100%',
               background:'transparent', border:'none',
-              borderBottom:`1px solid ${err ? 'var(--magenta)' : 'var(--ink)'}`,
-              color:'var(--ink)', fontFamily:"'Cormorant Garamond', serif",
-              fontSize:24, fontStyle:'italic', fontWeight:300, textAlign:'center',
-              padding:'12px 0', outline:'none',
-              letterSpacing:'0.18em',
+              borderBottom:`1px solid ${err ? 'var(--burgundy)' : 'var(--ink-mute)'}`,
+              color:'var(--ink)',
+              fontFamily:"'Cinzel', Georgia, serif",
+              fontSize:22, fontWeight:400,
+              textAlign:'center',
+              padding:'12px 0', outline:'none', letterSpacing:'0.16em', textTransform:'lowercase',
               transition:'border-color 0.2s',
             }}
           />
           <button type="submit" style={{
-            marginTop:24, width:'100%',
+            marginTop:32,
             background:'var(--ink)', color:'var(--cream)', border:'none',
-            padding:'14px 0',
-            fontFamily:'Inter, sans-serif', fontSize:10, fontWeight:500,
-            letterSpacing:'0.36em', textTransform:'uppercase', cursor:'pointer',
-            transition:'background 0.2s',
+            padding:'14px 40px',
+            fontFamily:'Cinzel, Georgia, serif', fontSize:11, fontWeight:500,
+            letterSpacing:'0.36em', textTransform:'uppercase', textIndent:'0.36em',
+            cursor:'pointer', transition:'background 0.2s',
           }}
           onMouseEnter={(e) => e.currentTarget.style.background = 'var(--burgundy)'}
           onMouseLeave={(e) => e.currentTarget.style.background = 'var(--ink)'}
-          >Open</button>
+          >Enter</button>
+
           <div style={{
-            minHeight:18, marginTop:14,
+            minHeight:20, marginTop:16,
+            fontFamily:"'Cinzel', Georgia, serif",
             fontSize:13, fontStyle:'italic',
-            fontFamily:"'Cormorant Garamond', serif",
-            color: err ? 'var(--magenta)' : 'var(--ink-soft)', opacity: err ? 1 : 0.5,
+            color: err ? 'var(--burgundy)' : 'var(--ink-mute)',
+            opacity: err ? 1 : 0.55,
           }}>
-            {err ? 'That isn\u2019t it — try again.' : '\u00A0'}
+            {err ? 'We couldn\u2019t find that code — please check your invitation.' : '\u00A0'}
           </div>
         </form>
-      </div>
 
-      <div style={{
-        position:'absolute', bottom:34, left:'50%', transform:'translateX(-50%)',
-        color:'var(--ink-soft)', opacity:0.55,
-      }}>
-        <span className="mono-eyebrow" style={{ fontSize:10 }}>St Audries Park · Somerset</span>
+        <div style={{
+          marginTop:48,
+          fontFamily:'Cinzel, Georgia, serif',
+          fontSize:10, fontWeight:400,
+          letterSpacing:'0.36em', textTransform:'uppercase',
+          color:'var(--ink-mute)', opacity:0.55, textIndent:'0.36em',
+        }}>02 . 07 . 2027 &nbsp;·&nbsp; Somerset</div>
+
+        {/* Preview hint — drop this in production */}
+        <div style={{
+          marginTop:60, paddingTop:24,
+          borderTop:'1px solid var(--rule-soft)',
+          fontFamily:'Cinzel, Georgia, serif',
+          fontSize:12, fontStyle:'italic', fontWeight:300,
+          color:'var(--ink-mute)', opacity:0.7,
+        }}>
+          Preview · try <code style={{
+            fontFamily:'Cinzel, Georgia, serif',
+            fontStyle:'normal',
+            background:'var(--cream-deep)',
+            padding:'2px 8px',
+            border:'1px solid var(--rule-soft)',
+            margin:'0 2px',
+          }}>katie2027</code> or <code style={{
+            fontFamily:'Cinzel, Georgia, serif',
+            fontStyle:'normal',
+            background:'var(--cream-deep)',
+            padding:'2px 8px',
+            border:'1px solid var(--rule-soft)',
+            margin:'0 2px',
+          }}>smith2027</code>
+        </div>
       </div>
 
       <style>{`
-        @keyframes cardIn { from { opacity:0; transform: translateY(8px) scale(0.985); } to { opacity:1; transform:none; } }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
         @keyframes shake {
           0%,100%{ transform:translateX(0); }
-          20%,60%{ transform:translateX(-5px); }
-          40%,80%{ transform:translateX(5px); }
-        }
-        @media (max-width: 540px){
-          .gate-card{ padding:48px 28px !important; }
+          20%,60%{ transform:translateX(-4px); }
+          40%,80%{ transform:translateX(4px); }
         }
       `}</style>
     </div>
   );
 };
 
-// Tiny corner crop-mark like printed proofs use
-const CornerMark = ({ style }) => (
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ position:'absolute', color:'var(--ink-soft)', opacity:0.35, ...style }}>
-    <line x1="0" y1="0.5" x2="14" y2="0.5" stroke="currentColor"/>
-    <line x1="0.5" y1="0" x2="0.5" y2="14" stroke="currentColor"/>
-  </svg>
-);
-
-const RuleOrnament = ({ style }) => (
-  <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:14, ...style }}>
-    <span style={{ width:80, height:1, background:'var(--ink)', opacity:0.5 }}/>
-    <span className="serif" style={{ fontSize:18, color:'var(--burgundy)', fontStyle:'italic' }}>·</span>
-    <span style={{ width:80, height:1, background:'var(--ink)', opacity:0.5 }}/>
-  </div>
-);
-
-Object.assign(window, { Gate, PASSWORD, TOKEN_KEY, CornerMark, RuleOrnament });
+Object.assign(window, { Gate, GUEST_CODES, lookupGuest, TOKEN_KEY });

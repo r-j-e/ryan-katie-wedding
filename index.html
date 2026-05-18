@@ -7,52 +7,119 @@
 <title>Ryan &amp; Katie · 2 July 2027</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  /* Amoresa — your licensed font, served from the project. */
+  @font-face {
+    font-family: 'Amoresa';
+    src: url('fonts/Amoresa.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+</style>
 <style>
   :root{
     --burgundy:#4A1A2C;
-    --magenta:#A8326B;
+    --burgundy-soft:#6B3147;
     --blush:#D4A5A5;
-    --plum:#5B2A4A;
     --cream:#F4EDE4;
     --cream-deep:#EDE3D4;
+    --paper:#FAF6EF;
     --ink:#1A1416;
     --ink-soft:#2A2024;
-    --rule:rgba(26,20,22,0.18);
-    --rule-soft:rgba(26,20,22,0.10);
+    --ink-mute:rgba(26,20,22,0.55);
+    --rule:rgba(26,20,22,0.14);
+    --rule-soft:rgba(26,20,22,0.08);
   }
   *{ box-sizing:border-box; -webkit-font-smoothing:antialiased; }
-  html,body{ margin:0; padding:0; background:var(--cream); color:var(--ink); font-family:'Inter',system-ui,sans-serif; font-weight:400; }
+  html,body{
+    margin:0; padding:0;
+    background:var(--cream); color:var(--ink);
+    font-family:'Cinzel', Georgia, serif;
+    font-weight:400;
+  }
   body{ overflow-x:hidden; }
   ::selection{ background:var(--burgundy); color:var(--cream); }
   a{ color:inherit; }
-  .serif{ font-family:'Cormorant Garamond',Georgia,serif; }
-  .mono-eyebrow{
-    font-family:'Inter',sans-serif;
-    font-weight:500;
-    font-size:11px;
-    letter-spacing:0.32em;
+  .serif{ font-family:'Cinzel', Georgia, serif; }
+  /* === The wedding-name treatment ===
+     Capital letters in Amoresa script (the user's licensed font, served
+     from /fonts/Amoresa.ttf). The rest of the word in Cinzel caps —
+     matches the printed Canva invite.
+  */
+  :root{
+    --script-family: 'Amoresa', 'Allura', cursive;
+    --caps-family:   'Cinzel', 'Trajan Pro', Georgia, serif;
+  }
+  .script{
+    font-family: var(--script-family);
+    font-weight:400;
+    /* Big and dramatic — the script must dominate the Cinzel caps that
+       follow, like a hand-lettered initial on the printed invite. */
+    font-size:1.75em;
+    line-height:0.95;
+    /* Small positive gap so the script swash doesn't crash into the caps. */
+    margin-right:0.06em;
+    color: inherit;
+  }
+  .script.amp{
+    /* Burgundy ampersand — the only accent in the wordmark. */
+    color: var(--burgundy);
+    /* Generous breathing room around the ampersand on the inline lockup. */
+    margin: 0 0.32em;
+  }
+  .caps{
+    font-family: var(--caps-family);
     text-transform:uppercase;
+    /* Invite has very tight Cinzel — almost touching. */
+    letter-spacing:0.04em;
+    font-weight:400;
   }
-  /* image-slot styling override for editorial look */
+  /* Inline (one-line) */
+  .script-name{
+    display:inline-block;
+    white-space:nowrap;
+    line-height:1;
+  }
+  /* Stacked (Katie / & / Ryan) — matches the invite */
+  .script-name.stacked{
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    line-height:1;
+  }
+  .script-name.stacked .line{ display:block; white-space:nowrap; }
+  .script-name.stacked .ampline{
+    /* Tuck the ampersand up between the names. The descenders of the
+       upper name and the ascenders of the lower name will interleave. */
+    margin:-0.22em 0 -0.10em;
+  }
+  .script-name.stacked .ampline .script{
+    font-size:1.1em;  /* slightly smaller than the names */
+  }
+  .label{
+    font-family:'Cinzel', Georgia, serif;
+    font-weight:400;
+    font-size:11px;
+    letter-spacing:0.28em;
+    text-transform:uppercase;
+    color: var(--ink-mute);
+  }
+  /* image-slot defaults — plain cream block with faint outline + tiny label */
   image-slot{
-    --slot-bg: rgba(26,20,22,0.04);
-    --slot-border: rgba(26,20,22,0.18);
-    --slot-color: rgba(26,20,22,0.55);
+    --slot-bg: var(--cream-deep);
+    --slot-border: rgba(26,20,22,0.10);
+    --slot-color: rgba(26,20,22,0.40);
     --slot-font: 'Inter', sans-serif;
-  }
-  image-slot[data-on-dark]{
-    --slot-bg: rgba(244,237,228,0.05);
-    --slot-border: rgba(244,237,228,0.22);
-    --slot-color: rgba(244,237,228,0.65);
   }
   /* utility */
   .hidden{ display:none !important; }
-  /* Loading fallback */
   #__loading{
     position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
-    background:var(--cream); color:var(--ink); font-family:'Cormorant Garamond',serif; font-style:italic;
-    z-index:9999; font-size:18px; opacity:0.6;
+    background:var(--cream); color:var(--ink-mute);
+    font-family:'Cinzel', Georgia, serif;
+    z-index:9999; font-size:18px;
   }
 </style>
 </head>
@@ -75,6 +142,7 @@
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
   <script src="image-slot.js"></script>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
   <script type="text/babel" src="gate.jsx"></script>
   <script type="text/babel" src="sections.jsx"></script>
   <script type="text/babel" src="rsvp.jsx"></script>

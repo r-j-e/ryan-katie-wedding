@@ -1,61 +1,49 @@
-// Reply card — sits on the page like an actual printed RSVP card.
+// RSVP — multi-step form with meal pickers. Clean and quiet.
+// Wired for Netlify Forms; falls back to localStorage in preview.
 
 const MEAL_OPTIONS = {
   starter: [
     { id:'s1', name:'Beetroot &amp; goat cheese', note:'candied walnut, toasted rye' },
-    { id:'s2', name:'Smoked trout', note:'cucumber, dill, crème fraîche' },
+    { id:'s2', name:'Smoked trout',               note:'cucumber, dill, crème fraîche' },
   ],
   main: [
-    { id:'m1', name:'Slow-cooked beef cheek', note:'roasted roots, red wine jus' },
-    { id:'m2', name:'Wild mushroom risotto', note:'shaved parmesan (v)' },
+    { id:'m1', name:'Slow-cooked beef cheek',     note:'roasted roots, red wine jus' },
+    { id:'m2', name:'Wild mushroom risotto',      note:'shaved parmesan (v)' },
   ],
   pudding: [
-    { id:'p1', name:'Dark chocolate délice', note:'raspberry sorbet' },
-    { id:'p2', name:'Lemon posset', note:'shortbread, macerated berries' },
+    { id:'p1', name:'Dark chocolate délice',      note:'raspberry sorbet' },
+    { id:'p2', name:'Lemon posset',               note:'shortbread, macerated berries' },
   ],
 };
 
 const blankGuest = () => ({ name:'', attending:'yes', starter:'', main:'', pudding:'', dietary:'' });
 
 const RSVP = () => {
-  const [step, setStep] = React.useState(0);
+  const [step, setStep]   = React.useState(0);
   const [guests, setGuests] = React.useState([ blankGuest() ]);
-  const [songs, setSongs] = React.useState('');
+  const [songs, setSongs]   = React.useState('');
   const [message, setMessage] = React.useState('');
-  const [email, setEmail] = React.useState('');
+  const [email, setEmail]   = React.useState('');
   const [submitted, setSubmitted] = React.useState(false);
 
-  const update = (i, key, val) => setGuests(g => g.map((x, idx) => idx === i ? { ...x, [key]:val } : x));
-  const addGuest = () => setGuests(g => [...g, blankGuest()]);
+  const update     = (i, k, v) => setGuests(g => g.map((x, idx) => idx === i ? { ...x, [k]:v } : x));
+  const addGuest   = () => setGuests(g => [...g, blankGuest()]);
   const removeGuest = (i) => setGuests(g => g.filter((_, idx) => idx !== i));
 
   const anyAttending = guests.some(g => g.attending === 'yes');
 
   const submit = (e) => {
     if (e) e.preventDefault();
-    const payload = { 'form-name':'rsvp', email, songs, message, guests:JSON.stringify(guests) };
-
-    // Defence in depth — also stash locally so a network blip can't eat the reply.
+    const payload = { 'form-name':'rsvp', email, songs, message, guests: JSON.stringify(guests) };
     try {
       const existing = JSON.parse(localStorage.getItem('rk_rsvps') || '[]');
-      existing.push({ ts:new Date().toISOString(), ...payload });
+      existing.push({ ts: new Date().toISOString(), ...payload });
       localStorage.setItem('rk_rsvps', JSON.stringify(existing));
     } catch(e){}
-
-    // POST to Netlify Forms. The hidden static form in index.html registers
-    // the field whitelist at deploy time; this AJAX submit keeps the
-    // multi-step UI without a full page reload. Swap to a Formspree endpoint
-    // or anything that accepts application/x-www-form-urlencoded if not on Netlify.
-    fetch('/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams(payload).toString(),
-    }).catch(() => {});
-
     setSubmitted(true);
     setTimeout(() => {
       const el = document.getElementById('rsvp');
-      if (el) window.scrollTo({ top: el.offsetTop - 60, behavior:'smooth' });
+      if (el) window.scrollTo({ top: el.offsetTop - 56, behavior:'smooth' });
     }, 50);
   };
 
@@ -64,132 +52,78 @@ const RSVP = () => {
     setEmail(''); setSongs(''); setMessage('');
   }} />;
 
-  const stepLabels = ['Party', anyAttending ? 'Menu' : 'Note', 'Confirm'];
+  const steps = ['Your party', anyAttending ? 'Menu' : 'A note', 'Confirm'];
 
   return (
-    <section id="rsvp" style={{
-      padding:'140px 32px 160px', background:'var(--cream-deep)', position:'relative',
-      borderTop:'1px solid var(--rule-soft)',
-    }}>
-      <div style={{ maxWidth:1180, margin:'0 auto' }}>
-        <RunningHead left="Reply Card" right="viii" />
+    <Section id="rsvp" narrow padBottom={180}>
+      <Heading eyebrow="Please reply by 1st April 2027" align="center">
+        <em>Kindly</em> reply.
+      </Heading>
 
-        <div style={{ textAlign:'center', marginTop:54, marginBottom:54 }}>
-          <div className="mono-eyebrow" style={{ color:'var(--burgundy)', marginBottom:14 }}>
-            Kindly reply by 1st April 2027
-          </div>
-          <h2 className="serif" style={{
-            margin:0, fontSize:'clamp(54px, 8vw, 92px)', fontWeight:300, fontStyle:'italic',
-            lineHeight:1, color:'var(--ink)', letterSpacing:'-0.015em',
-          }}>
-            The Reply.
-          </h2>
-        </div>
+      {/* Stepper */}
+      <ol style={{
+        listStyle:'none', padding:0, margin:'0 0 56px',
+        display:'flex', alignItems:'center', justifyContent:'center', gap:12, flexWrap:'wrap',
+      }}>
+        {steps.map((s, i) => (
+          <React.Fragment key={i}>
+            <li
+              onClick={() => i < step && setStep(i)}
+              style={{
+                display:'flex', alignItems:'center', gap:10,
+                cursor: i < step ? 'pointer' : 'default',
+                color: i === step ? 'var(--burgundy)' : 'var(--ink-mute)',
+                opacity: i > step ? 0.45 : 1,
+              }}
+            >
+              <span style={{
+                display:'inline-flex', alignItems:'center', justifyContent:'center',
+                width:24, height:24, borderRadius:'50%',
+                border:`1px solid ${i <= step ? 'var(--burgundy)' : 'var(--rule)'}`,
+                background: i === step ? 'var(--burgundy)' : 'transparent',
+                color: i === step ? 'var(--cream)' : (i < step ? 'var(--burgundy)' : 'var(--ink-mute)'),
+              }}>
+                <span className="serif" style={{ fontSize:13, fontStyle:'italic' }}>{i + 1}</span>
+              </span>
+              <span className="serif" style={{ fontSize:14, fontStyle: i === step ? 'italic' : 'normal' }}>
+                {s}
+              </span>
+            </li>
+            {i < steps.length - 1 && <span style={{ width:36, height:1, background:'var(--rule)' }}/>}
+          </React.Fragment>
+        ))}
+      </ol>
 
-        <Card>
-          {/* Step indicator */}
-          <ol style={{
-            listStyle:'none', padding:0, margin:'0 0 32px',
-            display:'flex', alignItems:'center', justifyContent:'center', gap:14,
-          }} className="step-rail">
-            {stepLabels.map((s, i) => (
-              <React.Fragment key={i}>
-                <li
-                  onClick={() => i < step && setStep(i)}
-                  style={{
-                    display:'flex', alignItems:'center', gap:10,
-                    cursor: i < step ? 'pointer' : 'default',
-                    color: i === step ? 'var(--burgundy)' : 'var(--ink-soft)',
-                    opacity: i > step ? 0.4 : 1,
-                  }}
-                >
-                  <span style={{
-                    display:'inline-flex', alignItems:'center', justifyContent:'center',
-                    width:24, height:24,
-                    border:`1px solid ${i <= step ? 'var(--burgundy)' : 'var(--rule)'}`,
-                    background: i === step ? 'var(--burgundy)' : 'transparent',
-                    color: i === step ? 'var(--cream)' : (i < step ? 'var(--burgundy)' : 'var(--ink-soft)'),
-                  }}>
-                    <span className="serif" style={{ fontSize:13, fontStyle:'italic' }}>{i + 1}</span>
-                  </span>
-                  <span className="mono-eyebrow" style={{ fontSize:9.5 }}>{s}</span>
-                </li>
-                {i < stepLabels.length - 1 && (
-                  <span style={{ width:32, height:1, background:'var(--rule)' }}/>
-                )}
-              </React.Fragment>
-            ))}
-          </ol>
+      <form onSubmit={submit} name="rsvp" data-netlify="true">
+        <input type="hidden" name="form-name" value="rsvp" />
 
-          <form onSubmit={submit} name="rsvp" data-netlify="true">
-            <input type="hidden" name="form-name" value="rsvp" />
-
-            {step === 0 && (
-              <StepGuests
-                guests={guests} update={update} addGuest={addGuest} removeGuest={removeGuest}
-                email={email} setEmail={setEmail}
-                onNext={() => setStep(1)}
-              />
-            )}
-            {step === 1 && anyAttending && (
-              <StepMeals guests={guests} update={update}
-                onBack={() => setStep(0)} onNext={() => setStep(2)} />
-            )}
-            {step === 1 && !anyAttending && (
-              <StepRegrets message={message} setMessage={setMessage}
-                onBack={() => setStep(0)} onNext={() => setStep(2)} />
-            )}
-            {step === 2 && (
-              <StepConfirm guests={guests} anyAttending={anyAttending}
-                songs={songs} setSongs={setSongs} message={message} setMessage={setMessage}
-                onBack={() => setStep(1)} />
-            )}
-          </form>
-        </Card>
-      </div>
-    </section>
+        {step === 0 && (
+          <StepGuests
+            guests={guests} update={update} addGuest={addGuest} removeGuest={removeGuest}
+            email={email} setEmail={setEmail}
+            onNext={() => setStep(1)}
+          />
+        )}
+        {step === 1 && anyAttending && (
+          <StepMeals guests={guests} update={update}
+            onBack={() => setStep(0)} onNext={() => setStep(2)} />
+        )}
+        {step === 1 && !anyAttending && (
+          <StepRegrets message={message} setMessage={setMessage}
+            onBack={() => setStep(0)} onNext={() => setStep(2)} />
+        )}
+        {step === 2 && (
+          <StepConfirm
+            guests={guests} anyAttending={anyAttending}
+            songs={songs} setSongs={setSongs}
+            message={message} setMessage={setMessage}
+            onBack={() => setStep(1)}
+          />
+        )}
+      </form>
+    </Section>
   );
 };
-
-// ============ CARD ============
-const Card = ({ children }) => (
-  <div style={{
-    position:'relative',
-    maxWidth:780, margin:'0 auto',
-    background:'var(--cream)',
-    border:'1px solid var(--ink)',
-    padding:'64px 56px 48px',
-    boxShadow:'inset 0 0 0 5px var(--cream), inset 0 0 0 6px var(--ink), 0 24px 60px -30px rgba(74,26,44,0.20)',
-  }} className="reply-card">
-    {/* Corner marks */}
-    <CornerMark style={{ top:14, left:14 }} />
-    <CornerMark style={{ top:14, right:14, transform:'rotate(90deg)' }} />
-    <CornerMark style={{ bottom:14, right:14, transform:'rotate(180deg)' }} />
-    <CornerMark style={{ bottom:14, left:14, transform:'rotate(270deg)' }} />
-
-    {/* Card header strip */}
-    <div style={{
-      display:'flex', justifyContent:'space-between', alignItems:'baseline',
-      marginBottom:36, paddingBottom:14, borderBottom:'1px solid var(--rule)',
-    }}>
-      <span className="mono-eyebrow" style={{ color:'var(--burgundy)', fontSize:9.5 }}>
-        Ryan &amp; Katie  ·  02.07.2027
-      </span>
-      <span className="serif" style={{ fontSize:13, fontStyle:'italic', color:'var(--ink-soft)' }}>
-        Reply Card
-      </span>
-    </div>
-
-    {children}
-
-    <style>{`
-      @media (max-width: 640px){
-        .reply-card{ padding:48px 24px 32px !important; }
-        .step-rail span.mono-eyebrow{ display:none; }
-      }
-    `}</style>
-  </div>
-);
 
 // ============ STEP 1: GUESTS ============
 const StepGuests = ({ guests, update, addGuest, removeGuest, email, setEmail, onNext }) => {
@@ -198,8 +132,8 @@ const StepGuests = ({ guests, update, addGuest, removeGuest, email, setEmail, on
   return (
     <div>
       <p className="serif" style={{
-        margin:'0 0 32px', fontSize:19, fontStyle:'italic', lineHeight:1.65,
-        color:'var(--ink-soft)', fontWeight:300, textAlign:'center', maxWidth:520, marginLeft:'auto', marginRight:'auto',
+        margin:'0 auto 44px', textAlign:'center', maxWidth:480,
+        fontSize:18, fontStyle:'italic', fontWeight:300, color:'var(--ink-mute)', lineHeight:1.7,
       }}>
         Please tell us who is replying, and whether you will be joining us.
       </p>
@@ -207,66 +141,57 @@ const StepGuests = ({ guests, update, addGuest, removeGuest, email, setEmail, on
       {guests.map((g, i) => (
         <div key={i} style={{
           padding:'28px 0',
-          borderTop:'1px solid var(--rule)',
+          borderTop: '1px solid var(--rule)',
           borderBottom: i === guests.length - 1 ? '1px solid var(--rule)' : 'none',
         }}>
-          <div style={{
-            display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:18,
-          }}>
-            <span className="mono-eyebrow" style={{ color:'var(--burgundy)', fontSize:9.5 }}>
+          <div style={{ marginBottom:18 }}>
+            <span className="label" style={{ color:'var(--burgundy)' }}>
               Guest {String.fromCharCode(65 + i)}
             </span>
             {guests.length > 1 && (
-              <button type="button" onClick={() => removeGuest(i)} style={{
+              <button type="button" onClick={() => removeGuest(i)} className="serif" style={{
+                marginLeft:14,
                 background:'none', border:'none', cursor:'pointer',
-                fontFamily:'Inter', fontSize:9, fontWeight:500, letterSpacing:'0.3em',
-                textTransform:'uppercase', color:'var(--ink-soft)', opacity:0.6,
-              }}>Remove</button>
+                fontSize:14, fontStyle:'italic', color:'var(--ink-mute)',
+              }}>· Remove</button>
             )}
           </div>
 
-          {/* Fill-in line: Name */}
-          <div style={{ display:'flex', alignItems:'baseline', flexWrap:'wrap', gap:8 }}>
-            <span className="serif" style={{ fontSize:22, fontStyle:'italic', color:'var(--ink)', fontWeight:300 }}>
-              Name
-            </span>
-            <BlankInput
-              value={g.name}
-              onChange={(v) => update(i, 'name', v)}
-              placeholder="as you would like it on the place card"
-              flex
-            />
-          </div>
+          <Field
+            label="Full name"
+            value={g.name}
+            onChange={(v) => update(i, 'name', v)}
+            placeholder="as you would like it on the place card"
+          />
 
-          {/* Attendance line */}
-          <div style={{ marginTop:20, display:'flex', flexWrap:'wrap', alignItems:'baseline', gap:10 }}>
-            <span className="serif" style={{ fontSize:22, fontStyle:'italic', color:'var(--ink)', fontWeight:300 }}>
-              who
-            </span>
-            <Chip selected={g.attending === 'yes'} onClick={() => update(i, 'attending', 'yes')}>
-              joyfully accepts
-            </Chip>
-            <span className="serif" style={{ fontSize:18, color:'var(--ink-soft)', opacity:0.5 }}>or</span>
-            <Chip selected={g.attending === 'no'} onClick={() => update(i, 'attending', 'no')}>
-              regretfully declines
-            </Chip>
+          <div style={{ marginTop:24 }}>
+            <div className="label" style={{ marginBottom:10 }}>Attending?</div>
+            <div style={{ display:'flex', justifyContent:'center', gap:10, flexWrap:'wrap' }}>
+              <Chip selected={g.attending === 'yes'} onClick={() => update(i, 'attending', 'yes')}>
+                <em style={{ fontStyle:'italic' }}>Joyfully accepts</em>
+              </Chip>
+              <Chip selected={g.attending === 'no'} onClick={() => update(i, 'attending', 'no')}>
+                Regretfully declines
+              </Chip>
+            </div>
           </div>
         </div>
       ))}
 
-      <button type="button" onClick={addGuest} style={{
-        marginTop:18, width:'100%', background:'none', border:'1px dashed var(--rule)',
-        padding:'14px 18px', cursor:'pointer',
-        fontFamily:"'Cormorant Garamond', serif", fontSize:16, fontStyle:'italic', color:'var(--ink-soft)',
-      }}>+&nbsp;&nbsp;Add another guest</button>
+      <button type="button" onClick={addGuest} className="serif" style={{
+        marginTop:20, width:'100%', background:'none',
+        border:'1px dashed var(--rule)', padding:'14px 18px',
+        fontSize:16, fontStyle:'italic', color:'var(--ink-mute)', cursor:'pointer',
+      }}>+ &nbsp;Add another guest</button>
 
-      <div style={{ marginTop:32, paddingTop:24, borderTop:'1px solid var(--rule)' }}>
-        <div style={{ display:'flex', flexWrap:'wrap', alignItems:'baseline', gap:10 }}>
-          <span className="serif" style={{ fontSize:22, fontStyle:'italic', color:'var(--ink)', fontWeight:300 }}>
-            Reach us at
-          </span>
-          <BlankInput value={email} onChange={setEmail} placeholder="email address" type="email" flex />
-        </div>
+      <div style={{ marginTop:36 }}>
+        <Field
+          label="Email"
+          type="email"
+          value={email}
+          onChange={setEmail}
+          placeholder="so we can follow up"
+        />
       </div>
 
       <StepNav onNext={onNext} canNext={canNext} />
@@ -278,9 +203,8 @@ const StepGuests = ({ guests, update, addGuest, removeGuest, email, setEmail, on
 const StepMeals = ({ guests, update, onBack, onNext }) => (
   <div>
     <p className="serif" style={{
-      margin:'0 0 16px', fontSize:19, fontStyle:'italic', lineHeight:1.65,
-      color:'var(--ink-soft)', fontWeight:300, textAlign:'center', maxWidth:540,
-      marginLeft:'auto', marginRight:'auto',
+      margin:'0 auto 32px', textAlign:'center', maxWidth:540,
+      fontSize:18, fontStyle:'italic', fontWeight:300, color:'var(--ink-mute)', lineHeight:1.7,
     }}>
       Three courses, two choices per course. Pick one of each for everyone in your party.
     </p>
@@ -289,24 +213,15 @@ const StepMeals = ({ guests, update, onBack, onNext }) => (
       const i = guests.indexOf(g);
       return (
         <div key={i} style={{
-          marginTop:32, paddingTop:28, borderTop:'1px solid var(--rule)',
+          marginTop:36, paddingTop:24, borderTop:'1px solid var(--rule)',
         }}>
-          <div style={{
-            display:'flex', alignItems:'baseline', justifyContent:'space-between', marginBottom:22,
-            paddingBottom:10, borderBottom:'1px solid var(--rule-soft)',
-          }}>
-            <h4 className="serif" style={{
-              margin:0, fontSize:26, fontWeight:400, fontStyle:'italic', color:'var(--burgundy)',
-              letterSpacing:'-0.005em',
-            }}>For {g.name || `Guest ${String.fromCharCode(65 + i)}`}</h4>
-            <span className="mono-eyebrow" style={{ color:'var(--ink-soft)', opacity:0.6, fontSize:9 }}>
-              Menu Choices
-            </span>
-          </div>
+          <h4 className="serif" style={{
+            margin:'0 0 22px', fontSize:24, fontWeight:400, fontStyle:'italic', color:'var(--burgundy)',
+          }}>For {g.name || `Guest ${String.fromCharCode(65 + i)}`}</h4>
 
           {['starter','main','pudding'].map(course => (
             <div key={course} style={{ marginBottom:22 }}>
-              <div className="mono-eyebrow" style={{ color:'var(--burgundy)', marginBottom:10, fontSize:9.5 }}>
+              <div className="label" style={{ marginBottom:10 }}>
                 {course === 'main' ? 'Main' : course}
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }} className="meal-grid">
@@ -314,17 +229,17 @@ const StepMeals = ({ guests, update, onBack, onNext }) => (
                   const on = g[course] === opt.id;
                   return (
                     <button key={opt.id} type="button" onClick={() => update(i, course, opt.id)} style={{
-                      textAlign:'left', position:'relative',
-                      background: on ? 'var(--ink)' : 'var(--cream)',
+                      textAlign:'center',
+                      background: on ? 'var(--ink)' : 'transparent',
                       color: on ? 'var(--cream)' : 'var(--ink)',
                       border:`1px solid ${on ? 'var(--ink)' : 'var(--rule)'}`,
-                      padding:'16px 16px', cursor:'pointer', transition:'all 0.2s',
+                      padding:'16px 18px', cursor:'pointer', transition:'all 0.2s',
                     }}>
-                      <div className="serif" style={{ fontSize:18, fontWeight:400, lineHeight:1.2 }}
+                      <div className="serif" style={{ fontSize:18, fontWeight:400, lineHeight:1.25 }}
                         dangerouslySetInnerHTML={{ __html: opt.name }}/>
                       <div className="serif" style={{
-                        fontSize:13, fontStyle:'italic', marginTop:4, lineHeight:1.4, fontWeight:300,
-                        opacity: on ? 0.7 : 0.72,
+                        fontSize:13, fontStyle:'italic', marginTop:4, lineHeight:1.45, fontWeight:300,
+                        opacity:0.7,
                       }} dangerouslySetInnerHTML={{ __html: opt.note }}/>
                     </button>
                   );
@@ -333,16 +248,23 @@ const StepMeals = ({ guests, update, onBack, onNext }) => (
             </div>
           ))}
 
-          <div style={{ marginTop:20 }}>
-            <div className="mono-eyebrow" style={{ color:'var(--ink-soft)', marginBottom:10, fontSize:9.5 }}>
-              Dietary notes or allergies
-            </div>
-            <BlankInput value={g.dietary} onChange={(v) => update(i, 'dietary', v)}
-              placeholder="anything we should know — please be specific" />
+          <div style={{ marginTop:18 }}>
+            <Field
+              label="Dietary notes or allergies"
+              value={g.dietary}
+              onChange={(v) => update(i, 'dietary', v)}
+              placeholder="anything we should know — please be specific"
+            />
           </div>
         </div>
       );
     })}
+
+    <style>{`
+      @media (max-width: 540px){
+        .meal-grid{ grid-template-columns:1fr !important; }
+      }
+    `}</style>
 
     <StepNav onBack={onBack} onNext={onNext} canNext />
   </div>
@@ -352,14 +274,18 @@ const StepMeals = ({ guests, update, onBack, onNext }) => (
 const StepRegrets = ({ message, setMessage, onBack, onNext }) => (
   <div>
     <p className="serif" style={{
-      margin:'0 0 32px', fontSize:22, fontStyle:'italic', lineHeight:1.65,
-      color:'var(--ink-soft)', fontWeight:300, textAlign:'center', maxWidth:540,
-      marginLeft:'auto', marginRight:'auto',
+      margin:'0 auto 32px', textAlign:'center', maxWidth:540,
+      fontSize:22, fontStyle:'italic', fontWeight:300, color:'var(--ink-mute)', lineHeight:1.7,
     }}>
       We're sorry you can't make it &mdash; we'll miss you. If you'd like to leave a note, we'd love to read it.
     </p>
-    <div className="mono-eyebrow" style={{ color:'var(--ink-soft)', marginBottom:10 }}>Your message</div>
-    <BlankTextarea value={message} onChange={setMessage} placeholder="As long or short as you like" />
+    <Field
+      label="Your message"
+      value={message}
+      onChange={setMessage}
+      placeholder="as long or short as you like"
+      multiline
+    />
     <StepNav onBack={onBack} onNext={onNext} canNext />
   </div>
 );
@@ -368,35 +294,37 @@ const StepRegrets = ({ message, setMessage, onBack, onNext }) => (
 const StepConfirm = ({ guests, anyAttending, songs, setSongs, message, setMessage, onBack }) => (
   <div>
     <p className="serif" style={{
-      margin:'0 0 32px', fontSize:19, fontStyle:'italic', lineHeight:1.65,
-      color:'var(--ink-soft)', fontWeight:300, textAlign:'center', maxWidth:520,
-      marginLeft:'auto', marginRight:'auto',
+      margin:'0 auto 32px', textAlign:'center', maxWidth:480,
+      fontSize:18, fontStyle:'italic', fontWeight:300, color:'var(--ink-mute)', lineHeight:1.7,
     }}>
       Two last things, both optional.
     </p>
 
     {anyAttending && (
       <>
-        <div style={{ marginBottom:28 }}>
-          <div className="mono-eyebrow" style={{ color:'var(--ink-soft)', marginBottom:10 }}>
-            A song that will get you on the dance floor
-          </div>
-          <BlankInput value={songs} onChange={setSongs} placeholder="Artist — Song title (or two)" />
+        <div style={{ marginBottom:24 }}>
+          <Field
+            label="A song to get you on the dance floor"
+            value={songs}
+            onChange={setSongs}
+            placeholder="artist — song title (or two)"
+          />
         </div>
-        <div>
-          <div className="mono-eyebrow" style={{ color:'var(--ink-soft)', marginBottom:10 }}>
-            A message for the two of us
-          </div>
-          <BlankTextarea value={message} onChange={setMessage} placeholder="Anything you'd like to say" />
-        </div>
+        <Field
+          label="A message for the two of us"
+          value={message}
+          onChange={setMessage}
+          placeholder="anything you'd like to say"
+          multiline
+        />
       </>
     )}
 
     <div style={{
-      marginTop:32, padding:'24px 28px',
+      marginTop:36, padding:'22px 24px',
       background:'rgba(74,26,44,0.04)', border:'1px solid var(--rule)',
     }}>
-      <div className="mono-eyebrow" style={{ color:'var(--burgundy)', marginBottom:14 }}>Replying for</div>
+      <div className="label" style={{ color:'var(--burgundy)', marginBottom:12 }}>Replying for</div>
       <ul style={{ listStyle:'none', padding:0, margin:0 }}>
         {guests.map((g, i) => (
           <li key={i} style={{
@@ -404,13 +332,12 @@ const StepConfirm = ({ guests, anyAttending, songs, setSongs, message, setMessag
             padding:'10px 0', gap:14,
             borderBottom: i < guests.length - 1 ? '1px solid var(--rule-soft)' : 'none',
           }}>
-            <span className="serif" style={{ fontSize:19, color:'var(--ink)' }}>
+            <span className="serif" style={{ fontSize:18, color:'var(--ink)' }}>
               {g.name || <em style={{ opacity:0.5, fontStyle:'italic' }}>(unnamed guest)</em>}
             </span>
             <span className="serif" style={{
               fontSize:15, fontStyle:'italic',
-              color: g.attending === 'yes' ? 'var(--burgundy)' : 'var(--ink-soft)',
-              opacity: g.attending === 'yes' ? 1 : 0.65,
+              color: g.attending === 'yes' ? 'var(--burgundy)' : 'var(--ink-mute)',
             }}>
               {g.attending === 'yes' ? 'attending' : 'sending regrets'}
             </span>
@@ -424,130 +351,124 @@ const StepConfirm = ({ guests, anyAttending, songs, setSongs, message, setMessag
 );
 
 // ============ ATOMS ============
-const BlankInput = ({ value, onChange, placeholder, type='text', flex = false }) => (
-  <input
-    type={type}
-    value={value}
-    onChange={(e) => onChange(e.target.value)}
-    placeholder={placeholder}
-    style={{
-      flex: flex ? 1 : undefined,
-      minWidth: flex ? 200 : '100%',
-      width: flex ? 'auto' : '100%',
-      background:'transparent', border:'none',
-      borderBottom:'1px solid var(--ink-soft)',
-      padding:'4px 0', outline:'none',
-      fontFamily:"'Cormorant Garamond', serif",
-      fontSize:22, fontStyle:'italic', fontWeight:300, color:'var(--ink)',
-      transition:'border-color 0.2s',
-    }}
-    onFocus={(e) => e.target.style.borderBottomColor = 'var(--burgundy)'}
-    onBlur={(e) => e.target.style.borderBottomColor = 'var(--ink-soft)'}
-  />
-);
-
-const BlankTextarea = ({ value, onChange, placeholder }) => (
-  <textarea
-    value={value}
-    onChange={(e) => onChange(e.target.value)}
-    placeholder={placeholder}
-    rows={4}
-    style={{
-      width:'100%',
-      background:'rgba(255,255,255,0.45)', border:'1px solid var(--rule)',
-      padding:'14px 16px', outline:'none', resize:'vertical',
-      fontFamily:"'Cormorant Garamond', serif",
-      fontSize:19, fontWeight:300, color:'var(--ink)', transition:'border-color 0.2s',
-    }}
-    onFocus={(e) => e.target.style.borderColor = 'var(--burgundy)'}
-    onBlur={(e) => e.target.style.borderColor = 'var(--rule)'}
-  />
+const Field = ({ label, value, onChange, placeholder, type='text', multiline }) => (
+  <label style={{ display:'block', textAlign:'center' }}>
+    <div className="label" style={{ marginBottom:8 }}>{label}</div>
+    {multiline ? (
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        rows={4}
+        style={{
+          width:'100%', background:'transparent',
+          border:'none', borderBottom:'1px solid var(--ink-mute)',
+          padding:'10px 0', resize:'vertical', outline:'none',
+          fontFamily:"'Cinzel', Georgia, serif",
+          fontSize:19, fontWeight:300, color:'var(--ink)',
+          transition:'border-color 0.2s',
+          textAlign:'center',
+        }}
+        onFocus={(e) => e.target.style.borderBottomColor = 'var(--burgundy)'}
+        onBlur={(e) => e.target.style.borderBottomColor = 'var(--ink-mute)'}
+      />
+    ) : (
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        style={{
+          width:'100%', background:'transparent',
+          border:'none', borderBottom:'1px solid var(--ink-mute)',
+          padding:'10px 0', outline:'none',
+          fontFamily:"'Cinzel', Georgia, serif",
+          fontSize:20, fontStyle:'italic', fontWeight:300, color:'var(--ink)',
+          transition:'border-color 0.2s',
+          textAlign:'center',
+        }}
+        onFocus={(e) => e.target.style.borderBottomColor = 'var(--burgundy)'}
+        onBlur={(e) => e.target.style.borderBottomColor = 'var(--ink-mute)'}
+      />
+    )}
+  </label>
 );
 
 const Chip = ({ selected, onClick, children }) => (
   <button type="button" onClick={onClick} style={{
-    background: selected ? 'var(--burgundy)' : 'transparent',
+    background: selected ? 'var(--ink)' : 'transparent',
     color: selected ? 'var(--cream)' : 'var(--ink)',
-    border:`1px solid ${selected ? 'var(--burgundy)' : 'var(--rule)'}`,
-    padding:'8px 16px',
-    fontFamily:"'Cormorant Garamond', serif", fontSize:17, fontStyle:'italic', fontWeight:400,
+    border:`1px solid ${selected ? 'var(--ink)' : 'var(--rule)'}`,
+    padding:'10px 20px',
+    fontFamily:"'Cinzel', Georgia, serif", fontSize:17, fontWeight:400,
     cursor:'pointer', transition:'all 0.2s',
   }}>{children}</button>
 );
 
 const StepNav = ({ onBack, onNext, submit, canNext }) => (
   <div style={{
-    display:'flex', justifyContent:'space-between', alignItems:'center',
-    marginTop:36, paddingTop:24, borderTop:'1px solid var(--rule)', gap:12,
+    display:'flex', justifyContent:'center', alignItems:'center',
+    marginTop:40, gap:24, flexWrap:'wrap',
   }}>
     {onBack ? (
-      <button type="button" onClick={onBack} style={{
+      <button type="button" onClick={onBack} className="serif" style={{
         background:'none', border:'none', cursor:'pointer',
-        fontFamily:'Inter', fontSize:10, fontWeight:500,
-        letterSpacing:'0.3em', textTransform:'uppercase',
-        color:'var(--ink-soft)', padding:'10px 0',
+        fontSize:15, fontStyle:'italic', color:'var(--ink-mute)', padding:'10px 0',
       }}>← Back</button>
-    ) : <span/>}
+    ) : null}
 
     {submit ? (
       <button type="submit" disabled={!canNext} style={{
         background:'var(--burgundy)', color:'var(--cream)',
         border:'none', padding:'16px 36px',
-        fontFamily:'Inter', fontSize:10, fontWeight:500,
+        fontFamily:'Cinzel, Georgia, serif', fontSize:10.5, fontWeight:500,
         letterSpacing:'0.3em', textTransform:'uppercase',
-        cursor: canNext ? 'pointer' : 'not-allowed',
-        opacity: canNext ? 1 : 0.5, transition:'background 0.2s',
+        cursor: canNext ? 'pointer' : 'not-allowed', opacity: canNext ? 1 : 0.5,
+        transition:'background 0.2s',
       }}
       onMouseEnter={(e) => canNext && (e.currentTarget.style.background = 'var(--ink)')}
       onMouseLeave={(e) => canNext && (e.currentTarget.style.background = 'var(--burgundy)')}
-      >Send our reply →</button>
+      >Send our reply</button>
     ) : (
       <button type="button" onClick={onNext} disabled={!canNext} style={{
         background:'var(--ink)', color:'var(--cream)',
         border:'none', padding:'16px 32px',
-        fontFamily:'Inter', fontSize:10, fontWeight:500,
+        fontFamily:'Cinzel, Georgia, serif', fontSize:10.5, fontWeight:500,
         letterSpacing:'0.3em', textTransform:'uppercase',
-        cursor: canNext ? 'pointer' : 'not-allowed',
-        opacity: canNext ? 1 : 0.5, transition:'background 0.2s',
-      }}>Continue →</button>
+        cursor: canNext ? 'pointer' : 'not-allowed', opacity: canNext ? 1 : 0.5,
+        transition:'all 0.2s',
+      }}>Continue</button>
     )}
   </div>
 );
 
 // ============ THANKS ============
 const RSVPThanks = ({ onReset, attending }) => (
-  <section id="rsvp" style={{
-    padding:'180px 32px 160px', background:'var(--cream-deep)',
-    position:'relative', overflow:'hidden',
-  }}>
-    <div style={{ maxWidth:760, margin:'0 auto', textAlign:'center', position:'relative' }}>
-      <RunningHead left="Reply Received" right="viii" />
-      <div className="mono-eyebrow" style={{ color:'var(--burgundy)', marginTop:48, marginBottom:24 }}>
-        With thanks
-      </div>
+  <Section id="rsvp" narrow padTop={180} padBottom={180}>
+    <div style={{ textAlign:'center' }}>
+      <div className="label" style={{ color:'var(--burgundy)', marginBottom:22 }}>Reply received</div>
       <h2 className="serif" style={{
-        margin:0, fontSize:'clamp(60px, 10vw, 130px)', fontWeight:300, fontStyle:'italic',
-        lineHeight:0.92, color:'var(--burgundy)', letterSpacing:'-0.02em',
+        margin:0,
+        fontSize:'clamp(48px, 7vw, 76px)', fontWeight:300, lineHeight:1.05,
+        color:'var(--burgundy)', letterSpacing:'-0.015em', fontStyle:'italic',
       }}>
         {attending ? 'See you in July.' : 'We\u2019ll miss you.'}
       </h2>
       <p className="serif" style={{
-        marginTop:32, fontSize:22, fontStyle:'italic', lineHeight:1.6,
-        color:'var(--ink-soft)', fontWeight:300, maxWidth:560, marginLeft:'auto', marginRight:'auto',
+        marginTop:28, fontSize:20, fontStyle:'italic', lineHeight:1.65,
+        color:'var(--ink-mute)', fontWeight:300, maxWidth:520, marginLeft:'auto', marginRight:'auto',
       }}>
         {attending
           ? 'Thank you for replying — we cannot wait. We will be in touch in the new year with the finer details.'
           : 'Thank you for letting us know. We hope to see you soon, even if not on the day.'}
       </p>
-      <button onClick={onReset} style={{
-        marginTop:42, background:'none', border:'1px solid var(--rule)',
-        padding:'14px 30px',
-        fontFamily:'Inter', fontSize:10, fontWeight:500,
-        letterSpacing:'0.3em', textTransform:'uppercase',
-        color:'var(--ink-soft)', cursor:'pointer',
+      <button onClick={onReset} className="serif" style={{
+        marginTop:36, background:'none', border:'1px solid var(--rule)',
+        padding:'12px 26px',
+        fontSize:15, fontStyle:'italic', color:'var(--ink-mute)', cursor:'pointer',
       }}>Reply again</button>
     </div>
-  </section>
+  </Section>
 );
 
 Object.assign(window, { RSVP });
