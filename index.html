@@ -82,6 +82,12 @@
     background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
+    /* The ampersand's flourishes extend well past the inherited
+       line-height:0.95 — relax it so background-clip:text doesn't
+       chop the top and bottom of the glyph. */
+    display: inline-block;
+    line-height: 1.25;
+    padding: 0.1em 0;
     /* Generous breathing room around the ampersand on the inline lockup. */
     margin: 0 0.32em;
   }

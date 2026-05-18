@@ -464,7 +464,9 @@ const DateBand = ({ className }) =>
       <span className="serif accent-gradient" style={{
       fontWeight: 400,
       fontVariantNumeric: 'tabular-nums',
-      lineHeight: 0.72, fontSize: "46.5px"
+      lineHeight: 1, fontSize: "46.5px",
+      padding: "0.05em 0.05em",
+      display: "inline-block",
     }}>02</span>
       <span style={{
       fontFamily: 'Cinzel, Georgia, serif',
