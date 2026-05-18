@@ -87,26 +87,35 @@ const Gate = ({ onUnlock }) => {
         width:'100%', maxWidth:440,
         background:'var(--paper)',
         border:'1px solid var(--rule)',
-        padding:'56px 48px',
+        padding:'48px 40px 56px',
         textAlign:'center',
         animation: shake ? 'shake 0.45s' : 'fadeUp 0.9s ease-out',
         boxShadow:'0 1px 0 rgba(26,20,22,0.02), 0 30px 60px -30px rgba(26,20,22,0.18)',
       }}>
-        {/* Date — stamped at the top, burgundy serif numerals */}
+        {/* Names lockup — Amoresa script + Cinzel caps, sized to the card */}
         <div style={{
-          fontFamily:"'Cormorant Garamond', Georgia, serif",
-          fontSize:'clamp(20px, 2.4vw, 26px)',
-          fontWeight:400, fontStyle:'italic',
-          color:'var(--burgundy)',
-          letterSpacing:'0.08em',
-          fontVariantNumeric:'tabular-nums',
-        }}>02 &middot; VII &middot; 2027</div>
+          fontSize:'clamp(20px, 2.2vw, 24px)',
+          lineHeight:1, color:'var(--ink)',
+        }}>
+          <Names />
+        </div>
 
         {/* Hairline rule */}
         <div aria-hidden="true" style={{
           width:40, height:1, background:'var(--rule)',
-          margin:'28px auto',
+          margin:'32px auto 24px',
         }} />
+
+        {/* Date — smaller, demoted below the names */}
+        <div style={{
+          fontFamily:"'Cormorant Garamond', Georgia, serif",
+          fontSize:'clamp(15px, 1.6vw, 17px)',
+          fontWeight:400, fontStyle:'italic',
+          color:'var(--burgundy)',
+          letterSpacing:'0.08em',
+          fontVariantNumeric:'tabular-nums',
+          marginBottom:24,
+        }}>02 &middot; VII &middot; 2027</div>
 
         {/* Single line of body copy */}
         <p style={{
