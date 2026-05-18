@@ -93,14 +93,11 @@ const Nav = ({ active, guest, onSignOut }) => {
           )}
         </ul>
 
-        {/* Guest greeting — visible when scrolled, on desktop only */}
+        {/* Guest greeting — always visible on desktop */}
         {guest && (
           <div className="nav-guest" style={{
             position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)',
             display: 'flex', alignItems: 'center', gap: 14,
-            opacity: scrolled ? 1 : 0,
-            transition: 'opacity 0.35s',
-            pointerEvents: scrolled ? 'auto' : 'none',
           }}>
             <span style={{
               fontFamily: 'Cinzel, Georgia, serif',
@@ -110,12 +107,14 @@ const Nav = ({ active, guest, onSignOut }) => {
               whiteSpace: 'nowrap',
             }}>{guest.household}</span>
             <button onClick={onSignOut} style={{
-              background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0',
+              background: 'none', border: 'none', cursor: 'pointer', padding: 0,
               fontFamily: 'Cinzel, Georgia, serif',
               fontSize: 10, fontWeight: 400,
               letterSpacing: '0.32em', textTransform: 'uppercase',
               color: 'var(--burgundy)', textIndent: '0.32em',
-              borderBottom: '1px solid var(--burgundy)',
+              textDecoration: 'underline',
+              textDecorationThickness: '1px',
+              textUnderlineOffset: '6px',
               opacity: 0.7,
             }}>Sign out</button>
           </div>
