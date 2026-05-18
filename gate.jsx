@@ -105,7 +105,7 @@ const Gate = ({ onUnlock }) => {
           </div>
 
           {/* Date written out, then venue in tracked caps */}
-          <p className="gate-date">the second of july, two thousand twenty&#8209;seven</p>
+          <p className="gate-date">2nd July 2027</p>
           <p className="gate-venue">St Audries Park &middot; Somerset</p>
 
           <form onSubmit={submit} className="gate-form">
@@ -117,7 +117,7 @@ const Gate = ({ onUnlock }) => {
                 type="text"
                 value={val}
                 onChange={(e) => { setVal(e.target.value); setErr(false); }}
-                placeholder="&mdash;"
+                placeholder="e.g. elliott2027"
                 autoComplete="off"
                 spellCheck="false"
                 aria-describedby="gate-error"
@@ -197,7 +197,7 @@ const Gate = ({ onUnlock }) => {
         .gate-stack > *:nth-child(7){ animation-delay:1.05s; }
 
         .gate-eyebrow{
-          margin:0 0 28px;
+          margin:0 0 44px;
           font-family:'Cinzel', Georgia, serif;
           font-size:11px; font-weight:400;
           letter-spacing:0.42em; text-transform:uppercase;
