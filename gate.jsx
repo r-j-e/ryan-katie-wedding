@@ -83,132 +83,119 @@ const Gate = ({ onUnlock }) => {
       display:'grid', placeItems:'center', padding:'48px 24px',
       position:'relative',
     }}>
-      <div style={{
-        width:'100%', maxWidth:560, textAlign:'center',
-        animation:'fadeUp 0.9s ease-out',
-        overflow:'hidden',
+      <div className="gate-card" style={{
+        width:'100%', maxWidth:440,
+        background:'var(--paper)',
+        border:'1px solid var(--rule)',
+        padding:'56px 48px',
+        textAlign:'center',
+        animation: shake ? 'shake 0.45s' : 'fadeUp 0.9s ease-out',
+        boxShadow:'0 1px 0 rgba(26,20,22,0.02), 0 30px 60px -30px rgba(26,20,22,0.18)',
       }}>
+        {/* Date — stamped at the top, burgundy serif numerals */}
         <div style={{
-          fontFamily:'Cinzel, Georgia, serif',
-          fontSize:11, fontWeight:400,
-          letterSpacing:'0.36em', textTransform:'uppercase',
-          color:'var(--ink-mute)', textIndent:'0.36em',
-        }}>By invitation only</div>
+          fontFamily:"'Cormorant Garamond', Georgia, serif",
+          fontSize:'clamp(20px, 2.4vw, 26px)',
+          fontWeight:400, fontStyle:'italic',
+          color:'var(--burgundy)',
+          letterSpacing:'0.08em',
+          fontVariantNumeric:'tabular-nums',
+        }}>02 &middot; VII &middot; 2027</div>
 
-        <h1 style={{
-          margin:'80px 0 0',
-          fontSize:'clamp(18px, 2.8vw, 30px)',
-          fontWeight:400, lineHeight:1.8, letterSpacing:'-0.005em',
-          color:'var(--ink)',
-          padding:'0 16px',
-        }}>
-          <Names />
-        </h1>
+        {/* Hairline rule */}
+        <div aria-hidden="true" style={{
+          width:40, height:1, background:'var(--rule)',
+          margin:'28px auto',
+        }} />
 
+        {/* Single line of body copy */}
         <p style={{
-          margin:'32px auto 0', maxWidth:380,
-          fontFamily:'Cinzel, Georgia, serif',
-          fontSize:'clamp(14px, 1.6vw, 16px)', fontStyle:'italic', fontWeight:300,
-          color:'var(--ink-mute)', lineHeight:1.7,
+          margin:0,
+          fontFamily:"'Cormorant Garamond', Georgia, serif",
+          fontSize:'clamp(15px, 1.5vw, 17px)', fontStyle:'italic', fontWeight:300,
+          color:'var(--ink-soft)', lineHeight:1.55,
         }}>
-          The code printed on your invitation will open the doors.
+          The doors open with the code<br/>on your invitation.
         </p>
 
-        <form onSubmit={submit} style={{
-          marginTop:56, animation: shake ? 'shake 0.45s' : 'none',
-        }}>
-          <label htmlFor="gate-code" style={{
-            display:'block', marginBottom:14,
-            fontFamily:'Cinzel, Georgia, serif',
-            fontSize:10, fontWeight:400,
-            letterSpacing:'0.34em', textTransform:'uppercase',
-            color:'var(--ink-mute)', textIndent:'0.34em',
-          }}>Your code</label>
+        <form onSubmit={submit} style={{ marginTop:40 }}>
+          <label htmlFor="gate-code" className="visually-hidden">
+            Your invitation code
+          </label>
           <input
             id="gate-code"
             ref={inputRef}
             type="text"
             value={val}
             onChange={(e) => { setVal(e.target.value); setErr(false); }}
-            placeholder="—"
+            placeholder="your code"
             autoComplete="off"
             spellCheck="false"
             aria-label="Your invitation code"
             style={{
               width:'100%',
               background:'transparent', border:'none',
-              borderBottom:`1px solid ${err ? 'var(--burgundy)' : 'var(--ink-mute)'}`,
+              borderBottom:`1px solid ${err ? 'var(--burgundy)' : 'var(--rule)'}`,
               color:'var(--ink)',
-              fontFamily:"'Cinzel', Georgia, serif",
-              fontSize:22, fontWeight:400,
+              fontFamily:"'Cormorant Garamond', Georgia, serif",
+              fontSize:20, fontWeight:400, fontStyle:'italic',
               textAlign:'center',
-              padding:'12px 0', outline:'none', letterSpacing:'0.16em', textTransform:'lowercase',
+              padding:'10px 0', outline:'none', letterSpacing:'0.06em', textTransform:'lowercase',
               transition:'border-color 0.2s',
             }}
           />
-          <button type="submit" style={{
-            marginTop:32,
-            background:'var(--ink)', color:'var(--cream)', border:'none',
-            padding:'14px 40px',
-            fontFamily:'Cinzel, Georgia, serif', fontSize:11, fontWeight:500,
-            letterSpacing:'0.36em', textTransform:'uppercase', textIndent:'0.36em',
-            cursor:'pointer', transition:'background 0.2s',
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.background = 'var(--burgundy)'}
-          onMouseLeave={(e) => e.currentTarget.style.background = 'var(--ink)'}
-          >Enter</button>
 
-          <div style={{
-            minHeight:20, marginTop:16,
+          <button type="submit" className="gate-enter" style={{
+            marginTop:28,
+            background:'none', border:'none', cursor:'pointer', padding:'4px 0',
             fontFamily:"'Cinzel', Georgia, serif",
-            fontSize:13, fontStyle:'italic',
-            color: err ? 'var(--burgundy)' : 'var(--ink-mute)',
-            opacity: err ? 1 : 0.55,
+            fontSize:11, fontWeight:400,
+            letterSpacing:'0.32em', textTransform:'uppercase', textIndent:'0.32em',
+            color:'var(--burgundy)',
+            display:'inline-flex', alignItems:'center', gap:8,
+            transition:'gap 0.2s',
           }}>
-            {err ? 'We couldn\u2019t find that code — please check your invitation.' : '\u00A0'}
+            <span>Enter</span>
+            <span aria-hidden="true" style={{ letterSpacing:0, textIndent:0 }}>&rarr;</span>
+          </button>
+
+          <div role="status" aria-live="polite" style={{
+            minHeight:18, marginTop:18,
+            fontFamily:"'Cormorant Garamond', Georgia, serif",
+            fontSize:13, fontStyle:'italic',
+            color:'var(--burgundy)',
+            opacity: err ? 1 : 0,
+            transition:'opacity 0.2s',
+          }}>
+            {err ? 'We couldn’t find that code.' : ' '}
           </div>
         </form>
+      </div>
 
-        <div style={{
-          marginTop:48,
-          fontFamily:'Cinzel, Georgia, serif',
-          fontSize:10, fontWeight:400,
-          letterSpacing:'0.36em', textTransform:'uppercase',
-          color:'var(--ink-mute)', opacity:0.55, textIndent:'0.36em',
-        }}>02 . 07 . 2027 &nbsp;·&nbsp; Somerset</div>
-
-        {/* Preview hint — drop this in production */}
-        <div style={{
-          marginTop:60, paddingTop:24,
-          borderTop:'1px solid var(--rule-soft)',
-          fontFamily:'Cinzel, Georgia, serif',
-          fontSize:12, fontStyle:'italic', fontWeight:300,
-          color:'var(--ink-mute)', opacity:0.7,
-        }}>
-          Preview · try <code style={{
-            fontFamily:'Cinzel, Georgia, serif',
-            fontStyle:'normal',
-            background:'var(--cream-deep)',
-            padding:'2px 8px',
-            border:'1px solid var(--rule-soft)',
-            margin:'0 2px',
-          }}>katie2027</code> or <code style={{
-            fontFamily:'Cinzel, Georgia, serif',
-            fontStyle:'normal',
-            background:'var(--cream-deep)',
-            padding:'2px 8px',
-            border:'1px solid var(--rule-soft)',
-            margin:'0 2px',
-          }}>smith2027</code>
-        </div>
+      {/* Preview hint — outside the card, very faint */}
+      <div style={{
+        position:'absolute', bottom:24, left:0, right:0, textAlign:'center',
+        fontFamily:"'Cormorant Garamond', Georgia, serif",
+        fontSize:12, fontStyle:'italic', fontWeight:300,
+        color:'var(--ink-mute)', opacity:0.6,
+      }}>
+        Preview &middot; try <em>katie2027</em> or <em>smith2027</em>
       </div>
 
       <style>{`
+        .visually-hidden{
+          position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+          overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+        }
+        .gate-enter:hover{ gap:14px !important; }
         @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
         @keyframes shake {
           0%,100%{ transform:translateX(0); }
           20%,60%{ transform:translateX(-4px); }
           40%,80%{ transform:translateX(4px); }
+        }
+        @media (max-width: 480px){
+          .gate-card{ padding:44px 28px !important; }
         }
       `}</style>
     </div>
