@@ -75,22 +75,13 @@
     color: inherit;
   }
   .script.amp{
-    /* Aubergine→magenta gradient ampersand — the only accent in the wordmark.
-       Pulled from the calla-lily bouquet (deep burgundy through to fuchsia). */
-    background-image: var(--accent-gradient);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-    /* The Amoresa ampersand has wild swash flourishes that extend
-       far above and below the em-box. background-clip:text only
-       paints inside the element's padding box, so we need a very
-       generous line-height + vertical padding to keep the gradient
-       from chopping the top loop and bottom tail. */
-    display: inline-block;
-    line-height: 1.8;
-    padding: 0.35em 0.2em;
-    vertical-align: middle;
+    /* Solid burgundy ampersand — the only accent in the wordmark.
+       We tried background-clip:text gradient here, but the Amoresa
+       swashes extend so far beyond the em-box that any line-height
+       big enough to avoid clipping made the lockup look bloated.
+       Gradient lives on the other accents (02, schedule times,
+       monograms, etc.); the & stays solid. */
+    color: var(--burgundy);
     /* Generous breathing room around the ampersand on the inline lockup. */
     margin: 0 0.32em;
   }
