@@ -21,9 +21,9 @@ const Names = ({ stacked = false, size = 'inherit', color }) => {
   }
   return (
     <span className="script-name" style={{ fontSize: size, color }}>
-      <span className="script" style={{ fontSize: "121.61px" }}>K</span><span className="caps" style={{ fontSize: "80.92px" }}>atie</span>
+      <span className="script">K</span><span className="caps">atie</span>
       <span className="script amp">&amp;</span>
-      <span className="script" style={{ fontSize: "121.61px" }}>R</span><span className="caps" style={{ fontSize: "80.92px" }}>yan</span>
+      <span className="script">R</span><span className="caps">yan</span>
     </span>);
 
 };
