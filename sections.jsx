@@ -970,6 +970,19 @@ const Footer = () => (
       letterSpacing: '0.36em', textTransform: 'uppercase',
       color: 'var(--ink-mute)', textIndent: '0.36em',
     }}>02 · 07 · 2027 &nbsp;·&nbsp; St Audries Park</div>
+    {/* Quiet admin link — only useful to the couple. Discreet on purpose
+        so it doesn't look like a public destination. */}
+    <a href="/admin" style={{
+      display: 'inline-block', marginTop: 24,
+      fontFamily: 'Cinzel, Georgia, serif',
+      fontSize: 9, fontWeight: 400, letterSpacing: '0.32em', textTransform: 'uppercase',
+      color: 'var(--ink-mute)', textIndent: '0.32em',
+      textDecoration: 'none', opacity: 0.4,
+      transition: 'opacity 0.2s',
+    }}
+    onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+    onMouseLeave={(e) => e.currentTarget.style.opacity = '0.4'}
+    >Admin</a>
   </footer>
 );
 
