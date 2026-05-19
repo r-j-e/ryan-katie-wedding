@@ -18,7 +18,7 @@ npm-debug.log*
 # Design tool sidecar (image-slot persistence — for design tool only)
 .image-slots.state.json
 
-# Build artifacts (none right now, but future-proof)
+# Build artifacts — esbuild output for the JSX files. Rebuilt on every deploy.
 dist/
 build/
 

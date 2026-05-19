@@ -4,5 +4,11 @@ src
 schema.sql
 *.md
 .assetsignore
-# Design-iteration only — never load on the live site.
-tweaks-panel.jsx
+# JSX sources — esbuild compiles these into dist/*.js during the build
+# step (see wrangler.jsonc#build.command); browsers load the compiled JS.
+*.jsx
+# Build / npm noise.
+node_modules
+.npm
+package.json
+package-lock.json
