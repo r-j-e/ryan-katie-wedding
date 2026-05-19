@@ -335,8 +335,30 @@ const Hero = ({ showCountdown = true }) => {
         }}>today is the day</div>
         }
 
+        {/* Primary CTA — gets guests straight to the reason they're here. */}
+        <div className="hero-anim-6" style={{ marginTop: 48, textAlign: 'center' }}>
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.getElementById('rsvp');
+              if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 56, behavior: 'smooth' });
+            }}
+            style={{
+              background: 'var(--ink)', color: 'var(--cream)',
+              border: 'none', cursor: 'pointer',
+              padding: '16px 36px',
+              fontFamily: "'Cinzel', Georgia, serif",
+              fontSize: 11, fontWeight: 500,
+              letterSpacing: '0.4em', textTransform: 'uppercase', textIndent: '0.4em',
+              transition: 'background 0.3s ease, letter-spacing 0.3s ease',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--burgundy)'; e.currentTarget.style.letterSpacing = '0.5em'; e.currentTarget.style.textIndent = '0.5em'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--ink)'; e.currentTarget.style.letterSpacing = '0.4em'; e.currentTarget.style.textIndent = '0.4em'; }}
+          >RSVP</button>
+        </div>
+
         {/* Scroll cue — a subtle indicator nudging guests onward */}
-        <div className="hero-anim-6" style={{ marginTop: 56, textAlign: 'center' }}>
+        <div className="hero-anim-6" style={{ marginTop: 32, textAlign: 'center' }}>
           <button
             type="button"
             onClick={() => {
@@ -1100,7 +1122,63 @@ const ActionBtn = ({ href, children, ghost = false }) => (
 );
 
 
+// Floating RSVP pill — mobile only. Appears once the guest scrolls past
+// the hero so it doesn't fight with the hero's own RSVP button, and hides
+// once they're inside the RSVP section so it isn't redundant on top of
+// the form.
+const FloatingRsvpCta = () => {
+  const [show, setShow] = React.useState(false);
+
+  React.useEffect(() => {
+    const onScroll = () => {
+      const y = window.scrollY;
+      const rsvpEl = document.getElementById('rsvp');
+      const rsvpTop = rsvpEl ? rsvpEl.offsetTop : Infinity;
+      // Show after the hero is mostly off-screen, hide once we're at/past the form.
+      const shouldShow = y > 600 && y < rsvpTop - 200;
+      setShow(shouldShow);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const go = () => {
+    const el = document.getElementById('rsvp');
+    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 56, behavior: 'smooth' });
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={go}
+        className="floating-rsvp"
+        aria-label="Reply to invitation"
+        style={{
+          position: 'fixed', bottom: 20, right: 20, zIndex: 40,
+          background: 'var(--ink)', color: 'var(--cream)',
+          border: 'none', cursor: 'pointer',
+          padding: '14px 26px',
+          fontFamily: "'Cinzel', Georgia, serif",
+          fontSize: 11, fontWeight: 500,
+          letterSpacing: '0.32em', textTransform: 'uppercase', textIndent: '0.32em',
+          boxShadow: '0 8px 24px -6px rgba(26,20,22,0.35), 0 2px 6px -2px rgba(26,20,22,0.2)',
+          opacity: show ? 1 : 0,
+          transform: show ? 'translateY(0)' : 'translateY(20px)',
+          pointerEvents: show ? 'auto' : 'none',
+          transition: 'opacity 0.3s ease, transform 0.3s ease',
+        }}
+      >RSVP</button>
+      <style>{`
+        /* Desktop has the nav + hero CTA — only show this on phone widths. */
+        @media (min-width: 720px) { .floating-rsvp { display: none !important; } }
+      `}</style>
+    </>
+  );
+};
+
 Object.assign(window, {
-  Nav, Hero, Schedule, Venue, Travel, WeddingParty, Details, FAQ, Footer,
+  Nav, Hero, Schedule, Venue, Travel, WeddingParty, Details, FAQ, Footer, FloatingRsvpCta,
   Section, Heading, PageHeading, Card, CardEyebrow, CardTitle, CardBody, CardDetail, ActionBtn, Names,
 });
