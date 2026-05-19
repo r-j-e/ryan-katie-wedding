@@ -861,16 +861,16 @@ const Travel = () => (
 // WEDDING PARTY — two groups with avatar circles
 // ============================================================
 const PARTY_KATIE = [
-  { initials: 'CA', role: 'Maid of Honour', name: 'Charlotte Ashworth', bio: 'Katie’s sister, confidante, and principal architect of the hen weekend.' },
-  { initials: 'EP', role: 'Bridesmaid',      name: 'Eleanor Pemberton', bio: 'University roommate and Katie’s oldest friend since the age of seven.' },
-  { initials: 'SW', role: 'Bridesmaid',      name: 'Sophia Whitmore',   bio: 'Godmother-in-waiting and the reason Katie and Ryan ever met.' },
-  { initials: 'BH', role: 'Bridesmaid',      name: 'Beatrice Hartley',  bio: 'Cousin, travel companion, and the family’s unofficial photographer.' },
+  { initials: 'SL', role: 'Maid of Honour', name: 'Shanice Lobb', bio: '' },
+  { initials: 'LN', role: 'Bridesmaid',     name: 'Lucy Nile',    bio: '' },
+  { initials: 'KJ', role: 'Bridesmaid',     name: 'Katy Jewell',  bio: '' },
+  { initials: 'HK', role: 'Bridesmaid',     name: 'Holly Kirk',   bio: '' },
 ];
 const PARTY_RYAN = [
-  { initials: 'TW', role: 'Best Man',   name: 'Thomas Westbrook',    bio: 'Ryan’s brother, lifelong co-conspirator, and keeper of all the good stories.' },
-  { initials: 'HC', role: 'Groomsman',  name: 'Henry Callaghan',     bio: 'School friend of twenty years and Ryan’s most loyal fishing companion.' },
-  { initials: 'FA', role: 'Groomsman',  name: 'Frederick Ainsworth', bio: 'University housemate and godfather to our dog, Pip.' },
-  { initials: 'AM', role: 'Groomsman',  name: 'Arthur Montague',     bio: 'Work colleague turned lifelong friend. Will likely give the second-best speech.' },
+  { initials: 'PE', role: 'Best Man',  name: 'Paul Elliott',   bio: '' },
+  { initials: 'JA', role: 'Groomsman', name: 'Jake Adams',     bio: '' },
+  { initials: 'JW', role: 'Groomsman', name: 'Jamie Williams', bio: '' },
+  { initials: 'HS', role: 'Groomsman', name: 'Harry Shotton',  bio: '' },
 ];
 
 const WeddingParty = () => (
@@ -922,12 +922,14 @@ const PartyGroup = ({ label, people }) => (
             color: 'var(--ink)', textIndent: '0.14em',
             marginBottom: 12,
           }}>{p.name}</div>
-          <p style={{
-            margin: 0,
-            fontFamily: '"Cormorant Garamond", Georgia, serif',
-            fontSize: 15, fontStyle: 'italic', fontWeight: 400,
-            lineHeight: 1.55, color: 'var(--ink-mute)',
-          }}>{p.bio}</p>
+          {p.bio && (
+            <p style={{
+              margin: 0,
+              fontFamily: '"Cormorant Garamond", Georgia, serif',
+              fontSize: 15, fontStyle: 'italic', fontWeight: 400,
+              lineHeight: 1.55, color: 'var(--ink-mute)',
+            }}>{p.bio}</p>
+          )}
         </article>
       ))}
     </div>
