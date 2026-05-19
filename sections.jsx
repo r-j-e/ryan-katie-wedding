@@ -216,12 +216,12 @@ const WEDDING_ICS = [
 'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Ryan and Katie//Wedding//EN',
 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
 'BEGIN:VEVENT',
-'UID:rk-wedding-02jul2027@ryanandkatie.co',
+'UID:rk-wedding-02jul2027@katieandryan.co.uk',
 'DTSTAMP:20260514T000000Z',
 'DTSTART:20270702T120000Z', 'DTEND:20270702T230000Z',
-'SUMMARY:Ryan & Katie\u2019s Wedding',
+'SUMMARY:Katie & Ryan\u2019s Wedding',
 'LOCATION:St Audries Park\\, West Quantoxhead\\, Somerset TA4 4DS',
-'DESCRIPTION:The wedding of Ryan & Katie. Black tie. Full details at ryanandkatie.co',
+'DESCRIPTION:The wedding of Katie & Ryan. Black tie. Full details at katieandryan.co.uk',
 'STATUS:CONFIRMED', 'TRANSP:OPAQUE', 'END:VEVENT', 'END:VCALENDAR'].
 join('\r\n');
 
@@ -918,7 +918,7 @@ const FAQ = () => {
         fontSize: 14, fontStyle: 'italic', fontWeight: 300,
         color: 'var(--ink-mute)',
       }}>
-        Anything left over — write to us at <a href="mailto:hello@ryanandkatie.co" style={{ color: 'var(--burgundy)' }}>hello@ryanandkatie.co</a>.
+        Anything left over — just ask Katie or Ryan directly.
       </p>
     </Section>
   );
@@ -955,13 +955,6 @@ const Footer = () => (
         textDecoration: 'underline', textUnderlineOffset: 8, textDecorationThickness: '1px',
         textIndent: '0.32em',
       }}>Add to calendar</button>
-      <a href="mailto:hello@ryanandkatie.co" style={{
-        color: 'var(--burgundy)',
-        fontFamily: 'Cinzel, Georgia, serif',
-        fontSize: 11, fontWeight: 400, letterSpacing: '0.32em', textTransform: 'uppercase',
-        textDecoration: 'underline', textUnderlineOffset: 8, textDecorationThickness: '1px',
-        textIndent: '0.32em',
-      }}>Write to us</a>
     </div>
     <div style={{
       marginTop: 64,

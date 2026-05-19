@@ -117,7 +117,7 @@ const Gate = ({ onUnlock }) => {
           </form>
 
           <p className="gate-help">
-            Lost your invitation? <a href="mailto:hello@ryanandkatie.co">Reach out to Katie or Ryan</a>.
+            Lost your invitation? Reach out to Katie or Ryan.
           </p>
         </div>
       </div>

@@ -65,7 +65,7 @@ const RSVP = ({ guest }) => {
         if (el) window.scrollTo({ top: el.offsetTop - 56, behavior:'smooth' });
       }, 50);
     } catch (err) {
-      setSubmitError('Sorry — we couldn’t send your reply just then. Please try again, or write to us at hello@katieandryan.co.uk.');
+      setSubmitError('Sorry — we couldn’t send your reply just then. Please try again in a moment.');
     } finally {
       setSubmitting(false);
     }

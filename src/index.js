@@ -161,11 +161,26 @@ async function handleRsvpPost(request, env) {
   }
 
   await ready(env);
+  const codeKey = String(code);
+
+  // One reply per code — if this code has already replied, throw away the
+  // previous submission (and its guest rows) before inserting the new one.
+  // D1 doesn't have ON DELETE CASCADE, hence the explicit two-step.
+  const prior = await env.DB.prepare('SELECT id FROM rsvps WHERE code = ?').bind(codeKey).all();
+  const priorIds = prior.results.map((r) => r.id);
+  if (priorIds.length) {
+    const placeholders = priorIds.map(() => '?').join(',');
+    await env.DB.batch([
+      env.DB.prepare(`DELETE FROM rsvp_guests WHERE rsvp_id IN (${placeholders})`).bind(...priorIds),
+      env.DB.prepare('DELETE FROM rsvps WHERE code = ?').bind(codeKey),
+    ]);
+  }
+
   const submittedAt = new Date().toISOString();
   const ins = await env.DB.prepare(
     'INSERT INTO rsvps (submitted_at, code, household, email, songs, message) VALUES (?, ?, ?, ?, ?, ?)'
   ).bind(
-    submittedAt, String(code), s(household), s(email), s(songs), s(message)
+    submittedAt, codeKey, s(household), s(email), s(songs), s(message)
   ).run();
   const rsvpId = ins.meta.last_row_id;
 
@@ -176,7 +191,7 @@ async function handleRsvpPost(request, env) {
   );
   if (stmts.length) await env.DB.batch(stmts);
 
-  return json({ ok: true, id: rsvpId });
+  return json({ ok: true, id: rsvpId, replaced: priorIds.length > 0 });
 }
 
 // ──────────────────────────────────────────────────────────────────────────

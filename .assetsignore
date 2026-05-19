@@ -4,3 +4,5 @@ src
 schema.sql
 *.md
 .assetsignore
+# Design-iteration only — never load on the live site.
+tweaks-panel.jsx
