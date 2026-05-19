@@ -1,0 +1,6 @@
+# Files in the repo root that shouldn't be served as static assets at
+# katieandryan.co.uk. Worker source + schema + repo docs.
+src
+schema.sql
+*.md
+.assetsignore

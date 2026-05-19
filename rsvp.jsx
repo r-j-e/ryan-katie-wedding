@@ -30,29 +30,51 @@ const RSVP = ({ guest }) => {
   const [message, setMessage] = React.useState('');
   const [email, setEmail]   = React.useState('');
   const [submitted, setSubmitted] = React.useState(false);
+  const [submitting, setSubmitting] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState(null);
 
   const update = (i, k, v) => setGuests(g => g.map((x, idx) => idx === i ? { ...x, [k]:v } : x));
 
   const anyAttending = guests.some(g => g.attending === 'yes');
 
-  const submit = (e) => {
+  const submit = async (e) => {
     if (e) e.preventDefault();
-    const payload = { code: guest?.code, household: guest?.household, email, songs, message, guests };
+    if (submitting) return;
+    setSubmitting(true);
+    setSubmitError(null);
+
+    const payload = {
+      code: guest?.code,
+      household: guest?.household,
+      email, songs, message, guests,
+    };
+
     try {
-      const existing = JSON.parse(localStorage.getItem('rk_rsvps') || '[]');
-      existing.push({ ts: new Date().toISOString(), ...payload });
-      localStorage.setItem('rk_rsvps', JSON.stringify(existing));
-    } catch(e){}
-    setSubmitted(true);
-    setTimeout(() => {
-      const el = document.getElementById('rsvp');
-      if (el) window.scrollTo({ top: el.offsetTop - 56, behavior:'smooth' });
-    }, 50);
+      const res = await fetch('/api/rsvp', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`server returned ${res.status}`);
+      const body = await res.json();
+      if (!body.ok) throw new Error(body.error || 'unknown');
+
+      setSubmitted(true);
+      setTimeout(() => {
+        const el = document.getElementById('rsvp');
+        if (el) window.scrollTo({ top: el.offsetTop - 56, behavior:'smooth' });
+      }, 50);
+    } catch (err) {
+      setSubmitError('Sorry — we couldn’t send your reply just then. Please try again, or write to us at hello@katieandryan.co.uk.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) return <RSVPThanks attending={anyAttending} onReset={() => {
     setSubmitted(false); setStep(0); setGuests(seedGuests(guest));
     setEmail(''); setSongs(''); setMessage('');
+    setSubmitError(null);
   }} />;
 
   const steps = ['Your party', anyAttending ? 'Menu' : 'A note', 'Confirm'];
@@ -120,6 +142,8 @@ const RSVP = ({ guest }) => {
             songs={songs} setSongs={setSongs}
             message={message} setMessage={setMessage}
             onBack={() => setStep(1)}
+            submitting={submitting}
+            submitError={submitError}
           />
         )}
       </form>
@@ -278,7 +302,7 @@ const StepRegrets = ({ message, setMessage, onBack, onNext }) => (
 );
 
 // ============ STEP 3: CONFIRM ============
-const StepConfirm = ({ guests, anyAttending, songs, setSongs, message, setMessage, onBack }) => (
+const StepConfirm = ({ guests, anyAttending, songs, setSongs, message, setMessage, onBack, submitting, submitError }) => (
   <div>
     <p className="serif" style={{
       margin:'0 auto 32px', textAlign:'center', maxWidth:480,
@@ -333,7 +357,17 @@ const StepConfirm = ({ guests, anyAttending, songs, setSongs, message, setMessag
       </ul>
     </div>
 
-    <StepNav onBack={onBack} submit canNext />
+    {submitError && (
+      <div role="alert" style={{
+        marginTop:24, padding:'14px 18px',
+        background:'rgba(74,26,44,0.08)', border:'1px solid var(--burgundy)',
+        fontFamily:"'Cormorant Garamond', Georgia, serif",
+        fontSize:15, fontStyle:'italic', color:'var(--burgundy)',
+        textAlign:'center', lineHeight:1.55,
+      }}>{submitError}</div>
+    )}
+
+    <StepNav onBack={onBack} submit canNext={!submitting} submitting={submitting} />
   </div>
 );
 
@@ -392,7 +426,7 @@ const Chip = ({ selected, onClick, children }) => (
   }}>{children}</button>
 );
 
-const StepNav = ({ onBack, onNext, submit, canNext }) => (
+const StepNav = ({ onBack, onNext, submit, canNext, submitting }) => (
   <div style={{
     display:'flex', justifyContent:'center', alignItems:'center',
     marginTop:40, gap:24, flexWrap:'wrap',
@@ -405,17 +439,18 @@ const StepNav = ({ onBack, onNext, submit, canNext }) => (
     ) : null}
 
     {submit ? (
-      <button type="submit" disabled={!canNext} style={{
+      <button type="submit" disabled={!canNext || submitting} style={{
         background:'var(--burgundy)', color:'var(--cream)',
         border:'none', padding:'16px 36px',
         fontFamily:'Cinzel, Georgia, serif', fontSize:10.5, fontWeight:500,
         letterSpacing:'0.3em', textTransform:'uppercase',
-        cursor: canNext ? 'pointer' : 'not-allowed', opacity: canNext ? 1 : 0.5,
+        cursor: (canNext && !submitting) ? 'pointer' : 'not-allowed',
+        opacity: (canNext && !submitting) ? 1 : 0.5,
         transition:'background 0.2s',
       }}
-      onMouseEnter={(e) => canNext && (e.currentTarget.style.background = 'var(--ink)')}
-      onMouseLeave={(e) => canNext && (e.currentTarget.style.background = 'var(--burgundy)')}
-      >Send our reply</button>
+      onMouseEnter={(e) => canNext && !submitting && (e.currentTarget.style.background = 'var(--ink)')}
+      onMouseLeave={(e) => canNext && !submitting && (e.currentTarget.style.background = 'var(--burgundy)')}
+      >{submitting ? 'Sending…' : 'Send our reply'}</button>
     ) : (
       <button type="button" onClick={onNext} disabled={!canNext} style={{
         background:'var(--ink)', color:'var(--cream)',

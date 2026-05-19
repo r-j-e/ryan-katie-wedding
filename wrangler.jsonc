@@ -2,13 +2,22 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ryan-katie-wedding",
   "compatibility_date": "2026-05-18",
+  "main": "src/index.js",
   "observability": {
     "enabled": true
   },
   "assets": {
-    "directory": "."
+    "directory": ".",
+    "binding": "ASSETS"
   },
   "compatibility_flags": [
     "nodejs_compat"
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ryan-katie-rsvps",
+      "database_id": "89eb561d-9769-481c-a498-17e40e56de9c"
+    }
   ]
 }
