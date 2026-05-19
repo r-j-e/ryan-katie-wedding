@@ -522,8 +522,8 @@ const DateBand = ({ className }) =>
 // alternates which side the image sits on; missing images leave a clean
 // empty slot so this works before the SVGs are uploaded.
 const SCHEDULE = [
-  { heading: 'We do!',     time: '1:00 pm',  desc: 'Vows in the Music Room at St Audries Park. Please find your seat by quarter-to.', img: '/images/schedule/ceremony.svg',   alt: 'A wedding arch' },
-  { heading: 'We drink!',  time: '1:45 pm',  desc: 'Champagne and canapés on the lawn, photographs in the walled garden.',           img: '/images/schedule/drinks.svg',     alt: 'Champagne flutes' },
+  { heading: 'We do!',     time: '1:00 pm',  desc: 'Vows in the orangery at St Audries Park.',                                       img: '/images/schedule/ceremony.svg',   alt: 'A wedding arch' },
+  { heading: 'We drink!',  time: '1:45 pm',  desc: 'Prosecco, canapés and photographs by the fountain.',                            img: '/images/schedule/drinks.svg',     alt: 'Champagne flutes' },
   { heading: 'We eat!',    time: '4:00 pm',  desc: 'Three courses and good wine in the Dining Room.',                                img: '/images/schedule/breakfast.svg',  alt: 'A place setting' },
   { heading: 'We toast!',  time: '5:30 pm',  desc: 'Words from the people who know us best. Tissues optional.',                      img: '/images/schedule/speeches.svg',   alt: 'A raised glass' },
   { heading: 'We dance!',  time: '7:30 pm',  desc: 'Cake first, then the first dance, then the band. A late buffet around ten.',    img: '/images/schedule/dance.svg',      alt: 'A dancing couple' },
