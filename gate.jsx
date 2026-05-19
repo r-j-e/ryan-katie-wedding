@@ -3,44 +3,49 @@
 // list of named guests, which pre-fill the RSVP form. Token persists in
 // localStorage so guests don't have to re-enter on return visits.
 //
-// In production these should live on the server (and ideally each code should
-// be one-shot or rate-limited) — but for a wedding website, a static map is fine.
-// The point is keeping the URL out of search engines and casual visitors, not
-// defending against motivated attackers.
+// The code → household/guests mapping lives in Cloudflare D1 and is managed
+// from /admin (Codes tab). The gate verifies via POST /api/lookup, so the
+// guest list isn't exposed in the public bundle.
 
 const TOKEN_KEY = 'rk_guest_v1';
 
-const GUEST_CODES = {
-  // — Real invitations —
-  'nile2027':    { household: 'Leigh & Philip',  guests: ['Leigh Nile', 'Philip Nile'] },
-
-  // — Demo / preview codes for testing —
-  'elliott2027': { household: 'Preview',         guests: ['Katie Elliott', 'Ryan Elliott'] },
-  'katie2027':   { household: 'Preview',         guests: ['Katie Elliott', 'Ryan Elliott'] },
-  'ryan2027':    { household: 'Preview',         guests: ['Katie Elliott', 'Ryan Elliott'] },
-};
-
-const lookupGuest = (raw) => {
+// Async lookup against the server. Returns a guest object on success
+// (mirroring the old shape) or null on miss/error.
+const lookupGuest = async (raw) => {
   if (!raw) return null;
-  const key = raw.trim().toLowerCase();
-  const found = GUEST_CODES[key];
-  if (!found) return null;
-  return { code: key, party: found.guests.length, ...found };
+  const code = raw.trim().toLowerCase();
+  if (!code) return null;
+  try {
+    const res = await fetch('/api/lookup', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ code }),
+    });
+    if (!res.ok) return null;
+    const body = await res.json();
+    return body.ok ? body.guest : null;
+  } catch {
+    return null;
+  }
 };
 
 const Gate = ({ onUnlock }) => {
   const [val, setVal] = React.useState('');
   const [err, setErr] = React.useState(false);
   const [shake, setShake] = React.useState(false);
+  const [busy, setBusy] = React.useState(false);
   const inputRef = React.useRef(null);
 
   React.useEffect(() => {
     setTimeout(() => inputRef.current && inputRef.current.focus(), 500);
   }, []);
 
-  const submit = (e) => {
+  const submit = async (e) => {
     if (e) e.preventDefault();
-    const guest = lookupGuest(val);
+    if (busy) return;
+    setBusy(true);
+    const guest = await lookupGuest(val);
+    setBusy(false);
     if (guest) {
       try { localStorage.setItem(TOKEN_KEY, JSON.stringify(guest)); } catch(e){}
       onUnlock(guest);
@@ -108,7 +113,7 @@ const Gate = ({ onUnlock }) => {
               {err ? 'That code doesn’t look quite right. Please try again.' : ' '}
             </div>
 
-            <button type="submit" className="gate-btn">Enter</button>
+            <button type="submit" className="gate-btn" disabled={busy}>{busy ? 'Verifying…' : 'Enter'}</button>
           </form>
 
           <p className="gate-help">
