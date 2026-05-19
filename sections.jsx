@@ -571,10 +571,15 @@ const Schedule = () => (
         column-gap: 32px;
         padding: 36px 0;
       }
-      .schedule-row.img-right .schedule-img{ order: 3; }
-      .schedule-row.img-right .schedule-text{ order: 1; text-align: right; }
-      .schedule-row.img-left .schedule-img{ text-align: right; }
-      .schedule-row.img-left .schedule-text{ text-align: left; }
+      /* Explicit column placement — using `order` alone leaked the dot
+         into column 1 on right-image rows and squashed the text into
+         the 60px middle column. */
+      .schedule-row.img-left  .schedule-img  { grid-column: 1; text-align: right; }
+      .schedule-row.img-left  .schedule-dot  { grid-column: 2; }
+      .schedule-row.img-left  .schedule-text { grid-column: 3; text-align: left; }
+      .schedule-row.img-right .schedule-text { grid-column: 1; text-align: right; }
+      .schedule-row.img-right .schedule-dot  { grid-column: 2; }
+      .schedule-row.img-right .schedule-img  { grid-column: 3; text-align: left; }
 
       .schedule-img img{
         display: inline-block;
@@ -613,9 +618,7 @@ const Schedule = () => (
         font-size: clamp(13px, 1.5vw, 16px); font-weight: 500;
         letter-spacing: 0.24em; text-transform: uppercase;
         font-variant-numeric: tabular-nums;
-        text-indent: 0.24em;
       }
-      .schedule-row.img-left .schedule-time{ text-indent: 0.24em; }
       .schedule-desc{
         margin: 14px 0 0;
         font-family: 'Cormorant Garamond', Georgia, serif;
@@ -623,7 +626,10 @@ const Schedule = () => (
         font-weight: 400; line-height: 1.6; color: var(--ink-soft);
         max-width: 38ch;
       }
+      /* Pin the description to the side of the text column that abuts
+         the timeline, so it reads inward instead of floating randomly. */
       .schedule-row.img-right .schedule-desc{ margin-left: auto; }
+      .schedule-row.img-left  .schedule-desc{ margin-right: auto; }
 
       @media (max-width: 720px) {
         .schedule-axis{ display: none; }
