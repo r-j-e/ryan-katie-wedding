@@ -522,12 +522,12 @@ const DateBand = ({ className }) =>
 // alternates which side the image sits on; missing images leave a clean
 // empty slot so this works before the SVGs are uploaded.
 const SCHEDULE = [
-  { heading: 'We do!',     time: '1:00 pm',  desc: 'Vows in the orangery at St Audries Park.',                                       img: '/images/schedule/ceremony.svg',   alt: 'A wedding arch' },
-  { heading: 'We drink!',  time: '1:45 pm',  desc: 'Prosecco, canapés and photographs by the fountain.',                            img: '/images/schedule/drinks.svg',     alt: 'Champagne flutes' },
-  { heading: 'We eat!',    time: '4:00 pm',  desc: 'Three courses and good wine in the Dining Room.',                                img: '/images/schedule/breakfast.svg',  alt: 'A place setting' },
-  { heading: 'We toast!',  time: '5:30 pm',  desc: 'Words from the people who know us best. Tissues optional.',                      img: '/images/schedule/speeches.svg',   alt: 'A raised glass' },
-  { heading: 'We dance!',  time: '7:30 pm',  desc: 'Cake first, then the first dance, then the band. A late buffet around ten.',    img: '/images/schedule/dance.svg',      alt: 'A dancing couple' },
-  { heading: 'Goodnight!', time: '12:00 am', desc: 'Last orders at half past eleven; taxis pre-booked from the venue.',              img: '/images/schedule/carriages.svg',  alt: 'A vintage car' },
+  { heading: 'We do!',     time: '1:00 pm',  desc: 'Vows in the orangery at St Audries Park. Please be in your seat by quarter-to so we can start on time.',                  img: '/images/schedule/ceremony.svg',   alt: 'A wedding arch' },
+  { heading: 'We drink!',  time: '1:45 pm',  desc: 'Prosecco, canapés and photographs by the fountain. We’ll be off chasing family portraits for a while — make yourselves at home.', img: '/images/schedule/drinks.svg',     alt: 'Champagne flutes' },
+  { heading: 'We eat!',    time: '4:00 pm',  desc: 'Three courses and good wine in the Dining Room. Find your seat at the place card with your name on, settle in for a long lunch.', img: '/images/schedule/breakfast.svg',  alt: 'A place setting' },
+  { heading: 'We toast!',  time: '5:30 pm',  desc: 'Words from the people who know us best — some funny, some sentimental, hopefully none too long. Tissues optional.',                img: '/images/schedule/speeches.svg',   alt: 'A raised glass' },
+  { heading: 'We dance!',  time: '7:30 pm',  desc: 'Cake first, then the first dance, then the floor’s open till late. A late buffet around ten for anyone still standing.',         img: '/images/schedule/dance.svg',      alt: 'A dancing couple' },
+  { heading: 'Goodnight!', time: '12:00 am', desc: 'Last orders at half past eleven. There are rooms held for guests at St Audries — we hope you’ll stay the night.',                  img: '/images/schedule/carriages.svg',  alt: 'A vintage car' },
 ];
 
 const Schedule = () => (
