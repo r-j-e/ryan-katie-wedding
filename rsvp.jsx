@@ -94,8 +94,7 @@ const RSVP = () => {
         ))}
       </ol>
 
-      <form onSubmit={submit} name="rsvp" data-netlify="true">
-        <input type="hidden" name="form-name" value="rsvp" />
+      <form onSubmit={submit}>
 
         {step === 0 && (
           <StepGuests
