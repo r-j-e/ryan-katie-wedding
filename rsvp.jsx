@@ -65,7 +65,7 @@ const RSVP = ({ guest }) => {
         if (el) window.scrollTo({ top: el.offsetTop - 56, behavior:'smooth' });
       }, 50);
     } catch (err) {
-      setSubmitError('Sorry — we couldn’t send your reply just then. Please try again in a moment.');
+      setSubmitError('Sorry, we couldn’t send your reply just then. Please try again in a moment.');
     } finally {
       setSubmitting(false);
     }
@@ -264,7 +264,7 @@ const StepMeals = ({ guests, update, onBack, onNext }) => (
               label="Dietary notes or allergies"
               value={g.dietary}
               onChange={(v) => update(i, 'dietary', v)}
-              placeholder="anything we should know — please be specific"
+              placeholder="anything we should know, please be specific"
             />
           </div>
         </div>
@@ -318,7 +318,7 @@ const StepConfirm = ({ guests, anyAttending, songs, setSongs, message, setMessag
             label="A song to get you on the dance floor"
             value={songs}
             onChange={setSongs}
-            placeholder="artist — song title (or two)"
+            placeholder="artist, song title (or two)"
           />
         </div>
         <Field
@@ -481,7 +481,7 @@ const RSVPThanks = ({ onReset, attending }) => (
         color:'var(--ink-mute)', fontWeight:300, maxWidth:520, marginLeft:'auto', marginRight:'auto',
       }}>
         {attending
-          ? 'Thank you for replying — we cannot wait. We will be in touch in the new year with the finer details.'
+          ? 'Thank you for replying. We cannot wait. We will be in touch in the new year with the finer details.'
           : 'Thank you for letting us know. We hope to see you soon, even if not on the day.'}
       </p>
       <button onClick={onReset} className="serif" style={{

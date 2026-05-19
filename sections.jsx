@@ -523,16 +523,16 @@ const DateBand = ({ className }) =>
 // empty slot so this works before the SVGs are uploaded.
 const SCHEDULE = [
   { heading: 'We do!',     time: '1:00 pm',  desc: 'Vows in the orangery at St Audries Park. Please be in your seat by quarter-to so we can start on time.',                  img: '/images/schedule/ceremony.svg',   alt: 'A wedding arch' },
-  { heading: 'We drink!',  time: '1:45 pm',  desc: 'Prosecco, canapés and photographs by the fountain. We’ll be off chasing family portraits for a while — make yourselves at home.', img: '/images/schedule/drinks.svg',     alt: 'Champagne flutes' },
+  { heading: 'We drink!',  time: '1:45 pm',  desc: 'Prosecco, canapés and photographs by the fountain. We’ll be off chasing family portraits for a while. Make yourselves at home.', img: '/images/schedule/drinks.svg',     alt: 'Champagne flutes' },
   { heading: 'We eat!',    time: '4:00 pm',  desc: 'Three courses and good wine in the Dining Room. Find your seat at the place card with your name on, settle in for a long lunch.', img: '/images/schedule/breakfast.svg',  alt: 'A place setting' },
-  { heading: 'We toast!',  time: '5:30 pm',  desc: 'Words from the people who know us best — some funny, some sentimental, hopefully none too long. Tissues optional.',                img: '/images/schedule/speeches.svg',   alt: 'A raised glass' },
+  { heading: 'We toast!',  time: '5:30 pm',  desc: 'Words from the people who know us best. Some funny, some sentimental, hopefully none too long. Tissues optional.',                img: '/images/schedule/speeches.svg',   alt: 'A raised glass' },
   { heading: 'We dance!',  time: '7:30 pm',  desc: 'Cake first, then the first dance, then the floor’s open till late. A late buffet around ten for anyone still standing.',         img: '/images/schedule/dance.svg',      alt: 'A dancing couple' },
-  { heading: 'Goodnight!', time: '12:00 am', desc: 'Last orders at half past eleven. There are rooms held for guests at St Audries — we hope you’ll stay the night.',                  img: '/images/schedule/carriages.svg',  alt: 'A vintage car' },
+  { heading: 'Goodnight!', time: '12:00 am', desc: 'Last orders at half past eleven. There are rooms held for guests at St Audries, and we hope you’ll stay the night.',               img: '/images/schedule/carriages.svg',  alt: 'A vintage car' },
 ];
 
 const Schedule = () => (
   <Section id="day" tint padTop={120} padBottom={120}>
-    <PageHeading eyebrow="The order of the day" title="Schedule" intro="A rough shape — times will firm up nearer July." />
+    <PageHeading eyebrow="The order of the day" title="Schedule" intro="A rough shape. Times will firm up nearer July." />
 
     <ol className="schedule-list" style={{
       listStyle: 'none', padding: 0, margin: '0 auto',
@@ -755,21 +755,21 @@ const Venue = () => (
 // TRAVEL — three transport cards + accommodation cards
 // ============================================================
 const TRANSPORT = [
-  { title: 'By Car',   body: 'From the M5, take Junction 23 or 24 and follow signs to the A39 toward Minehead. The venue is around 15 miles from the motorway. Free parking on site — cars may be left overnight.', detail: { label: 'Parking', value: 'Complimentary, on-site' } },
+  { title: 'By Car',   body: 'From the M5, take Junction 23 or 24 and follow signs to the A39 toward Minehead. The venue is around 15 miles from the motorway. Free parking on site; cars may be left overnight.', detail: { label: 'Parking', value: 'Complimentary, on-site' } },
   { title: 'By Train', body: 'Taunton (25 min taxi) or Bridgwater (30 min). Both well served from London Paddington and Bristol Temple Meads.', detail: { label: 'Taxis', value: 'A1 Williton · 01984 000 000' } },
   { title: 'By Air',   body: 'Bristol Airport is the nearest major airport, about 50 miles away. Exeter and Cardiff are within a 90-minute drive.', detail: { label: 'Transfers', value: 'We can suggest car hire' } },
 ];
 
 const STAYS = [
   { name: 'St Audries Park',       tagline: 'On site',        body: 'The house has rooms reserved for wedding guests at a preferential rate. Allocated first-come, first-served.', detail: 'From £180 / night', primary: true },
-  { name: 'The Plough Inn',        tagline: '1.4 mi away',    body: 'A small coaching inn with seven rooms — quiet and well-run. Walkable in daylight, cab home after dark.', detail: 'From £120 / night' },
+  { name: 'The Plough Inn',        tagline: '1.4 mi away',    body: 'A small coaching inn with seven rooms, quiet and well-run. Walkable in daylight, cab home after dark.', detail: 'From £120 / night' },
   { name: 'Combe House',           tagline: '4 mi away',      body: 'A country house hotel in Holford. Rooms held under Ryan & Katie until 1 April 2027.', detail: 'From £150 / night' },
-  { name: 'The Castle Hotel',      tagline: '18 mi · Taunton',body: 'A historic four-star hotel in central Taunton — good for guests arriving by train.', detail: 'From £180 / night' },
+  { name: 'The Castle Hotel',      tagline: '18 mi · Taunton',body: 'A historic four-star hotel in central Taunton, good for guests arriving by train.', detail: 'From £180 / night' },
 ];
 
 const Travel = () => (
   <Section id="travel" tint padTop={140} padBottom={140}>
-    <PageHeading eyebrow="Getting there" title="Travel & Stay" intro="It is a long way to Somerset, and a longer way home at midnight — please plan to stay." />
+    <PageHeading eyebrow="Getting there" title="Travel & Stay" intro="It is a long way to Somerset, and a longer way home at midnight. Please plan to stay." />
 
     <div style={{
       display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20,
@@ -800,7 +800,7 @@ const Travel = () => (
         fontSize: 'clamp(15px, 1.6vw, 17px)', fontStyle: 'italic',
         fontWeight: 300, lineHeight: 1.7, color: 'var(--ink-mute)',
       }}>
-        A few favourites — in order of proximity. Booking links to follow.
+        A few favourites, in order of proximity. Booking links to follow.
       </p>
     </div>
 
@@ -914,9 +914,9 @@ const PartyGroup = ({ label, people }) => (
 // ============================================================
 const DETAILS = [
   { eyebrow: 'Dress Code',  headline: 'Black Tie',          body: 'Dinner jackets for gentlemen, long or cocktail dresses for ladies. The ceremony will be indoors; drinks and photographs move outside if the weather is kind. Comfortable shoes for the lawn.' },
-  { eyebrow: 'Gifts',       headline: 'Honeymoon Fund',     body: 'Your company is the only present we ask for. If you’d like to mark the day, we’re saving towards our honeymoon in Japan — contributions of any size are gratefully received.' },
+  { eyebrow: 'Gifts',       headline: 'Honeymoon Fund',     body: 'Your company is the only present we ask for. If you’d like to mark the day, we’re saving towards our honeymoon in Japan. Contributions of any size are gratefully received.' },
   { eyebrow: 'Children',    headline: 'Adults Only',        body: 'With the exception of immediate family and ring-bearers, we’ve chosen to keep the day adults-only. We hope you’ll see it as an excuse for a rare evening off.' },
-  { eyebrow: 'Photography', headline: 'Unplugged Ceremony', body: 'Phones and cameras away during the ceremony, please. Our photographer will capture every moment — we’d love to see your faces rather than your screens.' },
+  { eyebrow: 'Photography', headline: 'Unplugged Ceremony', body: 'Phones and cameras away during the ceremony, please. Our photographer will capture every moment, and we’d love to see your faces rather than your screens.' },
 ];
 
 const Details = () => (
@@ -955,13 +955,13 @@ const Details = () => (
 // ============================================================
 const FAQS = [
   { q: 'Can we bring our children?',                       a: 'We adore your children but have chosen to keep the day adults-only (eighteen and up), with the exception of immediate family. We hope this gives plenty of notice to arrange care.' },
-  { q: 'I have a dietary requirement — what should I do?', a: 'There is a dedicated space on the RSVP form. Vegetarian, vegan, gluten-free, allergies, anything — please tell us in your own words and we will make sure every plate works.' },
-  { q: 'Are gifts expected?',                              a: 'Your company is more than gift enough. If you would like to mark the day, we are saving towards our honeymoon — you are under no obligation.' },
+  { q: 'I have a dietary requirement, what should I do?',  a: 'There is a dedicated space on the RSVP form. Vegetarian, vegan, gluten-free, allergies, anything; please tell us in your own words and we will make sure every plate works.' },
+  { q: 'Are gifts expected?',                              a: 'Your company is more than gift enough. If you would like to mark the day, we are saving towards our honeymoon, but you are under no obligation.' },
   { q: 'Is the ceremony indoors or outdoors?',             a: 'Indoors. The Music Room seats everyone comfortably. Drinks and photographs will move outside if the weather is kind.' },
-  { q: 'How long does the day run?',                       a: 'Roughly one in the afternoon through to midnight. The schedule is the current shape — times will firm up in the new year.' },
-  { q: 'Will there be photographers?',                     a: 'Yes — Sam from Field & Folk will be with us. We ask, gently, that phones stay away during the ceremony. After that, please snap to your heart’s content.' },
-  { q: 'How do I get there if I’m not driving?',      a: 'Trains to Taunton or Bridgwater, then a 25–30 minute taxi. We are also looking into a coach from Taunton in the afternoon and a return coach at midnight — details to follow.' },
-  { q: 'Can I bring a plus-one?',                          a: 'Your invitation will say. If your guest is named, please bring them. If not, we have kept the numbers tight — please don’t take it personally.' },
+  { q: 'How long does the day run?',                       a: 'Roughly one in the afternoon through to midnight. The schedule is the current shape; times will firm up in the new year.' },
+  { q: 'Will there be photographers?',                     a: 'Yes, Sam from Field & Folk will be with us. We ask, gently, that phones stay away during the ceremony. After that, please snap to your heart’s content.' },
+  { q: 'How do I get there if I’m not driving?',      a: 'Trains to Taunton or Bridgwater, then a 25–30 minute taxi. We are also looking into a coach from Taunton in the afternoon and a return coach at midnight; details to follow.' },
+  { q: 'Can I bring a plus-one?',                          a: 'Your invitation will say. If your guest is named, please bring them. If not, we have kept the numbers tight, please don’t take it personally.' },
 ];
 
 const FAQ = () => {
@@ -1026,7 +1026,7 @@ const FAQ = () => {
         fontSize: 14, fontStyle: 'italic', fontWeight: 300,
         color: 'var(--ink-mute)',
       }}>
-        Anything left over — just ask Katie or Ryan directly.
+        Anything left over, just ask Katie or Ryan directly.
       </p>
     </Section>
   );
