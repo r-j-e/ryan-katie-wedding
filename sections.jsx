@@ -515,76 +515,153 @@ const DateBand = ({ className }) =>
 
 
 // ============================================================
-// THE DAY — schedule with descriptions and a quiet timeline dot
+// THE DAY — playful schedule with alternating image / timeline / text rows
 // ============================================================
+// Each event has a heading (the "We do!" line), a time, a short description,
+// and optionally an image filename in /images/schedule/. The component
+// alternates which side the image sits on; missing images leave a clean
+// empty slot so this works before the SVGs are uploaded.
 const SCHEDULE = [
-  { time: '1:00 pm',  name: 'Arrival drinks',         desc: 'Guests arrive at St Audries Park. Champagne and elderflower cordial on the terrace.' },
-  { time: '1:45 pm',  name: 'Ceremony',               desc: 'The Music Room. Please be seated by 1:30. The service runs about thirty minutes.' },
-  { time: '2:30 pm',  name: 'Canapés & photographs', desc: 'Drinks, canapés, and group photographs on the lawn and in the walled garden.' },
-  { time: '4:30 pm',  name: 'Wedding breakfast',      desc: 'A formal three-course dinner in the Dining Room, with speeches to follow.' },
-  { time: '7:30 pm',  name: 'Cake & first dance',     desc: 'Cutting of the cake, then the first dance. Evening guests warmly welcomed.' },
-  { time: '8:00 pm',  name: 'Reception',              desc: 'Live band and DJ. A late buffet at ten — for those still standing.' },
-  { time: '12:00 am', name: 'Carriages',              desc: 'Last orders at half past eleven. Taxis pre-booked from the venue.' },
+  { heading: 'We do!',     time: '1:00 pm',  desc: 'Vows in the Music Room at St Audries Park. Please find your seat by quarter-to.', img: '/images/schedule/ceremony.svg',   alt: 'A wedding arch' },
+  { heading: 'We drink!',  time: '1:45 pm',  desc: 'Champagne and canapés on the lawn, photographs in the walled garden.',           img: '/images/schedule/drinks.svg',     alt: 'Champagne flutes' },
+  { heading: 'We eat!',    time: '4:00 pm',  desc: 'Three courses and good wine in the Dining Room.',                                img: '/images/schedule/breakfast.svg',  alt: 'A place setting' },
+  { heading: 'We toast!',  time: '5:30 pm',  desc: 'Words from the people who know us best. Tissues optional.',                      img: '/images/schedule/speeches.svg',   alt: 'A raised glass' },
+  { heading: 'We dance!',  time: '7:30 pm',  desc: 'Cake first, then the first dance, then the band. A late buffet around ten.',    img: '/images/schedule/dance.svg',      alt: 'A dancing couple' },
+  { heading: 'Goodnight!', time: '12:00 am', desc: 'Last orders at half past eleven; taxis pre-booked from the venue.',              img: '/images/schedule/carriages.svg',  alt: 'A vintage car' },
 ];
 
 const Schedule = () => (
-  <Section id="day" tint padTop={140} padBottom={140}>
-    <PageHeading eyebrow="The order of the day" title="The Day" intro="A rough shape — times will firm up nearer July." />
+  <Section id="day" tint padTop={120} padBottom={120}>
+    <PageHeading eyebrow="The order of the day" title="Schedule" intro="A rough shape — times will firm up nearer July." />
 
-    <ol style={{ listStyle: 'none', padding: 0, margin: '0 auto', maxWidth: 740, position: 'relative' }} className="schedule-list">
-      <div aria-hidden="true" style={{
-        position: 'absolute', top: 40, bottom: 40, left: 140, width: 1,
-        background: 'var(--rule-soft)',
-      }} className="schedule-axis" />
-      {SCHEDULE.map((item, i) => (
-        <li key={i} style={{
-          display: 'grid', gridTemplateColumns: '120px 40px 1fr',
-          alignItems: 'flex-start', columnGap: 24,
-          padding: '28px 0',
-          borderBottom: i < SCHEDULE.length - 1 ? '1px solid var(--rule)' : 'none',
-          position: 'relative',
-        }} className="schedule-row">
-          <div className="accent-gradient" style={{
-            fontFamily: 'Cinzel, Georgia, serif',
-            fontSize: 'clamp(15px, 1.7vw, 18px)', fontWeight: 500,
-            letterSpacing: '0.04em', textAlign: 'right', paddingTop: 8,
-            fontVariantNumeric: 'tabular-nums',
-          }}>{item.time}</div>
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            width: 40, height: 40, marginTop: 2,
-            border: '1px solid var(--rule)', borderRadius: '50%',
-            background: 'var(--cream)', position: 'relative', zIndex: 1,
-          }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundImage: 'var(--accent-gradient)' }} />
-          </div>
-          <div style={{ textAlign: 'left' }}>
-            <h3 style={{
-              margin: 0,
-              fontFamily: 'Cinzel, Georgia, serif',
-              fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500,
-              letterSpacing: '0.16em', textTransform: 'uppercase',
-              color: 'var(--ink)', textIndent: '0.16em',
-            }}>{item.name}</h3>
-            <p style={{
-              margin: '10px 0 0',
-              fontFamily: 'Cinzel, Georgia, serif',
-              fontSize: 'clamp(14px, 1.5vw, 16px)', fontStyle: 'italic',
-              fontWeight: 300, lineHeight: 1.65, color: 'var(--ink-mute)',
-            }}>{item.desc}</p>
-          </div>
-        </li>
-      ))}
+    <ol className="schedule-list" style={{
+      listStyle: 'none', padding: 0, margin: '0 auto',
+      maxWidth: 960, position: 'relative',
+    }}>
+      <div aria-hidden="true" className="schedule-axis" style={{
+        position: 'absolute', top: 28, bottom: 28, left: '50%',
+        width: 1, background: 'var(--rule)', transform: 'translateX(-50%)',
+      }} />
+
+      {SCHEDULE.map((item, i) => {
+        const imgFirst = i % 2 === 0;
+        return (
+          <li key={i} className={`schedule-row ${imgFirst ? 'img-left' : 'img-right'}`}>
+            <div className="schedule-img">
+              <ScheduleImage src={item.img} alt={item.alt} />
+            </div>
+            <div className="schedule-dot" aria-hidden="true">
+              <span />
+            </div>
+            <div className="schedule-text">
+              <h3 className="schedule-heading">{item.heading}</h3>
+              <div className="schedule-time accent-gradient">{item.time}</div>
+              <p className="schedule-desc">{item.desc}</p>
+            </div>
+          </li>
+        );
+      })}
     </ol>
+
     <style>{`
-      @media (max-width: 640px) {
+      .schedule-row{
+        display: grid;
+        grid-template-columns: 1fr 60px 1fr;
+        align-items: center;
+        column-gap: 32px;
+        padding: 36px 0;
+      }
+      .schedule-row.img-right .schedule-img{ order: 3; }
+      .schedule-row.img-right .schedule-text{ order: 1; text-align: right; }
+      .schedule-row.img-left .schedule-img{ text-align: right; }
+      .schedule-row.img-left .schedule-text{ text-align: left; }
+
+      .schedule-img img{
+        display: inline-block;
+        width: clamp(110px, 16vw, 170px);
+        height: auto;
+      }
+      .schedule-img-placeholder{
+        display: inline-block;
+        width: clamp(110px, 16vw, 170px);
+        aspect-ratio: 1 / 1;
+        border: 1px dashed var(--rule);
+        background: var(--cream);
+        border-radius: 6px;
+      }
+
+      .schedule-dot{
+        display: flex; align-items: center; justify-content: center;
+        position: relative; z-index: 1;
+      }
+      .schedule-dot span{
+        width: 12px; height: 12px; border-radius: 50%;
+        background-image: var(--accent-gradient);
+        box-shadow: 0 0 0 6px var(--cream-deep);
+      }
+
+      .schedule-heading{
+        margin: 0 0 8px;
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-style: italic; font-weight: 400;
+        font-size: clamp(28px, 3.6vw, 40px);
+        line-height: 1.05; letter-spacing: -0.005em;
+        color: var(--ink);
+      }
+      .schedule-time{
+        font-family: 'Cinzel', Georgia, serif;
+        font-size: clamp(13px, 1.5vw, 16px); font-weight: 500;
+        letter-spacing: 0.24em; text-transform: uppercase;
+        font-variant-numeric: tabular-nums;
+        text-indent: 0.24em;
+      }
+      .schedule-row.img-left .schedule-time{ text-indent: 0.24em; }
+      .schedule-desc{
+        margin: 14px 0 0;
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-size: clamp(15px, 1.6vw, 17px); font-style: italic;
+        font-weight: 400; line-height: 1.6; color: var(--ink-soft);
+        max-width: 38ch;
+      }
+      .schedule-row.img-right .schedule-desc{ margin-left: auto; }
+
+      @media (max-width: 720px) {
         .schedule-axis{ display: none; }
-        .schedule-row{ grid-template-columns: 88px 32px 1fr !important; column-gap: 14px !important; }
-        .schedule-row > div:first-child{ font-size: 14px !important; padding-top: 4px !important; }
+        .schedule-dot{ display: none; }
+        .schedule-row,
+        .schedule-row.img-right,
+        .schedule-row.img-left{
+          grid-template-columns: 1fr;
+          padding: 28px 0;
+          text-align: center !important;
+          column-gap: 0;
+          border-bottom: 1px solid var(--rule-soft);
+        }
+        .schedule-row:last-child{ border-bottom: none; }
+        .schedule-row .schedule-img,
+        .schedule-row .schedule-text{
+          order: 0;
+          text-align: center !important;
+        }
+        .schedule-row .schedule-img{ margin-bottom: 14px; }
+        .schedule-row.img-right .schedule-img{ order: 0; }
+        .schedule-row.img-right .schedule-text{ order: 1; }
+        .schedule-desc{ margin: 12px auto 0; }
+        .schedule-img img,
+        .schedule-img-placeholder{ width: 96px; }
       }
     `}</style>
   </Section>
 );
+
+// Renders an SVG / image only once it exists in the repo. If the file 404s
+// (still pending in /images/schedule/), the onError hides the broken-image
+// icon and shows a quiet dashed placeholder instead so the layout stays clean.
+const ScheduleImage = ({ src, alt }) => {
+  const [missing, setMissing] = React.useState(false);
+  if (!src || missing) return <span className="schedule-img-placeholder" aria-label={alt} />;
+  return <img src={src} alt={alt} loading="lazy" onError={() => setMissing(true)} />;
+};
 
 
 // ============================================================
