@@ -16,25 +16,28 @@ const MEAL_OPTIONS = {
   ],
 };
 
-const blankGuest = () => ({ name:'', attending:'yes', starter:'', main:'', pudding:'', dietary:'' });
+const blankGuest = (name = '') => ({ name, attending:'yes', starter:'', main:'', pudding:'', dietary:'' });
 
-const RSVP = () => {
+// Seed the guest rows from the invitation code's named list. Falls back to a
+// single blank row (preview / unauthenticated case) so the form still renders.
+const seedGuests = (guest) =>
+  (guest?.guests?.length ? guest.guests : ['']).map(name => blankGuest(name));
+
+const RSVP = ({ guest }) => {
   const [step, setStep]   = React.useState(0);
-  const [guests, setGuests] = React.useState([ blankGuest() ]);
+  const [guests, setGuests] = React.useState(() => seedGuests(guest));
   const [songs, setSongs]   = React.useState('');
   const [message, setMessage] = React.useState('');
   const [email, setEmail]   = React.useState('');
   const [submitted, setSubmitted] = React.useState(false);
 
-  const update     = (i, k, v) => setGuests(g => g.map((x, idx) => idx === i ? { ...x, [k]:v } : x));
-  const addGuest   = () => setGuests(g => [...g, blankGuest()]);
-  const removeGuest = (i) => setGuests(g => g.filter((_, idx) => idx !== i));
+  const update = (i, k, v) => setGuests(g => g.map((x, idx) => idx === i ? { ...x, [k]:v } : x));
 
   const anyAttending = guests.some(g => g.attending === 'yes');
 
   const submit = (e) => {
     if (e) e.preventDefault();
-    const payload = { 'form-name':'rsvp', email, songs, message, guests: JSON.stringify(guests) };
+    const payload = { code: guest?.code, household: guest?.household, email, songs, message, guests };
     try {
       const existing = JSON.parse(localStorage.getItem('rk_rsvps') || '[]');
       existing.push({ ts: new Date().toISOString(), ...payload });
@@ -48,7 +51,7 @@ const RSVP = () => {
   };
 
   if (submitted) return <RSVPThanks attending={anyAttending} onReset={() => {
-    setSubmitted(false); setStep(0); setGuests([blankGuest()]);
+    setSubmitted(false); setStep(0); setGuests(seedGuests(guest));
     setEmail(''); setSongs(''); setMessage('');
   }} />;
 
@@ -98,7 +101,7 @@ const RSVP = () => {
 
         {step === 0 && (
           <StepGuests
-            guests={guests} update={update} addGuest={addGuest} removeGuest={removeGuest}
+            guests={guests} update={update}
             email={email} setEmail={setEmail}
             onNext={() => setStep(1)}
           />
@@ -125,7 +128,10 @@ const RSVP = () => {
 };
 
 // ============ STEP 1: GUESTS ============
-const StepGuests = ({ guests, update, addGuest, removeGuest, email, setEmail, onNext }) => {
+// Names come pre-filled from the invitation code's guest list (see GUEST_CODES
+// in gate.jsx). The guest can still tweak the spelling for the place card —
+// what they don't get is add/remove, since the party size is set by the code.
+const StepGuests = ({ guests, update, email, setEmail, onNext }) => {
   const canNext = guests.every(g => g.name.trim()) && email.trim().includes('@');
 
   return (
@@ -134,7 +140,8 @@ const StepGuests = ({ guests, update, addGuest, removeGuest, email, setEmail, on
         margin:'0 auto 44px', textAlign:'center', maxWidth:480,
         fontSize:18, fontStyle:'italic', fontWeight:300, color:'var(--ink-mute)', lineHeight:1.7,
       }}>
-        Please tell us who is replying, and whether you will be joining us.
+        We&rsquo;ve pencilled in the names from your invitation. Let us know
+        who&rsquo;s able to join us.
       </p>
 
       {guests.map((g, i) => (
@@ -143,21 +150,8 @@ const StepGuests = ({ guests, update, addGuest, removeGuest, email, setEmail, on
           borderTop: '1px solid var(--rule)',
           borderBottom: i === guests.length - 1 ? '1px solid var(--rule)' : 'none',
         }}>
-          <div style={{ marginBottom:18 }}>
-            <span className="label" style={{ color:'var(--burgundy)' }}>
-              Guest {String.fromCharCode(65 + i)}
-            </span>
-            {guests.length > 1 && (
-              <button type="button" onClick={() => removeGuest(i)} className="serif" style={{
-                marginLeft:14,
-                background:'none', border:'none', cursor:'pointer',
-                fontSize:14, fontStyle:'italic', color:'var(--ink-mute)',
-              }}>· Remove</button>
-            )}
-          </div>
-
           <Field
-            label="Full name"
+            label="Name"
             value={g.name}
             onChange={(v) => update(i, 'name', v)}
             placeholder="as you would like it on the place card"
@@ -176,12 +170,6 @@ const StepGuests = ({ guests, update, addGuest, removeGuest, email, setEmail, on
           </div>
         </div>
       ))}
-
-      <button type="button" onClick={addGuest} className="serif" style={{
-        marginTop:20, width:'100%', background:'none',
-        border:'1px dashed var(--rule)', padding:'14px 18px',
-        fontSize:16, fontStyle:'italic', color:'var(--ink-mute)', cursor:'pointer',
-      }}>+ &nbsp;Add another guest</button>
 
       <div style={{ marginTop:36 }}>
         <Field

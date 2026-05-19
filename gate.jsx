@@ -1,7 +1,7 @@
-// Per-guest login. Each invitation card carries a unique code (e.g. 'smith2027').
-// The code maps to a household — we use that to personalise the welcome and to
-// pre-fill the RSVP form. Token persists in localStorage so guests don't have to
-// re-enter on return visits.
+// Per-guest login. Each invitation card carries a unique code (e.g. 'nile2027').
+// The code maps to a household — used for the nav greeting — and to a fixed
+// list of named guests, which pre-fill the RSVP form. Token persists in
+// localStorage so guests don't have to re-enter on return visits.
 //
 // In production these should live on the server (and ideally each code should
 // be one-shot or rate-limited) — but for a wedding website, a static map is fine.
@@ -11,49 +11,21 @@
 const TOKEN_KEY = 'rk_guest_v1';
 
 const GUEST_CODES = {
-  // — Family —
-  'smith2027':     { household: 'The Smith Family',    party: 4 },
-  'jones2027':     { household: 'The Jones Family',    party: 2 },
-  'williams2027':  { household: 'The Williams',        party: 2 },
-  'brown2027':     { household: 'The Browns',          party: 3 },
-  'taylor2027':    { household: 'The Taylor Family',   party: 4 },
-  'davies2027':    { household: 'The Davies',          party: 2 },
-  'wilson2027':    { household: 'The Wilson Family',   party: 3 },
-  'evans2027':     { household: 'The Evans',           party: 2 },
-  'thomas2027':    { household: 'The Thomas Family',   party: 4 },
-  'roberts2027':   { household: 'The Roberts',         party: 2 },
-  // — Friends —
-  'johnson2027':   { household: 'The Johnsons',        party: 3 },
-  'walker2027':    { household: 'The Walker Family',   party: 4 },
-  'white2027':     { household: 'The Whites',          party: 2 },
-  'green2027':     { household: 'The Green Family',    party: 2 },
-  'hall2027':      { household: 'The Halls',           party: 3 },
-  'wood2027':      { household: 'The Wood Family',     party: 4 },
-  'harris2027':    { household: 'The Harris',          party: 2 },
-  'clarke2027':    { household: 'The Clarkes',         party: 2 },
-  'lewis2027':     { household: 'The Lewis Family',    party: 3 },
-  'young2027':     { household: 'The Youngs',          party: 2 },
-  'king2027':      { household: 'The King Family',     party: 4 },
-  'wright2027':    { household: 'The Wrights',         party: 2 },
-  'scott2027':     { household: 'The Scott Family',    party: 3 },
-  'cooper2027':    { household: 'The Coopers',         party: 2 },
-  'ward2027':      { household: 'The Ward Family',     party: 4 },
-  'hughes2027':    { household: 'The Hughes',          party: 2 },
-  'morris2027':    { household: 'The Morris Family',   party: 3 },
-  'cook2027':      { household: 'The Cooks',           party: 2 },
-  'morgan2027':    { household: 'The Morgan Family',   party: 4 },
-  'bell2027':      { household: 'The Bells',           party: 2 },
+  // — Real invitations —
+  'nile2027':    { household: 'Leigh & Philip',  guests: ['Leigh Nile', 'Philip Nile'] },
+
   // — Demo / preview codes for testing —
-  'elliott2027':   { household: 'Preview',             party: 2 },
-  'katie2027':     { household: 'Preview',             party: 2 },
-  'ryan2027':      { household: 'Preview',             party: 2 },
+  'elliott2027': { household: 'Preview',         guests: ['Katie Elliott', 'Ryan Elliott'] },
+  'katie2027':   { household: 'Preview',         guests: ['Katie Elliott', 'Ryan Elliott'] },
+  'ryan2027':    { household: 'Preview',         guests: ['Katie Elliott', 'Ryan Elliott'] },
 };
 
 const lookupGuest = (raw) => {
   if (!raw) return null;
   const key = raw.trim().toLowerCase();
   const found = GUEST_CODES[key];
-  return found ? { code: key, ...found } : null;
+  if (!found) return null;
+  return { code: key, party: found.guests.length, ...found };
 };
 
 const Gate = ({ onUnlock }) => {
