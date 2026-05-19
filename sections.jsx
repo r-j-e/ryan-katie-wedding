@@ -545,19 +545,24 @@ const Schedule = () => (
 
       {SCHEDULE.map((item, i) => {
         const imgFirst = i % 2 === 0;
+        const imgCell = (
+          <div className="schedule-img">
+            <ScheduleImage src={item.img} alt={item.alt} />
+          </div>
+        );
+        const dotCell = <div className="schedule-dot" aria-hidden="true"><span /></div>;
+        const textCell = (
+          <div className="schedule-text">
+            <h3 className="schedule-heading">{item.heading}</h3>
+            <div className="schedule-time accent-gradient">{item.time}</div>
+            <p className="schedule-desc">{item.desc}</p>
+          </div>
+        );
         return (
           <li key={i} className={`schedule-row ${imgFirst ? 'img-left' : 'img-right'}`}>
-            <div className="schedule-img">
-              <ScheduleImage src={item.img} alt={item.alt} />
-            </div>
-            <div className="schedule-dot" aria-hidden="true">
-              <span />
-            </div>
-            <div className="schedule-text">
-              <h3 className="schedule-heading">{item.heading}</h3>
-              <div className="schedule-time accent-gradient">{item.time}</div>
-              <p className="schedule-desc">{item.desc}</p>
-            </div>
+            {imgFirst
+              ? <>{imgCell}{dotCell}{textCell}</>
+              : <>{textCell}{dotCell}{imgCell}</>}
           </li>
         );
       })}
@@ -571,15 +576,13 @@ const Schedule = () => (
         column-gap: 32px;
         padding: 36px 0;
       }
-      /* Explicit column placement — using `order` alone leaked the dot
-         into column 1 on right-image rows and squashed the text into
-         the 60px middle column. */
-      .schedule-row.img-left  .schedule-img  { grid-column: 1; text-align: right; }
-      .schedule-row.img-left  .schedule-dot  { grid-column: 2; }
-      .schedule-row.img-left  .schedule-text { grid-column: 3; text-align: left; }
-      .schedule-row.img-right .schedule-text { grid-column: 1; text-align: right; }
-      .schedule-row.img-right .schedule-dot  { grid-column: 2; }
-      .schedule-row.img-right .schedule-img  { grid-column: 3; text-align: left; }
+      /* Children render in source order; img-left and img-right rows swap
+         JSX order, so grid auto-flow puts the right thing in the right cell.
+         Only thing we need to vary is text alignment. */
+      .schedule-row.img-left  .schedule-img  { text-align: right; }
+      .schedule-row.img-left  .schedule-text { text-align: left; }
+      .schedule-row.img-right .schedule-text { text-align: right; }
+      .schedule-row.img-right .schedule-img  { text-align: left; }
 
       .schedule-img img{
         display: inline-block;
