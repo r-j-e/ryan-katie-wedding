@@ -672,6 +672,37 @@ const ScheduleImage = ({ src, alt }) => {
   return <img src={src} alt={alt} loading="lazy" onError={() => setMissing(true)} />;
 };
 
+// Venue hero photo. Landscape (3:2) framed inside the 2-column grid; falls
+// back to a quiet dashed box so the layout doesn't collapse before the
+// file is uploaded.
+const VenuePhoto = ({ src, alt }) => {
+  const [missing, setMissing] = React.useState(false);
+  const frameStyle = {
+    display: 'block', width: '100%', aspectRatio: '3 / 2',
+    border: '1px solid var(--rule)',
+    background: 'var(--cream-deep)',
+    overflow: 'hidden',
+  };
+  if (!src || missing) {
+    return (
+      <div style={{
+        ...frameStyle,
+        borderStyle: 'dashed',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontFamily: "'Cinzel', Georgia, serif",
+        fontSize: 10, letterSpacing: '0.32em', textTransform: 'uppercase',
+        color: 'var(--ink-mute)', textIndent: '0.32em',
+      }}>Venue photograph</div>
+    );
+  }
+  return (
+    <div style={frameStyle}>
+      <img src={src} alt={alt} loading="lazy" onError={() => setMissing(true)}
+        style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }} />
+    </div>
+  );
+};
+
 
 // ============================================================
 // VENUE — image left, info right with definition list, two CTAs
@@ -685,8 +716,7 @@ const Venue = () => (
       alignItems: 'center', maxWidth: 1120, margin: '0 auto',
       textAlign: 'left',
     }} className="venue-grid">
-      <image-slot id="venue-photo" shape="rect" placeholder="venue photograph"
-        style={{ display: 'block', width: '100%', aspectRatio: '4 / 5' }}></image-slot>
+      <VenuePhoto src="/images/venue/st-audries-park.jpg" alt="St Audries Park country house with ceremony chairs set up on the lawn" />
 
       <div>
         <p style={{
@@ -708,7 +738,7 @@ const Venue = () => (
           </div>
           <div>
             <dt style={{ fontFamily: 'Cinzel, Georgia, serif', fontSize: 10, fontWeight: 400, letterSpacing: '0.32em', textTransform: 'uppercase', color: 'var(--burgundy)', textIndent: '0.32em', marginBottom: 6 }}>Ceremony</dt>
-            <dd style={{ margin: 0, fontFamily: 'Cinzel, Georgia, serif', fontSize: 'clamp(15px, 1.6vw, 17px)', fontStyle: 'italic', fontWeight: 300, lineHeight: 1.55, color: 'var(--ink)' }}>The Music Room</dd>
+            <dd style={{ margin: 0, fontFamily: 'Cinzel, Georgia, serif', fontSize: 'clamp(15px, 1.6vw, 17px)', fontStyle: 'italic', fontWeight: 300, lineHeight: 1.55, color: 'var(--ink)' }}>The Orangery</dd>
           </div>
           <div>
             <dt style={{ fontFamily: 'Cinzel, Georgia, serif', fontSize: 10, fontWeight: 400, letterSpacing: '0.32em', textTransform: 'uppercase', color: 'var(--burgundy)', textIndent: '0.32em', marginBottom: 6 }}>Reception</dt>
@@ -957,7 +987,7 @@ const FAQS = [
   { q: 'Can we bring our children?',                       a: 'We adore your children but have chosen to keep the day adults-only (eighteen and up), with the exception of immediate family. We hope this gives plenty of notice to arrange care.' },
   { q: 'I have a dietary requirement, what should I do?',  a: 'There is a dedicated space on the RSVP form. Vegetarian, vegan, gluten-free, allergies, anything; please tell us in your own words and we will make sure every plate works.' },
   { q: 'Are gifts expected?',                              a: 'Your company is more than gift enough. If you would like to mark the day, we are saving towards our honeymoon, but you are under no obligation.' },
-  { q: 'Is the ceremony indoors or outdoors?',             a: 'Indoors. The Music Room seats everyone comfortably. Drinks and photographs will move outside if the weather is kind.' },
+  { q: 'Is the ceremony indoors or outdoors?',             a: 'Indoors. The Orangery seats everyone comfortably. Drinks and photographs will move outside if the weather is kind.' },
   { q: 'How long does the day run?',                       a: 'Roughly one in the afternoon through to midnight. The schedule is the current shape; times will firm up in the new year.' },
   { q: 'Will there be photographers?',                     a: 'Yes, Sam from Field & Folk will be with us. We ask, gently, that phones stay away during the ceremony. After that, please snap to your heart’s content.' },
   { q: 'How do I get there if I’m not driving?',      a: 'Trains to Taunton or Bridgwater, then a 25–30 minute taxi. We are also looking into a coach from Taunton in the afternoon and a return coach at midnight; details to follow.' },
