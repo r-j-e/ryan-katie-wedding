@@ -56,7 +56,11 @@
   body{ overflow-x:hidden; }
   ::selection{ background:var(--burgundy); color:var(--cream); }
   a{ color:inherit; }
-  .serif{ font-family:'Cinzel', Georgia, serif; }
+  /* Body serif. Cormorant Garamond has real italics and real lowercase
+     glyphs; Cinzel is a caps-only display face, so anything tagged
+     .serif with fontStyle:italic must NOT use Cinzel — synthetic
+     italics on small-caps render harsh and almost-uppercase. */
+  .serif{ font-family:'Cormorant Garamond', Georgia, serif; }
   /* === The wedding-name treatment ===
      Capital letters in Amoresa script (the user's licensed font, served
      from /fonts/Amoresa.ttf). The rest of the word in Cinzel caps —

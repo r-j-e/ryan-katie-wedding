@@ -721,9 +721,9 @@ const Venue = () => (
       <div>
         <p style={{
           margin: '0 0 32px',
-          fontFamily: 'Cinzel, Georgia, serif',
-          fontSize: 'clamp(18px, 2vw, 22px)', fontStyle: 'italic', fontWeight: 300,
-          lineHeight: 1.6, color: 'var(--ink)',
+          fontFamily: '"Cormorant Garamond", Georgia, serif',
+          fontSize: 'clamp(20px, 2.2vw, 24px)', fontStyle: 'italic', fontWeight: 400,
+          lineHeight: 1.55, color: 'var(--ink)',
         }}>
           A Grade II* listed country house set within 100 acres of private parkland in the Quantock Hills, with sweeping views across the Bristol Channel to Wales.
         </p>
@@ -734,19 +734,19 @@ const Venue = () => (
         }} className="venue-dl">
           <div>
             <dt style={{ fontFamily: 'Cinzel, Georgia, serif', fontSize: 10, fontWeight: 400, letterSpacing: '0.32em', textTransform: 'uppercase', color: 'var(--burgundy)', textIndent: '0.32em', marginBottom: 6 }}>Address</dt>
-            <dd style={{ margin: 0, fontFamily: 'Cinzel, Georgia, serif', fontSize: 'clamp(15px, 1.6vw, 17px)', fontStyle: 'italic', fontWeight: 300, lineHeight: 1.55, color: 'var(--ink)' }}>St Audries Park<br/>West Quantoxhead<br/>Taunton, Somerset TA4 4DS</dd>
+            <dd style={{ margin: 0, fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: 'clamp(15px, 1.7vw, 17px)', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.55, color: 'var(--ink)' }}>St Audries Park<br/>West Quantoxhead<br/>Taunton, Somerset TA4 4DS</dd>
           </div>
           <div>
             <dt style={{ fontFamily: 'Cinzel, Georgia, serif', fontSize: 10, fontWeight: 400, letterSpacing: '0.32em', textTransform: 'uppercase', color: 'var(--burgundy)', textIndent: '0.32em', marginBottom: 6 }}>Ceremony</dt>
-            <dd style={{ margin: 0, fontFamily: 'Cinzel, Georgia, serif', fontSize: 'clamp(15px, 1.6vw, 17px)', fontStyle: 'italic', fontWeight: 300, lineHeight: 1.55, color: 'var(--ink)' }}>The Orangery</dd>
+            <dd style={{ margin: 0, fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: 'clamp(15px, 1.7vw, 17px)', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.55, color: 'var(--ink)' }}>The Orangery</dd>
           </div>
           <div>
             <dt style={{ fontFamily: 'Cinzel, Georgia, serif', fontSize: 10, fontWeight: 400, letterSpacing: '0.32em', textTransform: 'uppercase', color: 'var(--burgundy)', textIndent: '0.32em', marginBottom: 6 }}>Reception</dt>
-            <dd style={{ margin: 0, fontFamily: 'Cinzel, Georgia, serif', fontSize: 'clamp(15px, 1.6vw, 17px)', fontStyle: 'italic', fontWeight: 300, lineHeight: 1.55, color: 'var(--ink)' }}>The Dining Room &amp; Terrace</dd>
+            <dd style={{ margin: 0, fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: 'clamp(15px, 1.7vw, 17px)', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.55, color: 'var(--ink)' }}>The Dining Room &amp; Terrace</dd>
           </div>
           <div>
             <dt style={{ fontFamily: 'Cinzel, Georgia, serif', fontSize: 10, fontWeight: 400, letterSpacing: '0.32em', textTransform: 'uppercase', color: 'var(--burgundy)', textIndent: '0.32em', marginBottom: 6 }}>Parking</dt>
-            <dd style={{ margin: 0, fontFamily: 'Cinzel, Georgia, serif', fontSize: 'clamp(15px, 1.6vw, 17px)', fontStyle: 'italic', fontWeight: 300, lineHeight: 1.55, color: 'var(--ink)' }}>Ample, on-site</dd>
+            <dd style={{ margin: 0, fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: 'clamp(15px, 1.7vw, 17px)', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.55, color: 'var(--ink)' }}>Ample, on-site</dd>
           </div>
         </dl>
 
@@ -826,9 +826,9 @@ const Travel = () => (
       }}>Where to stay</div>
       <p style={{
         margin: '20px 0 0',
-        fontFamily: 'Cinzel, Georgia, serif',
-        fontSize: 'clamp(15px, 1.6vw, 17px)', fontStyle: 'italic',
-        fontWeight: 300, lineHeight: 1.7, color: 'var(--ink-mute)',
+        fontFamily: '"Cormorant Garamond", Georgia, serif',
+        fontSize: 'clamp(15px, 1.7vw, 17px)', fontStyle: 'italic',
+        fontWeight: 400, lineHeight: 1.65, color: 'var(--ink-mute)',
       }}>
         A few favourites, in order of proximity. Booking links to follow.
       </p>
@@ -924,9 +924,9 @@ const PartyGroup = ({ label, people }) => (
           }}>{p.name}</div>
           <p style={{
             margin: 0,
-            fontFamily: 'Cinzel, Georgia, serif',
-            fontSize: 14, fontStyle: 'italic', fontWeight: 300,
-            lineHeight: 1.6, color: 'var(--ink-mute)',
+            fontFamily: '"Cormorant Garamond", Georgia, serif',
+            fontSize: 15, fontStyle: 'italic', fontWeight: 400,
+            lineHeight: 1.55, color: 'var(--ink-mute)',
           }}>{p.bio}</p>
         </article>
       ))}
@@ -1040,9 +1040,9 @@ const FAQ = () => {
               }}>
                 <p style={{
                   margin: '0 0 26px', padding: '0 4px',
-                  fontFamily: 'Cinzel, Georgia, serif',
-                  fontSize: 'clamp(15px, 1.7vw, 17px)', fontStyle: 'italic',
-                  fontWeight: 300, lineHeight: 1.75, color: 'var(--ink-mute)',
+                  fontFamily: '"Cormorant Garamond", Georgia, serif',
+                  fontSize: 'clamp(16px, 1.8vw, 18px)', fontStyle: 'italic',
+                  fontWeight: 400, lineHeight: 1.55, color: 'var(--ink-mute)',
                 }}>{item.a}</p>
               </div>
             </div>
@@ -1052,8 +1052,8 @@ const FAQ = () => {
 
       <p style={{
         margin: '48px auto 0', textAlign: 'center',
-        fontFamily: 'Cinzel, Georgia, serif',
-        fontSize: 14, fontStyle: 'italic', fontWeight: 300,
+        fontFamily: '"Cormorant Garamond", Georgia, serif',
+        fontSize: 16, fontStyle: 'italic', fontWeight: 400,
         color: 'var(--ink-mute)',
       }}>
         Anything left over, just ask Katie or Ryan directly.
@@ -1143,9 +1143,9 @@ const PageHeading = ({ eyebrow, title, intro }) => (
     {intro && (
       <p style={{
         margin: '32px auto 0', maxWidth: 560,
-        fontFamily: 'Cinzel, Georgia, serif',
-        fontSize: 'clamp(15px, 1.6vw, 17px)', fontStyle: 'italic',
-        fontWeight: 300, lineHeight: 1.8, color: 'var(--ink-mute)',
+        fontFamily: '"Cormorant Garamond", Georgia, serif',
+        fontSize: 'clamp(16px, 1.8vw, 19px)', fontStyle: 'italic',
+        fontWeight: 400, lineHeight: 1.6, color: 'var(--ink-mute)',
       }}>{intro}</p>
     )}
   </header>
@@ -1194,9 +1194,9 @@ const CardTitle = ({ children }) => (
 const CardBody = ({ children }) => (
   <p style={{
     margin: '0 0 16px',
-    fontFamily: 'Cinzel, Georgia, serif',
-    fontSize: 'clamp(14px, 1.5vw, 15px)', fontStyle: 'italic', fontWeight: 300,
-    lineHeight: 1.7, color: 'var(--ink-mute)',
+    fontFamily: '"Cormorant Garamond", Georgia, serif',
+    fontSize: 'clamp(15px, 1.6vw, 17px)', fontStyle: 'italic', fontWeight: 400,
+    lineHeight: 1.55, color: 'var(--ink-mute)',
     flex: 1,
   }}>{children}</p>
 );
@@ -1205,8 +1205,8 @@ const CardDetail = ({ label, children }) => (
   <div style={{
     marginTop: 'auto', paddingTop: 14,
     borderTop: '1px solid var(--rule-soft)',
-    fontFamily: 'Cinzel, Georgia, serif',
-    fontSize: 13, fontStyle: 'italic', fontWeight: 300,
+    fontFamily: '"Cormorant Garamond", Georgia, serif',
+    fontSize: 14, fontStyle: 'italic', fontWeight: 400,
     color: 'var(--ink-mute)',
   }}>
     {label && (
