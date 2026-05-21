@@ -24,6 +24,6 @@
   // (~6MB) on every mobile load. Outputs minified ES2020 to dist/ which
   // wrangler then uploads as static assets.
   "build": {
-    "command": "npx --yes esbuild app.jsx gate.jsx sections.jsx rsvp.jsx --outdir=dist --jsx=transform --target=es2020 --minify"
+    "command": "npx --yes esbuild sections.jsx rsvp.jsx app.jsx --outdir=dist --jsx=transform --target=es2020 --minify"
   }
 }

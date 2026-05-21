@@ -1,14 +1,14 @@
-// Main app — guest gate, sections, scroll-spy.
+// Main app — public site (no gate) + scroll-spy + RSVP popup.
 
 const App = () => {
-  const [guest, setGuest] = React.useState(() => {
-    try { return JSON.parse(localStorage.getItem(TOKEN_KEY) || 'null'); } catch(e) { return null; }
-  });
   const [active, setActive] = React.useState('top');
+  const [rsvpOpen, setRsvpOpen] = React.useState(false);
+
+  const openRsvp = () => setRsvpOpen(true);
+  const closeRsvp = () => setRsvpOpen(false);
 
   // Scroll spy
   React.useEffect(() => {
-    if (!guest) return;
     const ids = ['top', 'day', 'venue', 'travel', 'party', 'details', 'faqs', 'rsvp'];
     const onScroll = () => {
       const y = window.scrollY + 100;
@@ -22,33 +22,24 @@ const App = () => {
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, [guest]);
-
-  const signOut = () => {
-    try { localStorage.removeItem(TOKEN_KEY); } catch(e){}
-    setGuest(null);
-    window.scrollTo(0, 0);
-  };
-
-  if (!guest) {
-    return <Gate onUnlock={(g) => setGuest(g)} />;
-  }
+  }, []);
 
   return (
     <>
-      <Nav active={active} guest={guest} onSignOut={signOut} />
+      <Nav active={active} />
       <main>
-        <Hero guest={guest} />
+        <Hero onRsvp={openRsvp} />
         <Schedule />
         <Venue />
         <Travel />
         <WeddingParty />
         <Details />
         <FAQ />
-        <RSVP guest={guest} />
+        <RSVP onRsvp={openRsvp} />
         <Footer />
       </main>
-      <FloatingRsvpCta />
+      <FloatingRsvpCta onRsvp={openRsvp} />
+      {rsvpOpen && <RsvpModal onClose={closeRsvp} />}
     </>
   );
 };

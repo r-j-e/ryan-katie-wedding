@@ -31,7 +31,7 @@ const Names = ({ stacked = false, size = 'inherit', color }) => {
 // ============================================================
 // NAV — minimal, top-fixed, dot-separated, fades in on scroll
 // ============================================================
-const Nav = ({ active, guest, onSignOut }) => {
+const Nav = ({ active }) => {
   const [scrolled, setScrolled] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -93,33 +93,6 @@ const Nav = ({ active, guest, onSignOut }) => {
           )}
         </ul>
 
-        {/* Guest greeting — always visible on desktop */}
-        {guest && (
-          <div className="nav-guest" style={{
-            position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)',
-            display: 'flex', alignItems: 'center', gap: 14,
-          }}>
-            <span style={{
-              fontFamily: 'Cinzel, Georgia, serif',
-              fontSize: 10, fontWeight: 400,
-              letterSpacing: '0.32em', textTransform: 'uppercase',
-              color: 'var(--ink-mute)', textIndent: '0.32em',
-              whiteSpace: 'nowrap',
-            }}>{guest.household}</span>
-            <button onClick={onSignOut} style={{
-              background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-              fontFamily: 'Cinzel, Georgia, serif',
-              fontSize: 10, fontWeight: 400,
-              letterSpacing: '0.32em', textTransform: 'uppercase',
-              color: 'var(--burgundy)', textIndent: '0.32em',
-              textDecoration: 'underline',
-              textDecorationThickness: '1px',
-              textUnderlineOffset: '6px',
-              opacity: 0.7,
-            }}>Sign out</button>
-          </div>
-        )}
-
         <button onClick={() => setMobileOpen(true)} className="nav-mobile-toggle" aria-label="Menu" style={{
           background: 'none', border: 'none', cursor: 'pointer', padding: 8,
           display: 'none', color: 'var(--ink)',
@@ -144,20 +117,6 @@ const Nav = ({ active, guest, onSignOut }) => {
             }}>Close</button>
           </div>
 
-          {guest &&
-            <div style={{
-              marginTop: 24, paddingBottom: 16, borderBottom: '1px solid var(--rule-soft)',
-              textAlign: 'center',
-            }}>
-              <div style={{
-                fontFamily: 'Cinzel, Georgia, serif',
-                fontSize: 11, fontWeight: 400,
-                letterSpacing: '0.32em', textTransform: 'uppercase',
-                color: 'var(--ink-mute)', textIndent: '0.32em',
-              }}>Welcome, {guest.household}</div>
-            </div>
-          }
-
           <ul style={{ listStyle: 'none', padding: 0, margin: 'auto 0', display: 'flex', flexDirection: 'column', gap: 8 }}>
             {links.map((l) =>
               <li key={l.id}>
@@ -167,17 +126,6 @@ const Nav = ({ active, guest, onSignOut }) => {
               </li>
             )}
           </ul>
-
-          {guest &&
-            <button onClick={() => { setMobileOpen(false); onSignOut(); }} style={{
-              marginTop: 24, alignSelf: 'center',
-              background: 'none', border: 'none', cursor: 'pointer',
-              fontFamily: 'Cinzel, Georgia, serif',
-              fontSize: 11, fontWeight: 400, letterSpacing: '0.32em', textTransform: 'uppercase',
-              color: 'var(--burgundy)', textIndent: '0.32em',
-              borderBottom: '1px solid var(--burgundy)', padding: '6px 0',
-            }}>Sign out</button>
-          }
         </div>
       }
 
@@ -267,7 +215,7 @@ const Heading = ({ children, eyebrow }) =>
 // HERO — single big image, names below, date/venue beneath.
 // Subtle ken-burns on image, staggered fade-in on the type.
 // ============================================================
-const Hero = ({ showCountdown = true }) => {
+const Hero = ({ showCountdown = true, onRsvp }) => {
   const { days, hours, minutes, seconds, total } = useCountdown('2027-07-02T13:00:00');
 
   return (
@@ -339,10 +287,7 @@ const Hero = ({ showCountdown = true }) => {
         <div className="hero-anim-6" style={{ marginTop: 48, textAlign: 'center' }}>
           <button
             type="button"
-            onClick={() => {
-              const el = document.getElementById('rsvp');
-              if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 56, behavior: 'smooth' });
-            }}
+            onClick={onRsvp}
             style={{
               background: 'var(--ink)', color: 'var(--cream)',
               border: 'none', cursor: 'pointer',
@@ -1244,7 +1189,7 @@ const ActionBtn = ({ href, children, ghost = false }) => (
 // the hero so it doesn't fight with the hero's own RSVP button, and hides
 // once they're inside the RSVP section so it isn't redundant on top of
 // the form.
-const FloatingRsvpCta = () => {
+const FloatingRsvpCta = ({ onRsvp }) => {
   const [show, setShow] = React.useState(false);
 
   React.useEffect(() => {
@@ -1252,7 +1197,8 @@ const FloatingRsvpCta = () => {
       const y = window.scrollY;
       const rsvpEl = document.getElementById('rsvp');
       const rsvpTop = rsvpEl ? rsvpEl.offsetTop : Infinity;
-      // Show after the hero is mostly off-screen, hide once we're at/past the form.
+      // Show after the hero is mostly off-screen, hide once the RSVP section
+      // (with its own button) is in view so the pill isn't redundant.
       const shouldShow = y > 600 && y < rsvpTop - 200;
       setShow(shouldShow);
     };
@@ -1261,16 +1207,11 @@ const FloatingRsvpCta = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const go = () => {
-    const el = document.getElementById('rsvp');
-    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 56, behavior: 'smooth' });
-  };
-
   return (
     <>
       <button
         type="button"
-        onClick={go}
+        onClick={onRsvp}
         className="floating-rsvp"
         aria-label="Reply to invitation"
         style={{
