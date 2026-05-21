@@ -26,16 +26,16 @@ const lookupGuest = async (raw) => {
 
 const MEAL_OPTIONS = {
   starter: [
-    { id:'s1', name:'Beetroot &amp; goat cheese', note:'candied walnut, toasted rye' },
-    { id:'s2', name:'Smoked trout',               note:'cucumber, dill, crème fraîche' },
+    { id:'s1', name:'Chargrilled chicken salad', note:'cos lettuce, croutons, caesar dressing, parmesan shavings' },
+    { id:'s2', name:'Feta &amp; watermelon salad', note:'toasted walnuts, mint dressing' },
   ],
   main: [
-    { id:'m1', name:'Slow-cooked beef cheek',     note:'roasted roots, red wine jus' },
-    { id:'m2', name:'Wild mushroom risotto',      note:'shaved parmesan (v)' },
+    { id:'m1', name:'Roast sirloin of British beef', note:'herb Yorkshire pudding, buttery mash, rich roast gravy' },
+    { id:'m2', name:'Pan-fried potato gnocchi',      note:'roasted squash, lemon &amp; cracked pepper, wilted rocket' },
   ],
   pudding: [
-    { id:'p1', name:'Dark chocolate délice',      note:'raspberry sorbet' },
-    { id:'p2', name:'Lemon posset',               note:'shortbread, macerated berries' },
+    { id:'p1', name:'Chocolate caramel brownie',          note:'vanilla ice cream, dark chocolate sauce' },
+    { id:'p2', name:'Cinnamon spiced apple crumble tart', note:'vegan custard' },
   ],
 };
 
@@ -116,28 +116,31 @@ const RsvpModal = ({ onClose }) => {
           position:fixed; inset:0; z-index:1000;
           background:rgba(26,20,22,0.55);
           -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);
+          /* flex-start + auto margins on the dialog centres it when it fits
+             and lets the overlay scroll (without clipping the top) when it
+             doesn't — the classic flex-centring-in-a-scroll-container fix. */
           display:flex; align-items:flex-start; justify-content:center;
-          padding:40px 16px; overflow-y:auto;
+          padding:24px 16px; overflow-y:auto;
           animation: rsvp-fade 0.25s ease-out;
         }
         .rsvp-dialog{
-          position:relative; width:100%; max-width:620px;
-          margin:auto;
+          position:relative; width:100%; max-width:600px;
+          margin-top:auto; margin-bottom:auto;
           background:linear-gradient(180deg, var(--paper) 0%, var(--cream) 100%);
           border:1px solid var(--rule);
           box-shadow:0 30px 80px -20px rgba(26,20,22,0.4);
           animation: rsvp-rise 0.35s cubic-bezier(0.16,1,0.3,1) both;
         }
         .rsvp-dialog-close{
-          position:absolute; top:14px; right:16px; z-index:2;
+          position:absolute; top:12px; right:14px; z-index:2;
           background:none; border:none; cursor:pointer;
           font-size:26px; line-height:1; color:var(--ink-mute);
           width:36px; height:36px; border-radius:50%;
           transition:background 0.2s, color 0.2s;
         }
         .rsvp-dialog-close:hover{ background:var(--cream-deep); color:var(--burgundy); }
-        .rsvp-dialog-body{ padding:56px 44px 44px; }
-        @media (max-width:560px){ .rsvp-dialog-body{ padding:52px 24px 32px; } }
+        .rsvp-dialog-body{ padding:44px 40px 36px; }
+        @media (max-width:560px){ .rsvp-dialog-body{ padding:44px 22px 28px; } }
         @keyframes rsvp-fade{ from{ opacity:0; } to{ opacity:1; } }
         @keyframes rsvp-rise{ from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:none; } }
         @media (prefers-reduced-motion: reduce){
@@ -233,9 +236,7 @@ const RsvpCodeStep = ({ onUnlock }) => {
 const RsvpWizard = ({ guest, onChangeCode, onDone }) => {
   const [step, setStep]   = React.useState(0);
   const [guests, setGuests] = React.useState(() => seedGuests(guest));
-  const [songs, setSongs]   = React.useState('');
   const [message, setMessage] = React.useState('');
-  const [email, setEmail]   = React.useState('');
   const [submitted, setSubmitted] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
   const [submitError, setSubmitError] = React.useState(null);
@@ -250,7 +251,7 @@ const RsvpWizard = ({ guest, onChangeCode, onDone }) => {
     setSubmitting(true);
     setSubmitError(null);
 
-    const payload = { code: guest?.code, household: guest?.household, email, songs, message, guests };
+    const payload = { code: guest?.code, household: guest?.household, message, guests };
 
     try {
       const res = await fetch('/api/rsvp', {
@@ -322,7 +323,7 @@ const RsvpWizard = ({ guest, onChangeCode, onDone }) => {
 
       <form onSubmit={submit}>
         {step === 0 && (
-          <StepGuests guests={guests} update={update} email={email} setEmail={setEmail} onNext={() => setStep(1)} />
+          <StepGuests guests={guests} update={update} onNext={() => setStep(1)} />
         )}
         {step === 1 && anyAttending && (
           <StepMeals guests={guests} update={update} onBack={() => setStep(0)} onNext={() => setStep(2)} />
@@ -333,7 +334,6 @@ const RsvpWizard = ({ guest, onChangeCode, onDone }) => {
         {step === 2 && (
           <StepConfirm
             guests={guests} anyAttending={anyAttending}
-            songs={songs} setSongs={setSongs}
             message={message} setMessage={setMessage}
             onBack={() => setStep(1)}
             submitting={submitting} submitError={submitError}
@@ -347,8 +347,8 @@ const RsvpWizard = ({ guest, onChangeCode, onDone }) => {
 // ============ STEP 1: GUESTS ============
 // Names come pre-filled from the invitation code's guest list. The guest can
 // still tweak the spelling for the place card; the party size is fixed by the code.
-const StepGuests = ({ guests, update, email, setEmail, onNext }) => {
-  const canNext = guests.every(g => g.name.trim()) && email.trim().includes('@');
+const StepGuests = ({ guests, update, onNext }) => {
+  const canNext = guests.every(g => g.name.trim());
 
   return (
     <div>
@@ -382,10 +382,6 @@ const StepGuests = ({ guests, update, email, setEmail, onNext }) => {
           </div>
         </div>
       ))}
-
-      <div style={{ marginTop:36 }}>
-        <Field label="Email" type="email" value={email} onChange={setEmail} placeholder="so we can follow up" />
-      </div>
 
       <StepNav onNext={onNext} canNext={canNext} />
     </div>
@@ -469,24 +465,18 @@ const StepRegrets = ({ message, setMessage, onBack, onNext }) => (
 );
 
 // ============ STEP 3: CONFIRM ============
-const StepConfirm = ({ guests, anyAttending, songs, setSongs, message, setMessage, onBack, submitting, submitError }) => (
+const StepConfirm = ({ guests, anyAttending, message, setMessage, onBack, submitting, submitError }) => (
   <div>
     <p className="serif" style={{
       margin:'0 auto 32px', textAlign:'center', maxWidth:440,
       fontSize:17, fontStyle:'italic', fontWeight:400, color:'var(--ink-mute)', lineHeight:1.65,
     }}>
-      Two last things, both optional.
+      {anyAttending ? 'A message for the two of us, if you’d like.' : 'Please check the details below before sending.'}
     </p>
 
     {anyAttending && (
-      <>
-        <div style={{ marginBottom:24 }}>
-          <Field label="A song to get you on the dance floor" value={songs} onChange={setSongs}
-            placeholder="artist, song title (or two)" />
-        </div>
-        <Field label="A message for the two of us" value={message} onChange={setMessage}
-          placeholder="anything you'd like to say" multiline />
-      </>
+      <Field label="A message for the two of us" value={message} onChange={setMessage}
+        placeholder="anything you'd like to say" multiline />
     )}
 
     <div style={{ marginTop:36, padding:'22px 24px', background:'rgba(74,26,44,0.04)', border:'1px solid var(--rule)' }}>
