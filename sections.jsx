@@ -861,16 +861,16 @@ const Travel = () => (
 // WEDDING PARTY — two groups with avatar circles
 // ============================================================
 const PARTY_KATIE = [
-  { initials: 'SL', role: 'Maid of Honour', name: 'Shanice Lobb', bio: '' },
-  { initials: 'LN', role: 'Bridesmaid',     name: 'Lucy Nile',    bio: '' },
-  { initials: 'KJ', role: 'Bridesmaid',     name: 'Katy Jewell',  bio: '' },
-  { initials: 'HK', role: 'Bridesmaid',     name: 'Holly Kirk',   bio: '' },
+  { initials: 'SL', role: 'Maid of Honour', name: 'Shanice Lobb', bio: 'Katie’s right hand, chief organiser, and the one keeping the whole day on track.' },
+  { initials: 'LN', role: 'Bridesmaid',     name: 'Lucy Nile',    bio: 'A dear friend who has been there through every chapter, and a few misadventures besides.' },
+  { initials: 'KJ', role: 'Bridesmaid',     name: 'Katy Jewell',  bio: 'Always ready with a laugh, a kind word, and a glass of something cold.' },
+  { initials: 'HK', role: 'Bridesmaid',     name: 'Holly Kirk',   bio: 'One of Katie’s favourite people in the world, by her side all day long.' },
 ];
 const PARTY_RYAN = [
-  { initials: 'PE', role: 'Best Man',  name: 'Paul Elliott',   bio: '' },
-  { initials: 'JA', role: 'Groomsman', name: 'Jake Adams',     bio: '' },
-  { initials: 'JW', role: 'Groomsman', name: 'Jamie Williams', bio: '' },
-  { initials: 'HS', role: 'Groomsman', name: 'Harry Shotton',  bio: '' },
+  { initials: 'PE', role: 'Best Man',  name: 'Paul Elliott',   bio: 'Ryan’s right hand and the man behind the speech everyone is slightly nervous about.' },
+  { initials: 'JA', role: 'Groomsman', name: 'Jake Adams',     bio: 'A loyal friend through thick and thin, good for a story or two.' },
+  { initials: 'JW', role: 'Groomsman', name: 'Jamie Williams', bio: 'Brilliant company and a steady hand whenever it counts.' },
+  { initials: 'HS', role: 'Groomsman', name: 'Harry Shotton',  bio: 'One of Ryan’s oldest and dearest friends, here for all of it.' },
 ];
 
 const WeddingParty = () => (
