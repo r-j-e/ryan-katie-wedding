@@ -287,39 +287,36 @@ const RsvpWizard = ({ guest, onChangeCode, onDone }) => {
       </div>
 
       <h2 className="serif accent-gradient" style={{
-        margin:'0 0 36px', textAlign:'center', display:'block',
-        fontSize:'clamp(32px, 6vw, 46px)', fontWeight:300, fontStyle:'italic',
+        margin:'0 0 32px', textAlign:'center', display:'block',
+        fontSize:'clamp(26px, 5vw, 36px)', fontWeight:300, fontStyle:'italic',
         lineHeight:1.05, letterSpacing:'-0.01em',
       }}><em>Kindly</em> reply.</h2>
 
-      {/* Stepper */}
-      <ol style={{
-        listStyle:'none', padding:0, margin:'0 0 48px',
-        display:'flex', alignItems:'center', justifyContent:'center', gap:12, flexWrap:'wrap',
+      {/* Stepper — slim, text-only. Active step burgundy italic; done steps
+          clickable to go back; upcoming steps muted. Hairline separators. */}
+      <div style={{
+        display:'flex', alignItems:'center', justifyContent:'center',
+        gap:14, margin:'0 0 44px', flexWrap:'wrap',
       }}>
         {steps.map((s, i) => (
           <React.Fragment key={i}>
-            <li onClick={() => i < step && setStep(i)} style={{
-              display:'flex', alignItems:'center', gap:10,
-              cursor: i < step ? 'pointer' : 'default',
-              color: i === step ? 'var(--burgundy)' : 'var(--ink-mute)',
-              opacity: i > step ? 0.45 : 1,
-            }}>
-              <span style={{
-                display:'inline-flex', alignItems:'center', justifyContent:'center',
-                width:24, height:24, borderRadius:'50%',
-                border:`1px solid ${i <= step ? 'var(--burgundy)' : 'var(--rule)'}`,
-                background: i === step ? 'var(--burgundy)' : 'transparent',
-                color: i === step ? 'var(--cream)' : (i < step ? 'var(--burgundy)' : 'var(--ink-mute)'),
-              }}>
-                <span className="serif" style={{ fontSize:13, fontStyle:'italic' }}>{i + 1}</span>
-              </span>
-              <span className="serif" style={{ fontSize:14, fontStyle: i === step ? 'italic' : 'normal' }}>{s}</span>
-            </li>
-            {i < steps.length - 1 && <span style={{ width:28, height:1, background:'var(--rule)' }}/>}
+            <button
+              type="button"
+              onClick={() => i < step && setStep(i)}
+              className="serif"
+              style={{
+                background:'none', border:'none', padding:0,
+                cursor: i < step ? 'pointer' : 'default',
+                fontSize:15, fontStyle: i === step ? 'italic' : 'normal',
+                color: i === step ? 'var(--burgundy)' : (i < step ? 'var(--ink)' : 'var(--ink-mute)'),
+                opacity: i > step ? 0.5 : 1,
+                letterSpacing:'0.01em', whiteSpace:'nowrap',
+              }}
+            >{s}</button>
+            {i < steps.length - 1 && <span style={{ width:20, height:1, background:'var(--rule)' }} />}
           </React.Fragment>
         ))}
-      </ol>
+      </div>
 
       <form onSubmit={submit}>
         {step === 0 && (
@@ -415,12 +412,12 @@ const StepMeals = ({ guests, update, onBack, onNext }) => (
                   return (
                     <button key={opt.id} type="button" onClick={() => update(i, course, opt.id)} style={{
                       textAlign:'center',
-                      background: on ? 'var(--ink)' : 'transparent',
-                      color: on ? 'var(--cream)' : 'var(--ink)',
-                      border:`1px solid ${on ? 'var(--ink)' : 'var(--rule)'}`,
+                      background: on ? 'rgba(74,26,44,0.06)' : 'transparent',
+                      color: on ? 'var(--burgundy)' : 'var(--ink)',
+                      border:`1px solid ${on ? 'var(--burgundy)' : 'var(--rule)'}`,
                       padding:'16px 18px', cursor:'pointer', transition:'all 0.2s',
                     }}>
-                      <div className="serif" style={{ fontSize:18, fontWeight:400, lineHeight:1.25 }}
+                      <div className="serif" style={{ fontSize:18, fontWeight:400, fontStyle:'italic', lineHeight:1.25 }}
                         dangerouslySetInnerHTML={{ __html: opt.name }}/>
                       <div className="serif" style={{
                         fontSize:13, fontStyle:'italic', marginTop:4, lineHeight:1.45, fontWeight:400, opacity:0.7,
@@ -552,11 +549,11 @@ const Field = ({ label, value, onChange, placeholder, type='text', multiline }) 
 
 const Chip = ({ selected, onClick, children }) => (
   <button type="button" onClick={onClick} style={{
-    background: selected ? 'var(--ink)' : 'transparent',
-    color: selected ? 'var(--cream)' : 'var(--ink)',
-    border:`1px solid ${selected ? 'var(--ink)' : 'var(--rule)'}`,
-    padding:'10px 20px',
-    fontFamily:"'Cormorant Garamond', Georgia, serif", fontSize:18, fontWeight:400,
+    background: selected ? 'rgba(74,26,44,0.06)' : 'transparent',
+    color: selected ? 'var(--burgundy)' : 'var(--ink)',
+    border:`1px solid ${selected ? 'var(--burgundy)' : 'var(--rule)'}`,
+    padding:'11px 22px',
+    fontFamily:"'Cormorant Garamond', Georgia, serif", fontSize:18, fontWeight:400, fontStyle:'italic',
     cursor:'pointer', transition:'all 0.2s',
   }}>{children}</button>
 );
