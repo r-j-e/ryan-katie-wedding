@@ -295,7 +295,7 @@ const Hero = ({ showCountdown = true, onRsvp }) => {
           <div className="serif hero-anim-1" style={{
             fontSize: 'clamp(16px, 2vw, 20px)', fontStyle: 'italic', fontWeight: 400,
             color: 'var(--burgundy)', marginBottom: 22,
-          }}>Dear {household} —</div>
+          }}>Dear {household},</div>
         )}
 
         {/* Tiny eyebrow — copy lifted from the invite */}

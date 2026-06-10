@@ -95,24 +95,6 @@ const RsvpModal = ({ onClose }) => {
     try { return JSON.parse(localStorage.getItem(TOKEN_KEY) || 'null'); } catch (e) { return null; }
   });
 
-  // First open per session: the dialog arrives as a sealed envelope that
-  // opens, then the card rises out of it. Click to skip; reduced-motion
-  // and repeat visits go straight to the form.
-  const [phase, setPhase] = React.useState(() => {
-    try { if (sessionStorage.getItem('rk_env_seen')) return 'open'; } catch (e) {}
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return 'open';
-    return 'envelope';
-  });
-  const openUp = React.useCallback(() => {
-    try { sessionStorage.setItem('rk_env_seen', '1'); } catch (e) {}
-    setPhase('open');
-  }, []);
-  React.useEffect(() => {
-    if (phase !== 'envelope') return;
-    const t = setTimeout(openUp, 1600);
-    return () => clearTimeout(t);
-  }, [phase, openUp]);
-
   React.useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', onKey);
@@ -132,14 +114,6 @@ const RsvpModal = ({ onClose }) => {
 
   return (
     <div className="rsvp-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      {phase === 'envelope' ? (
-        <div className="rsvp-envelope" onClick={openUp} role="button" aria-label="Open your invitation" tabIndex={0}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') openUp(); }}>
-          <div className="env-pocket" />
-          <div className="env-flap" />
-          <div className="env-seal"><span>K&amp;R</span></div>
-        </div>
-      ) : (
       <div className="rsvp-dialog" role="dialog" aria-modal="true" aria-label="Reply to your invitation">
         <button className="rsvp-dialog-close" onClick={onClose} aria-label="Close">&times;</button>
         <div className="rsvp-dialog-body">
@@ -148,7 +122,6 @@ const RsvpModal = ({ onClose }) => {
             : <RsvpCodeStep onUnlock={onUnlock} />}
         </div>
       </div>
-      )}
 
       <style>{`
         .rsvp-overlay{
@@ -182,52 +155,6 @@ const RsvpModal = ({ onClose }) => {
         @media (max-width:560px){ .rsvp-dialog-body{ padding:44px 22px 28px; } }
         @keyframes rsvp-fade{ from{ opacity:0; } to{ opacity:1; } }
         @keyframes rsvp-rise{ from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:none; } }
-
-        /* ── Envelope intro ── */
-        .rsvp-envelope{
-          position:relative; margin:auto;
-          width:min(380px, 86vw); aspect-ratio: 38 / 25;
-          cursor:pointer; perspective:900px; outline:none;
-          animation: env-in 0.45s cubic-bezier(0.16,1,0.3,1) both,
-                     env-away 0.4s ease-in 1.25s forwards;
-        }
-        .env-pocket{
-          position:absolute; inset:0;
-          background:linear-gradient(180deg, var(--cream-deep), var(--paper));
-          border:1px solid var(--rule);
-          box-shadow:0 24px 60px -18px rgba(26,20,22,0.35);
-        }
-        /* bottom fold of the pocket */
-        .env-pocket::before{
-          content:''; position:absolute; inset:0;
-          background:var(--paper);
-          clip-path:polygon(0 100%, 50% 42%, 100% 100%);
-          border-top:1px solid var(--rule-soft);
-        }
-        .env-flap{
-          position:absolute; left:0; right:0; top:0; height:54%;
-          background:linear-gradient(180deg, var(--cream-deep) 0%, #E5D9C6 100%);
-          border:1px solid var(--rule);
-          clip-path:polygon(0 0, 100% 0, 50% 100%);
-          transform-origin:top center; z-index:2;
-          animation: flap-open 0.65s cubic-bezier(0.5, 0, 0.3, 1) 0.5s forwards;
-        }
-        .env-seal{
-          position:absolute; left:50%; top:50%; z-index:3;
-          width:60px; height:60px; border-radius:50%;
-          transform:translate(-50%, -50%);
-          background:radial-gradient(circle at 35% 30%, #6B3147, var(--burgundy) 72%);
-          box-shadow:0 2px 10px rgba(26,20,22,0.35), inset 0 0 0 3px rgba(244,237,228,0.12);
-          display:flex; align-items:center; justify-content:center;
-          color:var(--cream);
-          font-family:'Amoresa', cursive; font-size:19px;
-          animation: seal-break 0.45s ease 0.5s forwards;
-        }
-        @keyframes env-in{ from{ opacity:0; transform:scale(0.82) translateY(28px); } to{ opacity:1; transform:none; } }
-        @keyframes flap-open{ to{ transform:rotateX(-168deg); } }
-        @keyframes seal-break{ to{ transform:translate(-50%, -50%) scale(0.35); opacity:0; } }
-        @keyframes env-away{ to{ opacity:0; transform:translateY(-30px) scale(0.96); } }
-
         @media (prefers-reduced-motion: reduce){
           .rsvp-overlay, .rsvp-dialog{ animation:none !important; }
         }
