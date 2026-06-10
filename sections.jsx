@@ -52,6 +52,59 @@ const NamesWritten = () => (
 );
 
 // ============================================================
+// REVEAL — scroll-triggered entrance. Children fade/drift in the
+// first time they enter the viewport. Honours reduced-motion.
+//   from: 'up' (default) | 'left' | 'right'
+// ============================================================
+const Reveal = ({ children, delay = 0, from = 'up', style }) => {
+  const ref = React.useRef(null);
+  const [shown, setShown] = React.useState(false);
+
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setShown(true); return; }
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { setShown(true); io.disconnect(); }
+    }, { threshold: 0.12, rootMargin: '0px 0px -48px 0px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  const hidden = { up: 'translateY(28px)', left: 'translateX(-36px)', right: 'translateX(36px)' }[from];
+  return (
+    <div ref={ref} style={{
+      opacity: shown ? 1 : 0,
+      transform: shown ? 'none' : hidden,
+      transition: `opacity 0.9s ease ${delay}ms, transform 1.1s cubic-bezier(0.16,1,0.3,1) ${delay}ms`,
+      ...style
+    }}>{children}</div>
+  );
+};
+
+// ============================================================
+// CALLA ORNAMENT — the bouquet's calla lily as a small filled mark,
+// flanked by hairlines. Threads the stationery motif through the page.
+// ============================================================
+const CallaMark = ({ color = 'var(--burgundy)', size = 22 }) => (
+  <svg width={size} height={size * 30 / 22} viewBox="0 0 48 64" aria-hidden="true" style={{ display: 'block' }}>
+    <g fill="none" stroke={color} strokeWidth="2" strokeLinecap="round">
+      <path d="M24.5 9 C24.9 10.5 25.1 12 25.2 13.5" />
+      <path d="M23 42 C24 49 25 55 25 62" />
+    </g>
+    <path fill={color} d="M23 42 C14.5 33 11 17 14 7 C19.5 12.5 26 15.5 33 18 C34.5 28 30 38 23 42 Z" />
+  </svg>
+);
+
+const Ornament = ({ cream = false, style }) => (
+  <div aria-hidden="true" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18, ...style }}>
+    <span style={{ width: 56, height: 1, background: cream ? 'rgba(244,237,228,0.3)' : 'var(--rule)' }} />
+    <CallaMark color={cream ? 'rgba(244,237,228,0.75)' : 'var(--burgundy)'} />
+    <span style={{ width: 56, height: 1, background: cream ? 'rgba(244,237,228,0.3)' : 'var(--rule)' }} />
+  </div>
+);
+
+// ============================================================
 // NAV — minimal, top-fixed, dot-separated, fades in on scroll
 // ============================================================
 const Nav = ({ active }) => {
@@ -516,15 +569,19 @@ const Schedule = () => (
         const imgFirst = i % 2 === 0;
         const imgCell = (
           <div className="schedule-img">
-            <ScheduleImage src={item.img} alt={item.alt} />
+            <Reveal from={imgFirst ? 'left' : 'right'}>
+              <ScheduleImage src={item.img} alt={item.alt} />
+            </Reveal>
           </div>
         );
         const dotCell = <div className="schedule-dot" aria-hidden="true"><span /></div>;
         const textCell = (
           <div className="schedule-text">
-            <h3 className="schedule-heading">{item.heading}</h3>
-            <div className="schedule-time accent-gradient">{item.time}</div>
-            <p className="schedule-desc">{item.desc}</p>
+            <Reveal from={imgFirst ? 'right' : 'left'} delay={120}>
+              <h3 className="schedule-heading">{item.heading}</h3>
+              <div className="schedule-time accent-gradient">{item.time}</div>
+              <p className="schedule-desc">{item.desc}</p>
+            </Reveal>
           </div>
         );
         return (
@@ -674,6 +731,51 @@ const VenuePhoto = ({ src, alt }) => {
 
 
 // ============================================================
+// VENUE BAND — full-bleed photograph break between sections.
+// Fixed-attachment on desktop for a gentle parallax; scrolls on
+// mobile where fixed backgrounds are janky.
+// ============================================================
+const VenueBand = () => (
+  <section aria-label="St Audries Park, Somerset" style={{
+    position: 'relative', height: '54vh', minHeight: 360, maxHeight: 560, overflow: 'hidden',
+  }}>
+    <div className="venue-band-bg" style={{
+      position: 'absolute', inset: 0,
+      backgroundImage: 'url(/images/venue/st-audries-park.jpg)',
+      backgroundSize: 'cover', backgroundPosition: 'center 38%',
+      backgroundAttachment: 'fixed',
+    }} />
+    <div aria-hidden="true" style={{
+      position: 'absolute', inset: 0,
+      background: 'linear-gradient(180deg, rgba(26,20,22,0.3), rgba(26,20,22,0.05) 45%, rgba(26,20,22,0.4))',
+    }} />
+    <div style={{
+      position: 'relative', height: '100%',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end',
+      paddingBottom: 52, color: 'var(--cream)', textAlign: 'center',
+    }}>
+      <Reveal>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18 }}>
+          <span style={{ width: 48, height: 1, background: 'rgba(244,237,228,0.5)' }} />
+          <span style={{
+            fontFamily: 'Cinzel, Georgia, serif',
+            fontSize: 'clamp(11px, 1.3vw, 13px)', fontWeight: 400,
+            letterSpacing: '0.36em', textTransform: 'uppercase', textIndent: '0.36em',
+            textShadow: '0 1px 12px rgba(26,20,22,0.45)',
+          }}>The Quantock Hills &nbsp;·&nbsp; Somerset</span>
+          <span style={{ width: 48, height: 1, background: 'rgba(244,237,228,0.5)' }} />
+        </div>
+      </Reveal>
+    </div>
+    <style>{`
+      @media (max-width: 900px){
+        .venue-band-bg{ background-attachment: scroll !important; }
+      }
+    `}</style>
+  </section>
+);
+
+// ============================================================
 // VENUE — image left, info right with definition list, two CTAs
 // ============================================================
 const Venue = () => (
@@ -685,9 +787,11 @@ const Venue = () => (
       alignItems: 'center', maxWidth: 1120, margin: '0 auto',
       textAlign: 'left',
     }} className="venue-grid">
-      <VenuePhoto src="/images/venue/st-audries-park.jpg" alt="St Audries Park country house with ceremony chairs set up on the lawn" />
+      <Reveal from="left">
+        <VenuePhoto src="/images/venue/st-audries-park.jpg" alt="St Audries Park country house with ceremony chairs set up on the lawn" />
+      </Reveal>
 
-      <div>
+      <Reveal from="right" delay={120}>
         <p style={{
           margin: '0 0 32px',
           fontFamily: '"Cormorant Garamond", Georgia, serif',
@@ -723,10 +827,11 @@ const Venue = () => (
           <ActionBtn href="https://www.google.com/maps?q=St+Audries+Park,+Somerset">Open in Maps</ActionBtn>
           <ActionBtn href="https://www.staudriespark.co.uk" ghost>Venue website</ActionBtn>
         </div>
-      </div>
+      </Reveal>
     </div>
 
     <div style={{ maxWidth: 1120, margin: '80px auto 0' }}>
+      <Reveal>
       <div style={{
         position: 'relative', aspectRatio: '21 / 9',
         border: '1px solid var(--rule)', overflow: 'hidden', background: 'var(--cream-deep)',
@@ -738,6 +843,7 @@ const Venue = () => (
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade" />
       </div>
+      </Reveal>
     </div>
 
     <style>{`
@@ -775,11 +881,13 @@ const Travel = () => (
       maxWidth: 1120, margin: '0 auto',
     }} className="travel-grid">
       {TRANSPORT.map((t, i) => (
-        <Card key={i}>
-          <CardTitle>{t.title}</CardTitle>
-          <CardBody>{t.body}</CardBody>
-          <CardDetail label={t.detail.label}>{t.detail.value}</CardDetail>
-        </Card>
+        <Reveal key={i} delay={i * 90} style={{ display: 'grid' }}>
+          <Card>
+            <CardTitle>{t.title}</CardTitle>
+            <CardBody>{t.body}</CardBody>
+            <CardDetail label={t.detail.label}>{t.detail.value}</CardDetail>
+          </Card>
+        </Reveal>
       ))}
     </div>
 
@@ -808,12 +916,14 @@ const Travel = () => (
       maxWidth: 920, margin: '0 auto',
     }} className="stay-grid">
       {STAYS.map((s, i) => (
-        <Card key={i} primary={s.primary}>
-          <CardEyebrow>{s.primary ? 'Recommended · ' + s.tagline : s.tagline}</CardEyebrow>
-          <CardTitle>{s.name}</CardTitle>
-          <CardBody>{s.body}</CardBody>
-          <CardDetail>{s.detail}</CardDetail>
-        </Card>
+        <Reveal key={i} delay={(i % 2) * 90} style={{ display: 'grid' }}>
+          <Card primary={s.primary}>
+            <CardEyebrow>{s.primary ? 'Recommended · ' + s.tagline : s.tagline}</CardEyebrow>
+            <CardTitle>{s.name}</CardTitle>
+            <CardBody>{s.body}</CardBody>
+            <CardDetail>{s.detail}</CardDetail>
+          </Card>
+        </Reveal>
       ))}
     </div>
 
@@ -867,7 +977,8 @@ const PartyGroup = ({ label, people }) => (
       maxWidth: 1120, margin: '0 auto',
     }} className="party-grid">
       {people.map((p, i) => (
-        <article key={i} style={{ textAlign: 'center', padding: '8px 12px' }}>
+        <Reveal key={i} delay={i * 80}>
+        <article style={{ textAlign: 'center', padding: '8px 12px' }}>
           <div style={{
             width: 124, height: 124, borderRadius: '50%',
             border: '1px solid var(--rule)', background: 'var(--cream-deep)',
@@ -900,6 +1011,7 @@ const PartyGroup = ({ label, people }) => (
             }}>{p.bio}</p>
           )}
         </article>
+        </Reveal>
       ))}
     </div>
     <style>{`
@@ -920,32 +1032,53 @@ const DETAILS = [
   { eyebrow: 'Photography', headline: 'Unplugged Ceremony', body: 'Phones and cameras away during the ceremony, please. Our photographer will capture every moment, and we’d love to see your faces rather than your screens.' },
 ];
 
+// Editorial numbered list — oversized italic numerals in the bouquet
+// gradient, hairline-ruled rows. Replaced the old 2×2 card grid, which
+// read corporate against the stationery look.
 const Details = () => (
   <Section id="details" tint padTop={140} padBottom={140}>
     <PageHeading eyebrow="Good to know" title="The Finer Details" />
 
-    <div style={{
-      display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20,
-      maxWidth: 980, margin: '0 auto',
-    }} className="details-grid">
+    <div style={{ maxWidth: 780, margin: '0 auto', textAlign: 'left' }}>
       {DETAILS.map((d, i) => (
-        <Card key={i}>
-          <CardEyebrow>{d.eyebrow}</CardEyebrow>
-          <div style={{
-            margin: '10px 0 18px',
-            fontFamily: 'Cinzel, Georgia, serif',
-            fontSize: 'clamp(22px, 2.8vw, 30px)', fontWeight: 400,
-            letterSpacing: '0.06em', textTransform: 'uppercase',
-            color: 'var(--ink)', textIndent: '0.06em',
-            lineHeight: 1.2,
-          }}>{d.headline}</div>
-          <CardBody>{d.body}</CardBody>
-        </Card>
+        <Reveal key={i} delay={i * 70}>
+          <div className="detail-row" style={{
+            display: 'grid', gridTemplateColumns: 'minmax(76px, 104px) 1fr',
+            columnGap: 36, alignItems: 'baseline',
+            padding: '46px 0',
+            borderTop: '1px solid var(--rule)',
+            borderBottom: i === DETAILS.length - 1 ? '1px solid var(--rule)' : 'none',
+          }}>
+            <div className="serif accent-gradient" style={{
+              fontSize: 'clamp(46px, 6vw, 68px)', fontStyle: 'italic', fontWeight: 300,
+              lineHeight: 1, padding: '0.04em 0.06em', display: 'inline-block',
+            }}>{String(i + 1).padStart(2, '0')}</div>
+            <div>
+              <CardEyebrow>{d.eyebrow}</CardEyebrow>
+              <div style={{
+                margin: '12px 0 14px',
+                fontFamily: 'Cinzel, Georgia, serif',
+                fontSize: 'clamp(20px, 2.6vw, 27px)', fontWeight: 400,
+                letterSpacing: '0.08em', textTransform: 'uppercase',
+                color: 'var(--ink)', textIndent: '0.08em',
+                lineHeight: 1.2,
+              }}>{d.headline}</div>
+              <p style={{
+                margin: 0, maxWidth: '56ch',
+                fontFamily: '"Cormorant Garamond", Georgia, serif',
+                fontSize: 'clamp(15px, 1.7vw, 17px)', fontStyle: 'italic', fontWeight: 400,
+                lineHeight: 1.6, color: 'var(--ink-mute)',
+              }}>{d.body}</p>
+            </div>
+          </div>
+        </Reveal>
       ))}
     </div>
 
     <style>{`
-      @media (max-width: 720px) { .details-grid{ grid-template-columns: 1fr !important; } }
+      @media (max-width: 540px) {
+        .detail-row{ grid-template-columns: 1fr !important; row-gap: 10px; }
+      }
     `}</style>
   </Section>
 );
@@ -1042,6 +1175,7 @@ const Footer = () => (
     padding: '140px 24px 80px', background: 'var(--cream)',
     textAlign: 'center', borderTop: '1px solid var(--rule)',
   }}>
+    <Ornament style={{ marginBottom: 32 }} />
     <div style={{
       fontFamily: 'Cinzel, Georgia, serif',
       fontSize: 11, fontWeight: 400,
@@ -1095,6 +1229,8 @@ const Footer = () => (
 
 const PageHeading = ({ eyebrow, title, intro }) => (
   <header style={{ textAlign: 'center', marginBottom: 80 }}>
+    <Reveal>
+    <Ornament style={{ marginBottom: 30 }} />
     {eyebrow && (
       <div style={{
         fontFamily: 'Cinzel, Georgia, serif',
@@ -1119,6 +1255,7 @@ const PageHeading = ({ eyebrow, title, intro }) => (
         fontWeight: 400, lineHeight: 1.6, color: 'var(--ink-mute)',
       }}>{intro}</p>
     )}
+    </Reveal>
   </header>
 );
 
@@ -1262,6 +1399,7 @@ const FloatingRsvpCta = ({ onRsvp }) => {
 };
 
 Object.assign(window, {
-  Nav, Hero, Schedule, Venue, Travel, WeddingParty, Details, FAQ, Footer, FloatingRsvpCta,
+  Nav, Hero, Schedule, Venue, VenueBand, Travel, WeddingParty, Details, FAQ, Footer, FloatingRsvpCta,
+  Reveal, Ornament, CallaMark,
   Section, Heading, PageHeading, Card, CardEyebrow, CardTitle, CardBody, CardDetail, ActionBtn, Names,
 });

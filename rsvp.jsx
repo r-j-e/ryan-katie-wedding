@@ -48,31 +48,58 @@ const seedGuests = (guest) =>
 // ============================================================
 // RSVP SECTION — a call-to-action block. The form itself lives in the popup.
 // ============================================================
+// Full-bleed burgundy finale — the one dark moment on the page, so the
+// ask ("reply") lands with some weight. Oversized Names lockup sits as
+// a watermark behind the copy.
 const RSVP = ({ onRsvp }) => (
-  <Section id="rsvp" narrow padTop={140} padBottom={160}>
-    <Heading eyebrow="Please reply by 1st April 2027">
-      <em>Kindly</em> reply.
-    </Heading>
-    <p className="serif" style={{
-      margin:'0 auto 40px', textAlign:'center', maxWidth:480,
-      fontSize:'clamp(16px, 1.8vw, 19px)', fontStyle:'italic', fontWeight:400,
-      color:'var(--ink-mute)', lineHeight:1.6,
+  <section id="rsvp" style={{
+    position:'relative', overflow:'hidden', textAlign:'center',
+    padding:'150px 24px 160px',
+    background:'linear-gradient(165deg, #3E1424 0%, #4A1A2C 55%, #5B2A4A 100%)',
+  }}>
+    {/* Watermark — the lockup, barely-there cream */}
+    <div aria-hidden="true" style={{
+      position:'absolute', top:'50%', left:'50%',
+      transform:'translate(-50%, -50%) rotate(-4deg)',
+      fontSize:'clamp(140px, 24vw, 300px)', lineHeight:1,
+      color:'rgba(244,237,228,0.05)',
+      whiteSpace:'nowrap', pointerEvents:'none', userSelect:'none',
     }}>
-      Pop in the code from your invitation and let us know whether you can join us.
-    </p>
-    <div style={{ textAlign:'center' }}>
-      <button type="button" onClick={onRsvp} style={{
-        background:'var(--burgundy)', color:'var(--cream)', border:'none', cursor:'pointer',
-        padding:'18px 44px',
-        fontFamily:"'Cinzel', Georgia, serif", fontSize:11, fontWeight:500,
-        letterSpacing:'0.36em', textTransform:'uppercase', textIndent:'0.36em',
-        transition:'background 0.3s ease, letter-spacing 0.3s ease',
-      }}
-      onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ink)'; e.currentTarget.style.letterSpacing = '0.46em'; e.currentTarget.style.textIndent = '0.46em'; }}
-      onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--burgundy)'; e.currentTarget.style.letterSpacing = '0.36em'; e.currentTarget.style.textIndent = '0.36em'; }}
-      >Reply to your invitation</button>
+      <Names />
     </div>
-  </Section>
+
+    <div style={{ position:'relative', maxWidth:660, margin:'0 auto' }}>
+      <Reveal>
+        <Ornament cream style={{ marginBottom:34 }} />
+        <div className="label" style={{ color:'var(--blush)', marginBottom:26 }}>
+          Please reply by 1st April 2027
+        </div>
+        <h2 className="serif" style={{
+          margin:0, fontSize:'clamp(44px, 6.5vw, 72px)', fontWeight:300, fontStyle:'italic',
+          lineHeight:1.05, letterSpacing:'-0.01em', color:'var(--cream)',
+        }}>
+          Kindly reply.
+        </h2>
+        <p className="serif" style={{
+          margin:'30px auto 44px', maxWidth:480,
+          fontSize:'clamp(16px, 1.8vw, 19px)', fontStyle:'italic', fontWeight:400,
+          color:'rgba(244,237,228,0.75)', lineHeight:1.65,
+        }}>
+          Pop in the code from your invitation and let us know whether you can join us.
+        </p>
+        <button type="button" onClick={onRsvp} style={{
+          background:'var(--cream)', color:'var(--burgundy)', border:'none', cursor:'pointer',
+          padding:'18px 44px',
+          fontFamily:"'Cinzel', Georgia, serif", fontSize:11, fontWeight:500,
+          letterSpacing:'0.36em', textTransform:'uppercase', textIndent:'0.36em',
+          transition:'all 0.3s ease',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.letterSpacing = '0.46em'; e.currentTarget.style.textIndent = '0.46em'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--cream)'; e.currentTarget.style.letterSpacing = '0.36em'; e.currentTarget.style.textIndent = '0.36em'; }}
+        >Reply to your invitation</button>
+      </Reveal>
+    </div>
+  </section>
 );
 
 // ============================================================
