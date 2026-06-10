@@ -9,7 +9,7 @@
 //   stacked=true   → Katie / & / Ryan (the invite's vertical lockup)
 //   stacked=false  → Katie & Ryan in one line (used in nav/footer)
 // ============================================================
-const Names = ({ stacked = false, size = 'inherit', color }) => {
+const Names = ({ stacked = false, size = 'inherit', color, animate = false }) => {
   if (stacked) {
     return (
       <span className="script-name stacked" style={{ fontSize: size, color }}>
@@ -19,11 +19,20 @@ const Names = ({ stacked = false, size = 'inherit', color }) => {
       </span>);
 
   }
+  // animate: each segment is revealed with a left-to-right wipe (the
+  // "handwriting" effect). Only the hero opts in; the .write-on CSS
+  // lives in Hero's style block.
   return (
     <span className="script-name" style={{ fontSize: size, color }}>
-      <span className="script">K</span><span className="caps">atie</span>
-      <span className="script amp">&amp;</span>
-      <span className="script">R</span><span className="caps">yan</span>
+      <span className={animate ? 'write-on write-on-1' : undefined}>
+        <span className="script">K</span><span className="caps">atie</span>
+      </span>
+      <span className={animate ? 'write-on write-on-2' : undefined}>
+        <span className="script amp">&amp;</span>
+      </span>
+      <span className={animate ? 'write-on write-on-3' : undefined}>
+        <span className="script">R</span><span className="caps">yan</span>
+      </span>
     </span>);
 
 };
@@ -232,14 +241,14 @@ const Hero = ({ showCountdown = true, onRsvp }) => {
           Please join us in celebrating the marriage of
         </div>
 
-        {/* Names — Katie & Ryan on one line */}
-        <h1 className="hero-anim-3" style={{
+        {/* Names — Katie & Ryan on one line, written on like ink */}
+        <h1 style={{
           margin: 0,
           fontSize: 'clamp(28px, 4.4vw, 60px)',
           fontWeight: 300, lineHeight: 1.4, color: 'var(--ink)', letterSpacing: '-0.005em',
           padding: '0 16px'
         }}>
-          <Names />
+          <Names animate />
         </h1>
 
         {/* Date band — Friday · JUL 02 2027 · 1 o'clock — like the invite */}
@@ -346,12 +355,26 @@ const Hero = ({ showCountdown = true, onRsvp }) => {
           to   { opacity:0.7; letter-spacing: 0.01em; }
         }
         .hero-kenburns{ animation: kenBurns 22s ease-in-out infinite; }
+        /* Handwriting reveal on the names: each segment (Katie, &, Ryan)
+           is wiped on left-to-right, like ink flowing from a pen. The
+           generous negative insets stop Amoresa's swashes being cropped;
+           the oversized right inset (105%) fully hides it pre-animation. */
+        .write-on{
+          display:inline-block;
+          clip-path: inset(-45% 105% -50% -15%);
+          animation: writeOn cubic-bezier(0.5, 0.08, 0.5, 0.92) both;
+        }
+        @keyframes writeOn{ to { clip-path: inset(-45% -15% -50% -15%); } }
+        .write-on-1{ animation-duration: 0.95s; animation-delay: 0.55s; }
+        .write-on-2{ animation-duration: 0.35s; animation-delay: 1.60s; }
+        .write-on-3{ animation-duration: 1.00s; animation-delay: 2.00s; }
         .hero-anim-1{ animation: rise 1s ease-out 0.10s both; }
         .hero-anim-2{ animation: rise 1.2s ease-out 0.25s both; }
         .hero-anim-3{ animation: rise 1.0s ease-out 0.55s both; }
-        .hero-anim-4{ animation: driftIn 1.4s ease-out 0.85s both; }
-        .hero-anim-5{ animation: rise 0.9s ease-out 1.10s both; }
-        .hero-anim-6{ animation: rise 0.9s ease-out 1.35s both; }
+        /* The rest of the hero holds back until the names finish writing (~3s) */
+        .hero-anim-4{ animation: driftIn 1.4s ease-out 2.85s both; }
+        .hero-anim-5{ animation: rise 0.9s ease-out 3.15s both; }
+        .hero-anim-6{ animation: rise 0.9s ease-out 3.40s both; }
         @keyframes scrollNudge {
           0%, 100% { transform: translateY(0); opacity: 0.55; }
           50%      { transform: translateY(5px); opacity: 1; }
@@ -363,6 +386,7 @@ const Hero = ({ showCountdown = true, onRsvp }) => {
           .hero-anim-1, .hero-anim-2, .hero-anim-3,
           .hero-anim-4, .hero-anim-5, .hero-anim-6,
           .scroll-cue svg { animation: none !important; }
+          .write-on { animation: none !important; clip-path: none !important; }
         }
       `}</style>
     </section>);
