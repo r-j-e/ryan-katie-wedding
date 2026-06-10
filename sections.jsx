@@ -272,6 +272,15 @@ const Heading = ({ children, eyebrow }) =>
 const Hero = ({ showCountdown = true, onRsvp }) => {
   const { days, hours, minutes, seconds, total } = useCountdown('2027-07-02T13:00:00');
 
+  // Once a guest has entered their invitation code (rsvp.jsx stores it
+  // under rk_guest_v1), the hero greets their household by name. Read
+  // per-render so it appears as soon as the modal closes.
+  let household = null;
+  try {
+    const g = JSON.parse(localStorage.getItem('rk_guest_v1') || 'null');
+    if (g && g.household && g.household !== 'Preview') household = g.household;
+  } catch (e) {}
+
   return (
     <section id="top" style={{
       background: 'var(--cream)', padding: '120px 24px 80px',
@@ -281,6 +290,14 @@ const Hero = ({ showCountdown = true, onRsvp }) => {
       <div style={{
         maxWidth: 880, margin: '0 auto', width: '100%', textAlign: 'center'
       }}>
+        {/* Personal greeting once we know who's visiting */}
+        {household && (
+          <div className="serif hero-anim-1" style={{
+            fontSize: 'clamp(16px, 2vw, 20px)', fontStyle: 'italic', fontWeight: 400,
+            color: 'var(--burgundy)', marginBottom: 22,
+          }}>Dear {household} —</div>
+        )}
+
         {/* Tiny eyebrow — copy lifted from the invite */}
         <div className="label hero-anim-1" style={{ marginBottom: 96 }}>
           Please join us in celebrating the marriage of
@@ -424,12 +441,32 @@ const Hero = ({ showCountdown = true, onRsvp }) => {
 
 };
 
+const prefersReduce = () =>
+  window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// One odometer-style rolling digit: a vertical strip of 0-9 that
+// translates to the current value, clipped to a one-digit window.
+const ROLL_DIGITS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+const RollDigit = ({ d }) => (
+  <span aria-hidden="true" style={{ display: 'inline-block', height: '1em', overflow: 'hidden', verticalAlign: 'top' }}>
+    <span style={{
+      display: 'block',
+      transform: `translateY(${-d}em)`,
+      transition: prefersReduce() ? 'none' : 'transform 0.55s cubic-bezier(0.45, 0, 0.2, 1)',
+    }}>
+      {ROLL_DIGITS.map((n) =>
+      <span key={n} style={{ display: 'block', height: '1em', lineHeight: 1 }}>{n}</span>
+      )}
+    </span>
+  </span>
+);
+
 const CdCell = ({ n, label }) =>
 <span style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-    <span className="serif" style={{
+    <span className="serif" aria-label={String(n).padStart(2, '0')} style={{
     fontSize: 'clamp(22px, 3vw, 32px)', fontWeight: 300, lineHeight: 1, color: 'var(--ink)',
     fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em'
-  }}>{String(n).padStart(2, '0')}</span>
+  }}>{String(n).padStart(2, '0').split('').map((c, i) => <RollDigit key={i} d={Number(c)} />)}</span>
     <span style={{
     fontFamily: 'Cinzel', fontSize: 9.5, fontWeight: 400,
     letterSpacing: '0.24em', textTransform: 'uppercase', color: 'var(--ink-mute)',
@@ -530,18 +567,60 @@ const SCHEDULE = [
   { heading: 'Goodnight!', time: '12:00 am', desc: 'Last orders at half past eleven. There are rooms held for guests at St Audries, and we hope you’ll stay the night.',               img: '/images/schedule/carriages.svg',  alt: 'A vintage car' },
 ];
 
-const Schedule = () => (
+const Schedule = () => {
+  const listRef = React.useRef(null);
+  const inkRef = React.useRef(null);
+
+  // The centre axis "inks itself" as you scroll: a burgundy line grows
+  // down the track, and each event's dot blooms as the ink passes it.
+  React.useEffect(() => {
+    const list = listRef.current, ink = inkRef.current;
+    if (!list || !ink) return;
+    const dots = Array.from(list.querySelectorAll('.schedule-dot'));
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      ink.style.height = '100%';
+      dots.forEach((d) => d.classList.add('lit'));
+      return;
+    }
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const rect = list.getBoundingClientRect();
+      // the "pen" sits a little below the middle of the viewport
+      const penY = window.innerHeight * 0.62;
+      const p = Math.min(1, Math.max(0, (penY - rect.top) / rect.height));
+      ink.style.height = (p * 100).toFixed(2) + '%';
+      const inkY = rect.top + p * rect.height;
+      for (const d of dots) {
+        const r = d.getBoundingClientRect();
+        d.classList.toggle('lit', r.top + r.height / 2 <= inkY);
+      }
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  return (
   <Section id="day" tint padTop={120} padBottom={120}>
     <PageHeading eyebrow="The order of the day" title="Schedule" intro="A rough shape. Times will firm up nearer July." />
 
-    <ol className="schedule-list" style={{
+    <ol ref={listRef} className="schedule-list" style={{
       listStyle: 'none', padding: 0, margin: '0 auto',
       maxWidth: 960, position: 'relative',
     }}>
       <div aria-hidden="true" className="schedule-axis" style={{
         position: 'absolute', top: 28, bottom: 28, left: '50%',
         width: 1, background: 'var(--rule)', transform: 'translateX(-50%)',
-      }} />
+      }}>
+        <div ref={inkRef} className="schedule-axis-ink" />
+      </div>
 
       {SCHEDULE.map((item, i) => {
         const imgFirst = i % 2 === 0;
@@ -602,6 +681,11 @@ const Schedule = () => (
         border-radius: 6px;
       }
 
+      .schedule-axis-ink{
+        position: absolute; top: 0; left: 0; width: 100%; height: 0;
+        background: linear-gradient(180deg, var(--burgundy), var(--magenta));
+        transition: height 0.25s ease-out;
+      }
       .schedule-dot{
         display: flex; align-items: center; justify-content: center;
         position: relative; z-index: 1;
@@ -610,6 +694,11 @@ const Schedule = () => (
         width: 12px; height: 12px; border-radius: 50%;
         background-image: var(--accent-gradient);
         box-shadow: 0 0 0 6px var(--cream-deep);
+        transform: scale(0.45); opacity: 0.35;
+        transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+      }
+      .schedule-dot.lit span{
+        transform: scale(1); opacity: 1;
       }
 
       .schedule-heading{
@@ -665,7 +754,8 @@ const Schedule = () => (
       }
     `}</style>
   </Section>
-);
+  );
+};
 
 // Renders an SVG / image only once it exists in the repo. If the file 404s
 // (still pending in /images/schedule/), the onError hides the broken-image

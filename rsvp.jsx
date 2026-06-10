@@ -4,6 +4,11 @@
 // is remembered in localStorage so a returning guest skips straight to the form.
 
 const TOKEN_KEY = 'rk_guest_v1';
+const REPLIED_KEY = 'rk_replied_v1';   // { at: iso, attending: bool } once they've submitted
+
+const getReplied = () => {
+  try { return JSON.parse(localStorage.getItem(REPLIED_KEY) || 'null'); } catch (e) { return null; }
+};
 
 // Async lookup against the server. Returns a guest object on success or null.
 const lookupGuest = async (raw) => {
@@ -48,17 +53,23 @@ const seedGuests = (guest) =>
 // ============================================================
 // RSVP SECTION — a call-to-action block. The form itself lives in the popup.
 // ============================================================
-const RSVP = ({ onRsvp }) => (
+const RSVP = ({ onRsvp }) => {
+  const replied = getReplied();
+  return (
   <Section id="rsvp" narrow padTop={140} padBottom={160}>
-    <Heading eyebrow="Please reply by 1st April 2027">
-      <em>Kindly</em> reply.
+    <Heading eyebrow={replied ? 'Reply received' : 'Please reply by 1st April 2027'}>
+      {replied ? <>All <em>set.</em></> : <><em>Kindly</em> reply.</>}
     </Heading>
     <p className="serif" style={{
       margin:'0 auto 40px', textAlign:'center', maxWidth:480,
       fontSize:'clamp(16px, 1.8vw, 19px)', fontStyle:'italic', fontWeight:400,
       color:'var(--ink-mute)', lineHeight:1.6,
     }}>
-      Pop in the code from your invitation and let us know whether you can join us.
+      {replied
+        ? (replied.attending
+            ? 'We’ve got you down — see you in July. Plans change? You can update your reply any time before 1st April 2027.'
+            : 'Thank you for letting us know. If plans change, you can update your reply any time before 1st April 2027.')
+        : 'Pop in the code from your invitation and let us know whether you can join us.'}
     </p>
     <div style={{ textAlign:'center' }}>
       <button type="button" onClick={onRsvp} style={{
@@ -70,10 +81,11 @@ const RSVP = ({ onRsvp }) => (
       }}
       onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ink)'; e.currentTarget.style.letterSpacing = '0.46em'; e.currentTarget.style.textIndent = '0.46em'; }}
       onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--burgundy)'; e.currentTarget.style.letterSpacing = '0.36em'; e.currentTarget.style.textIndent = '0.36em'; }}
-      >Reply to your invitation</button>
+      >{replied ? 'Change your reply' : 'Reply to your invitation'}</button>
     </div>
   </Section>
-);
+  );
+};
 
 // ============================================================
 // MODAL SHELL — backdrop + dialog. Holds the code step or the wizard.
@@ -82,6 +94,24 @@ const RsvpModal = ({ onClose }) => {
   const [guest, setGuest] = React.useState(() => {
     try { return JSON.parse(localStorage.getItem(TOKEN_KEY) || 'null'); } catch (e) { return null; }
   });
+
+  // First open per session: the dialog arrives as a sealed envelope that
+  // opens, then the card rises out of it. Click to skip; reduced-motion
+  // and repeat visits go straight to the form.
+  const [phase, setPhase] = React.useState(() => {
+    try { if (sessionStorage.getItem('rk_env_seen')) return 'open'; } catch (e) {}
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return 'open';
+    return 'envelope';
+  });
+  const openUp = React.useCallback(() => {
+    try { sessionStorage.setItem('rk_env_seen', '1'); } catch (e) {}
+    setPhase('open');
+  }, []);
+  React.useEffect(() => {
+    if (phase !== 'envelope') return;
+    const t = setTimeout(openUp, 1600);
+    return () => clearTimeout(t);
+  }, [phase, openUp]);
 
   React.useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
@@ -96,12 +126,20 @@ const RsvpModal = ({ onClose }) => {
     setGuest(g);
   };
   const changeCode = () => {
-    try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+    try { localStorage.removeItem(TOKEN_KEY); localStorage.removeItem(REPLIED_KEY); } catch (e) {}
     setGuest(null);
   };
 
   return (
     <div className="rsvp-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      {phase === 'envelope' ? (
+        <div className="rsvp-envelope" onClick={openUp} role="button" aria-label="Open your invitation" tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') openUp(); }}>
+          <div className="env-pocket" />
+          <div className="env-flap" />
+          <div className="env-seal"><span>K&amp;R</span></div>
+        </div>
+      ) : (
       <div className="rsvp-dialog" role="dialog" aria-modal="true" aria-label="Reply to your invitation">
         <button className="rsvp-dialog-close" onClick={onClose} aria-label="Close">&times;</button>
         <div className="rsvp-dialog-body">
@@ -110,6 +148,7 @@ const RsvpModal = ({ onClose }) => {
             : <RsvpCodeStep onUnlock={onUnlock} />}
         </div>
       </div>
+      )}
 
       <style>{`
         .rsvp-overlay{
@@ -143,6 +182,52 @@ const RsvpModal = ({ onClose }) => {
         @media (max-width:560px){ .rsvp-dialog-body{ padding:44px 22px 28px; } }
         @keyframes rsvp-fade{ from{ opacity:0; } to{ opacity:1; } }
         @keyframes rsvp-rise{ from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:none; } }
+
+        /* ── Envelope intro ── */
+        .rsvp-envelope{
+          position:relative; margin:auto;
+          width:min(380px, 86vw); aspect-ratio: 38 / 25;
+          cursor:pointer; perspective:900px; outline:none;
+          animation: env-in 0.45s cubic-bezier(0.16,1,0.3,1) both,
+                     env-away 0.4s ease-in 1.25s forwards;
+        }
+        .env-pocket{
+          position:absolute; inset:0;
+          background:linear-gradient(180deg, var(--cream-deep), var(--paper));
+          border:1px solid var(--rule);
+          box-shadow:0 24px 60px -18px rgba(26,20,22,0.35);
+        }
+        /* bottom fold of the pocket */
+        .env-pocket::before{
+          content:''; position:absolute; inset:0;
+          background:var(--paper);
+          clip-path:polygon(0 100%, 50% 42%, 100% 100%);
+          border-top:1px solid var(--rule-soft);
+        }
+        .env-flap{
+          position:absolute; left:0; right:0; top:0; height:54%;
+          background:linear-gradient(180deg, var(--cream-deep) 0%, #E5D9C6 100%);
+          border:1px solid var(--rule);
+          clip-path:polygon(0 0, 100% 0, 50% 100%);
+          transform-origin:top center; z-index:2;
+          animation: flap-open 0.65s cubic-bezier(0.5, 0, 0.3, 1) 0.5s forwards;
+        }
+        .env-seal{
+          position:absolute; left:50%; top:50%; z-index:3;
+          width:60px; height:60px; border-radius:50%;
+          transform:translate(-50%, -50%);
+          background:radial-gradient(circle at 35% 30%, #6B3147, var(--burgundy) 72%);
+          box-shadow:0 2px 10px rgba(26,20,22,0.35), inset 0 0 0 3px rgba(244,237,228,0.12);
+          display:flex; align-items:center; justify-content:center;
+          color:var(--cream);
+          font-family:'Amoresa', cursive; font-size:19px;
+          animation: seal-break 0.45s ease 0.5s forwards;
+        }
+        @keyframes env-in{ from{ opacity:0; transform:scale(0.82) translateY(28px); } to{ opacity:1; transform:none; } }
+        @keyframes flap-open{ to{ transform:rotateX(-168deg); } }
+        @keyframes seal-break{ to{ transform:translate(-50%, -50%) scale(0.35); opacity:0; } }
+        @keyframes env-away{ to{ opacity:0; transform:translateY(-30px) scale(0.96); } }
+
         @media (prefers-reduced-motion: reduce){
           .rsvp-overlay, .rsvp-dialog{ animation:none !important; }
         }
@@ -262,6 +347,9 @@ const RsvpWizard = ({ guest, onChangeCode, onDone }) => {
       if (!res.ok) throw new Error(`server returned ${res.status}`);
       const body = await res.json();
       if (!body.ok) throw new Error(body.error || 'unknown');
+      try {
+        localStorage.setItem(REPLIED_KEY, JSON.stringify({ at: new Date().toISOString(), attending: anyAttending }));
+      } catch (err2) {}
       setSubmitted(true);
     } catch (err) {
       setSubmitError('Sorry, we couldn’t send your reply just then. Please try again in a moment.');
@@ -592,9 +680,57 @@ const StepNav = ({ onBack, onNext, submit, canNext, submitting }) => (
   </div>
 );
 
+// ============ CONFETTI ============
+// A brief fall of petals over the whole viewport when a party accepts.
+// DOM-only, pointer-transparent, removed after the last petal lands.
+const CONFETTI_COLORS = ['#4A1A2C', '#A8326B', '#D4A5A5', '#EDE3D4', '#5B2A4A'];
+const ConfettiBurst = () => {
+  const pieces = React.useMemo(() => Array.from({ length: 40 }, (_, i) => ({
+    left: Math.random() * 100,
+    delay: Math.random() * 0.7,
+    dur: 2.6 + Math.random() * 1.8,
+    size: 7 + Math.random() * 8,
+    color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+    sway: Math.round(Math.random() * 140 - 70),
+    spin: Math.round(Math.random() * 540 + 180),
+  })), []);
+  return (
+    <div aria-hidden="true" style={{ position:'fixed', inset:0, zIndex:1100, pointerEvents:'none', overflow:'hidden' }}>
+      {pieces.map((p, i) => (
+        <span key={i} style={{
+          position:'absolute', top:-24, left:`${p.left}%`,
+          width:p.size, height:p.size * 0.62,
+          background:p.color, borderRadius:'80% 20% 60% 40%',
+          opacity:0,
+          '--sway': `${p.sway}px`, '--spin': `${p.spin}deg`,
+          animation:`petal-fall ${p.dur}s ease-in ${p.delay}s forwards`,
+        }} />
+      ))}
+      <style>{`
+        @keyframes petal-fall{
+          0%{ transform:translate(0, 0) rotate(0); opacity:0; }
+          8%{ opacity:0.95; }
+          100%{ transform:translate(var(--sway), 105vh) rotate(var(--spin)); opacity:0.65; }
+        }
+      `}</style>
+    </div>
+  );
+};
+
 // ============ THANKS ============
-const RSVPThanks = ({ onClose, attending }) => (
+const RSVPThanks = ({ onClose, attending }) => {
+  const [confetti, setConfetti] = React.useState(false);
+  React.useEffect(() => {
+    if (!attending) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    setConfetti(true);
+    const t = setTimeout(() => setConfetti(false), 5500);
+    return () => clearTimeout(t);
+  }, [attending]);
+
+  return (
   <div style={{ textAlign:'center', padding:'12px 0' }}>
+    {confetti && <ConfettiBurst />}
     <div className="label" style={{ color:'var(--burgundy)', marginBottom:22 }}>Reply received</div>
     <h2 className="serif accent-gradient" style={{
       margin:0, display:'inline-block',
@@ -616,6 +752,7 @@ const RSVPThanks = ({ onClose, attending }) => (
       fontSize:15, fontStyle:'italic', color:'var(--ink-mute)', cursor:'pointer',
     }}>Close</button>
   </div>
-);
+  );
+};
 
 Object.assign(window, { RSVP, RsvpModal });
