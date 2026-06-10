@@ -530,6 +530,10 @@ const DateBand = ({ className }) =>
       lineHeight: 1, fontSize: "46.5px",
       padding: "0.05em 0.05em",
       display: "inline-block",
+      /* Optical centring: Cormorant's figures are ~0.41em tall inside a
+         line box sized for its 0.92em ascender, so the glyphs sit ~12px
+         low in the stack. Nudge computed from the font's glyph bounds. */
+      transform: 'translateY(-0.135em)',
     }}>02</span>
       <span style={{
       fontFamily: 'Cinzel, Georgia, serif',
