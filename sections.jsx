@@ -514,7 +514,7 @@ const DateBand = ({ className }) =>
     its content and the surrounding 1fr columns guarantee it sits on
     true page-centre. */}
     <span style={{
-    display: 'inline-flex', flexDirection: 'column', alignItems: 'center', rowGap: 14
+    display: 'inline-flex', flexDirection: 'column', alignItems: 'center', rowGap: 7
   }}>
       <span style={{
       fontFamily: 'Cinzel, Georgia, serif',
