@@ -83,28 +83,6 @@ const Reveal = ({ children, delay = 0, from = 'up', style }) => {
 };
 
 // ============================================================
-// CALLA ORNAMENT — the bouquet's calla lily as a small filled mark,
-// flanked by hairlines. Threads the stationery motif through the page.
-// ============================================================
-const CallaMark = ({ color = 'var(--burgundy)', size = 22 }) => (
-  <svg width={size} height={size * 30 / 22} viewBox="0 0 48 64" aria-hidden="true" style={{ display: 'block' }}>
-    <g fill="none" stroke={color} strokeWidth="2" strokeLinecap="round">
-      <path d="M24.5 9 C24.9 10.5 25.1 12 25.2 13.5" />
-      <path d="M23 42 C24 49 25 55 25 62" />
-    </g>
-    <path fill={color} d="M23 42 C14.5 33 11 17 14 7 C19.5 12.5 26 15.5 33 18 C34.5 28 30 38 23 42 Z" />
-  </svg>
-);
-
-const Ornament = ({ cream = false, style }) => (
-  <div aria-hidden="true" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18, ...style }}>
-    <span style={{ width: 56, height: 1, background: cream ? 'rgba(244,237,228,0.3)' : 'var(--rule)' }} />
-    <CallaMark color={cream ? 'rgba(244,237,228,0.75)' : 'var(--burgundy)'} />
-    <span style={{ width: 56, height: 1, background: cream ? 'rgba(244,237,228,0.3)' : 'var(--rule)' }} />
-  </div>
-);
-
-// ============================================================
 // NAV — minimal, top-fixed, dot-separated, fades in on scroll
 // ============================================================
 const Nav = ({ active }) => {
@@ -731,51 +709,6 @@ const VenuePhoto = ({ src, alt }) => {
 
 
 // ============================================================
-// VENUE BAND — full-bleed photograph break between sections.
-// Fixed-attachment on desktop for a gentle parallax; scrolls on
-// mobile where fixed backgrounds are janky.
-// ============================================================
-const VenueBand = () => (
-  <section aria-label="St Audries Park, Somerset" style={{
-    position: 'relative', height: '54vh', minHeight: 360, maxHeight: 560, overflow: 'hidden',
-  }}>
-    <div className="venue-band-bg" style={{
-      position: 'absolute', inset: 0,
-      backgroundImage: 'url(/images/venue/st-audries-park.jpg)',
-      backgroundSize: 'cover', backgroundPosition: 'center 38%',
-      backgroundAttachment: 'fixed',
-    }} />
-    <div aria-hidden="true" style={{
-      position: 'absolute', inset: 0,
-      background: 'linear-gradient(180deg, rgba(26,20,22,0.3), rgba(26,20,22,0.05) 45%, rgba(26,20,22,0.4))',
-    }} />
-    <div style={{
-      position: 'relative', height: '100%',
-      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end',
-      paddingBottom: 52, color: 'var(--cream)', textAlign: 'center',
-    }}>
-      <Reveal>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18 }}>
-          <span style={{ width: 48, height: 1, background: 'rgba(244,237,228,0.5)' }} />
-          <span style={{
-            fontFamily: 'Cinzel, Georgia, serif',
-            fontSize: 'clamp(11px, 1.3vw, 13px)', fontWeight: 400,
-            letterSpacing: '0.36em', textTransform: 'uppercase', textIndent: '0.36em',
-            textShadow: '0 1px 12px rgba(26,20,22,0.45)',
-          }}>The Quantock Hills &nbsp;·&nbsp; Somerset</span>
-          <span style={{ width: 48, height: 1, background: 'rgba(244,237,228,0.5)' }} />
-        </div>
-      </Reveal>
-    </div>
-    <style>{`
-      @media (max-width: 900px){
-        .venue-band-bg{ background-attachment: scroll !important; }
-      }
-    `}</style>
-  </section>
-);
-
-// ============================================================
 // VENUE — image left, info right with definition list, two CTAs
 // ============================================================
 const Venue = () => (
@@ -1032,53 +965,34 @@ const DETAILS = [
   { eyebrow: 'Photography', headline: 'Unplugged Ceremony', body: 'Phones and cameras away during the ceremony, please. Our photographer will capture every moment, and we’d love to see your faces rather than your screens.' },
 ];
 
-// Editorial numbered list — oversized italic numerals in the bouquet
-// gradient, hairline-ruled rows. Replaced the old 2×2 card grid, which
-// read corporate against the stationery look.
 const Details = () => (
   <Section id="details" tint padTop={140} padBottom={140}>
     <PageHeading eyebrow="Good to know" title="The Finer Details" />
 
-    <div style={{ maxWidth: 780, margin: '0 auto', textAlign: 'left' }}>
+    <div style={{
+      display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20,
+      maxWidth: 980, margin: '0 auto',
+    }} className="details-grid">
       {DETAILS.map((d, i) => (
-        <Reveal key={i} delay={i * 70}>
-          <div className="detail-row" style={{
-            display: 'grid', gridTemplateColumns: 'minmax(76px, 104px) 1fr',
-            columnGap: 36, alignItems: 'baseline',
-            padding: '46px 0',
-            borderTop: '1px solid var(--rule)',
-            borderBottom: i === DETAILS.length - 1 ? '1px solid var(--rule)' : 'none',
-          }}>
-            <div className="serif accent-gradient" style={{
-              fontSize: 'clamp(46px, 6vw, 68px)', fontStyle: 'italic', fontWeight: 300,
-              lineHeight: 1, padding: '0.04em 0.06em', display: 'inline-block',
-            }}>{String(i + 1).padStart(2, '0')}</div>
-            <div>
-              <CardEyebrow>{d.eyebrow}</CardEyebrow>
-              <div style={{
-                margin: '12px 0 14px',
-                fontFamily: 'Cinzel, Georgia, serif',
-                fontSize: 'clamp(20px, 2.6vw, 27px)', fontWeight: 400,
-                letterSpacing: '0.08em', textTransform: 'uppercase',
-                color: 'var(--ink)', textIndent: '0.08em',
-                lineHeight: 1.2,
-              }}>{d.headline}</div>
-              <p style={{
-                margin: 0, maxWidth: '56ch',
-                fontFamily: '"Cormorant Garamond", Georgia, serif',
-                fontSize: 'clamp(15px, 1.7vw, 17px)', fontStyle: 'italic', fontWeight: 400,
-                lineHeight: 1.6, color: 'var(--ink-mute)',
-              }}>{d.body}</p>
-            </div>
-          </div>
+        <Reveal key={i} delay={(i % 2) * 90} style={{ display: 'grid' }}>
+          <Card>
+            <CardEyebrow>{d.eyebrow}</CardEyebrow>
+            <div style={{
+              margin: '10px 0 18px',
+              fontFamily: 'Cinzel, Georgia, serif',
+              fontSize: 'clamp(22px, 2.8vw, 30px)', fontWeight: 400,
+              letterSpacing: '0.06em', textTransform: 'uppercase',
+              color: 'var(--ink)', textIndent: '0.06em',
+              lineHeight: 1.2,
+            }}>{d.headline}</div>
+            <CardBody>{d.body}</CardBody>
+          </Card>
         </Reveal>
       ))}
     </div>
 
     <style>{`
-      @media (max-width: 540px) {
-        .detail-row{ grid-template-columns: 1fr !important; row-gap: 10px; }
-      }
+      @media (max-width: 720px) { .details-grid{ grid-template-columns: 1fr !important; } }
     `}</style>
   </Section>
 );
@@ -1175,7 +1089,6 @@ const Footer = () => (
     padding: '140px 24px 80px', background: 'var(--cream)',
     textAlign: 'center', borderTop: '1px solid var(--rule)',
   }}>
-    <Ornament style={{ marginBottom: 32 }} />
     <div style={{
       fontFamily: 'Cinzel, Georgia, serif',
       fontSize: 11, fontWeight: 400,
@@ -1230,7 +1143,6 @@ const Footer = () => (
 const PageHeading = ({ eyebrow, title, intro }) => (
   <header style={{ textAlign: 'center', marginBottom: 80 }}>
     <Reveal>
-    <Ornament style={{ marginBottom: 30 }} />
     {eyebrow && (
       <div style={{
         fontFamily: 'Cinzel, Georgia, serif',
@@ -1399,7 +1311,6 @@ const FloatingRsvpCta = ({ onRsvp }) => {
 };
 
 Object.assign(window, {
-  Nav, Hero, Schedule, Venue, VenueBand, Travel, WeddingParty, Details, FAQ, Footer, FloatingRsvpCta,
-  Reveal, Ornament, CallaMark,
+  Nav, Hero, Schedule, Venue, Travel, WeddingParty, Details, FAQ, Footer, FloatingRsvpCta, Reveal,
   Section, Heading, PageHeading, Card, CardEyebrow, CardTitle, CardBody, CardDetail, ActionBtn, Names,
 });

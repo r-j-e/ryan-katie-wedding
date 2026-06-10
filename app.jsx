@@ -30,7 +30,6 @@ const App = () => {
       <main>
         <Hero onRsvp={openRsvp} />
         <Schedule />
-        <VenueBand />
         <Venue />
         <Travel />
         <WeddingParty />
