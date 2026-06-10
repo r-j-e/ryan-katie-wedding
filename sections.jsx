@@ -446,16 +446,20 @@ const prefersReduce = () =>
 
 // One odometer-style rolling digit: a vertical strip of 0-9 that
 // translates to the current value, clipped to a one-digit window.
+// Cells are 1.3em (not 1em) because Cormorant's figures overshoot the
+// em box — the extra padding keeps neighbouring digits from bleeding
+// into the visible window.
 const ROLL_DIGITS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+const ROLL_EM = 1.3;
 const RollDigit = ({ d }) => (
-  <span aria-hidden="true" style={{ display: 'inline-block', height: '1em', overflow: 'hidden', verticalAlign: 'top' }}>
+  <span aria-hidden="true" style={{ display: 'inline-block', height: `${ROLL_EM}em`, overflow: 'hidden', verticalAlign: 'top' }}>
     <span style={{
       display: 'block',
-      transform: `translateY(${-d}em)`,
+      transform: `translateY(${-d * ROLL_EM}em)`,
       transition: prefersReduce() ? 'none' : 'transform 0.55s cubic-bezier(0.45, 0, 0.2, 1)',
     }}>
       {ROLL_DIGITS.map((n) =>
-      <span key={n} style={{ display: 'block', height: '1em', lineHeight: 1 }}>{n}</span>
+      <span key={n} style={{ display: 'block', height: `${ROLL_EM}em`, lineHeight: ROLL_EM }}>{n}</span>
       )}
     </span>
   </span>
@@ -465,7 +469,7 @@ const CdCell = ({ n, label }) =>
 <span style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
     <span className="serif" aria-label={String(n).padStart(2, '0')} style={{
     fontSize: 'clamp(22px, 3vw, 32px)', fontWeight: 300, lineHeight: 1, color: 'var(--ink)',
-    fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em'
+    fontVariantNumeric: 'tabular-nums lining-nums', letterSpacing: '-0.01em'
   }}>{String(n).padStart(2, '0').split('').map((c, i) => <RollDigit key={i} d={Number(c)} />)}</span>
     <span style={{
     fontFamily: 'Cinzel', fontSize: 9.5, fontWeight: 400,
