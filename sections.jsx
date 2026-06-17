@@ -130,7 +130,7 @@ const Nav = ({ active }) => {
 
   return (
     <>
-    <nav className={pastHero ? undefined : 'nav-prehero'} style={{
+    <nav className="wnav-bar" style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
       background: scrolled ? 'rgba(244,237,228,0.94)' : 'transparent',
       backdropFilter: scrolled ? 'blur(12px) saturate(1.05)' : 'none',
@@ -169,18 +169,31 @@ const Nav = ({ active }) => {
             </li>
           )}
         </ul>
-
-        <button onClick={() => setMobileOpen(true)} className="nav-mobile-toggle" aria-label="Menu" style={{
-          background: 'none', border: 'none', cursor: 'pointer', padding: 12, lineHeight: 0,
-          display: 'none', color: scrolled ? 'var(--ink)' : 'rgba(244,237,228,0.95)',
-          filter: scrolled ? 'none' : 'drop-shadow(0 1px 10px rgba(16,12,14,0.6))',
-          position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)'
-        }}>
-          <svg width="20" height="16" viewBox="0 0 20 16"><line x1="0" y1="2" x2="20" y2="2" stroke="currentColor" /><line x1="0" y1="8" x2="20" y2="8" stroke="currentColor" /><line x1="0" y1="14" x2="20" y2="14" stroke="currentColor" /></svg>
-        </button>
       </div>
-
     </nav>
+
+    {/* Floating square menu button — phones/tablets. Mirrors the RSVP button
+        (same ink square + shadow), paired on the opposite bottom corner. It
+        replaces the old top bar and fades in once past the hero, so nothing
+        ever sits over the hero video. Opens the full-screen menu below. */}
+    <button onClick={() => setMobileOpen(true)} className="menu-fab" aria-label="Open menu" style={{
+      position: 'fixed', bottom: 20, left: 20, zIndex: 40,
+      width: 50, height: 50, display: 'none',
+      alignItems: 'center', justifyContent: 'center',
+      background: 'var(--ink)', color: 'var(--cream)',
+      border: 'none', cursor: 'pointer',
+      boxShadow: '0 8px 24px -6px rgba(26,20,22,0.35), 0 2px 6px -2px rgba(26,20,22,0.2)',
+      opacity: pastHero ? 1 : 0,
+      transform: pastHero ? 'translateY(0)' : 'translateY(20px)',
+      pointerEvents: pastHero ? 'auto' : 'none',
+      transition: 'opacity 0.3s ease, transform 0.3s ease',
+    }}>
+      <svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true">
+        <line x1="0" y1="1" x2="20" y2="1" stroke="currentColor" strokeWidth="1.3"/>
+        <line x1="0" y1="7" x2="20" y2="7" stroke="currentColor" strokeWidth="1.3"/>
+        <line x1="0" y1="13" x2="20" y2="13" stroke="currentColor" strokeWidth="1.3"/>
+      </svg>
+    </button>
 
       {/* Full-screen menu. Rendered as a SIBLING of <nav> (not a child) so it
           escapes the nav's backdrop-filter — a filter/transform on an ancestor
@@ -247,13 +260,10 @@ const Nav = ({ active }) => {
 
       <style>{`
         @media (max-width: 980px){
-          .nav-desktop{ display:none !important; }
-          .nav-mobile-toggle{ display:block !important; }
-          .nav-guest{ display:none !important; }
-          /* Header is hidden while over the hero (no bar on the video); it
-             slides down into view once you reach the schedule. The nav's own
-             transition (all .35s) animates the reveal. */
-          .nav-prehero{ opacity:0 !important; transform:translateY(-100%) !important; pointer-events:none !important; }
+          /* On phones/tablets there's no top bar — navigation is the floating
+             square menu button (.menu-fab), paired with the RSVP button. */
+          .wnav-bar{ display:none !important; }
+          .menu-fab{ display:flex !important; }
         }
         .menu-overlay{ animation: menuFade 0.34s ease both; }
         .menu-item{ animation: menuRise 0.5s cubic-bezier(0.16,1,0.3,1) both; }
@@ -1636,8 +1646,9 @@ const FloatingRsvpCta = ({ onRsvp }) => {
         }}
       >RSVP</button>
       <style>{`
-        /* Desktop has the nav + hero CTA — only show this on phone widths. */
-        @media (min-width: 720px) { .floating-rsvp { display: none !important; } }
+        /* Desktop (>=981px) has the top nav bar + hero CTA. Below that the
+           floating RSVP pairs with the floating menu button at the bottom. */
+        @media (min-width: 981px) { .floating-rsvp { display: none !important; } }
       `}</style>
     </>
   );
