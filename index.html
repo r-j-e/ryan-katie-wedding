@@ -8,10 +8,6 @@
      background colour — which looks like dead space top and bottom. We then
      pad content back in with env(safe-area-inset-*) so nothing hides. -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<!-- Tint Safari's address bar / toolbar to the dark hero colour so the
-     browser chrome blends into the hero on load instead of showing cream
-     bands (Safari otherwise samples the cream page background). -->
-<meta name="theme-color" content="#14100F" />
 <meta name="robots" content="noindex, nofollow" />
 <title>Ryan &amp; Katie · 2 July 2027</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -58,15 +54,9 @@
     color: transparent;
   }
   *{ box-sizing:border-box; -webkit-font-smoothing:antialiased; }
-  /* Base background is the dark hero colour, not cream. Every content section
-     paints its own cream background on top, so the page looks identical — but
-     this is the colour iOS Safari samples to tint its address bar / toolbar
-     (since this iOS ignores the theme-color hint), and the colour shown on
-     rubber-band overscroll. Dark here = the chrome blends into the hero. */
-  html{ background:#14100F; }
   html,body{
     margin:0; padding:0;
-    background-color:#14100F; color:var(--ink);
+    background:var(--cream); color:var(--ink);
     font-family:'Cinzel', Georgia, serif;
     font-weight:400;
   }
@@ -189,15 +179,16 @@
     input, textarea, select{ font-size:16px !important; }
 
     /* ---- Hero: make it sit like a landing page on a phone ----
-       100dvh = the DYNAMIC viewport height: it always matches the visible
-       area as Safari's bars show/hide, so the title card fills the screen
-       with no beige gap at the bottom and no content lost under the toolbar.
-       Tighten the big desktop margins so the stack reads as one composed
-       panel, not a long column. */
+       100lvh = the LARGE viewport height (the full screen, as if Safari's
+       bars were retracted). The video then fills the entire device screen and
+       sits *behind* the translucent glass toolbar, full-bleed, on load —
+       rather than stopping short and leaving a band. The safe-area padding
+       keeps the names/countdown/RSVP clear of the Island and the glass bar. */
     .hero-on-video{
-      min-height:100dvh !important;
+      min-height:100vh !important;   /* fallback for older browsers */
+      min-height:100lvh !important;
       padding-top: calc(72px + env(safe-area-inset-top)) !important;
-      padding-bottom: calc(36px + env(safe-area-inset-bottom)) !important;
+      padding-bottom: calc(40px + env(safe-area-inset-bottom)) !important;
     }
     .hero-eyebrow{ margin-bottom:44px !important; }
     .hero-dateband{ column-gap:14px !important; }
