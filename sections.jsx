@@ -165,7 +165,7 @@ const Nav = ({ active }) => {
           filter: scrolled ? 'none' : 'drop-shadow(0 1px 10px rgba(16,12,14,0.6))',
           position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)'
         }}>
-          <svg width="20" height="14" viewBox="0 0 20 14"><line x1="0" y1="3" x2="20" y2="3" stroke="currentColor" /><line x1="0" y1="11" x2="20" y2="11" stroke="currentColor" /></svg>
+          <svg width="20" height="16" viewBox="0 0 20 16"><line x1="0" y1="2" x2="20" y2="2" stroke="currentColor" /><line x1="0" y1="8" x2="20" y2="8" stroke="currentColor" /><line x1="0" y1="14" x2="20" y2="14" stroke="currentColor" /></svg>
         </button>
       </div>
 
