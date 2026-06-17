@@ -174,13 +174,14 @@
     input, textarea, select{ font-size:16px !important; }
 
     /* ---- Hero: make it sit like a landing page on a phone ----
-       100svh = the SMALL viewport height (toolbar showing), so the whole
-       title card fits the visible area instead of running under Safari's
-       bottom bar. Tighten the big desktop margins so the stack reads as
-       one composed panel, not a long column. */
+       100dvh = the DYNAMIC viewport height: it always matches the visible
+       area as Safari's bars show/hide, so the title card fills the screen
+       with no beige gap at the bottom and no content lost under the toolbar.
+       Tighten the big desktop margins so the stack reads as one composed
+       panel, not a long column. */
     .hero-on-video{
-      min-height:100svh !important;
-      padding-top:88px !important; padding-bottom:48px !important;
+      min-height:100dvh !important;
+      padding-top:76px !important; padding-bottom:40px !important;
     }
     .hero-eyebrow{ margin-bottom:44px !important; }
     .hero-dateband{ column-gap:14px !important; }

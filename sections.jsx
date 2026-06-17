@@ -96,6 +96,12 @@ const Nav = ({ active }) => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Lock the page behind the full-screen menu so it doesn't scroll under it.
+  React.useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileOpen]);
+
   const links = [
     { id: 'day',     label: 'The day' },
     { id: 'venue',   label: 'Venue' },
@@ -113,6 +119,7 @@ const Nav = ({ active }) => {
   };
 
   return (
+    <>
     <nav style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
       background: scrolled ? 'rgba(244,237,228,0.94)' : 'transparent',
@@ -162,30 +169,68 @@ const Nav = ({ active }) => {
         </button>
       </div>
 
+    </nav>
+
+      {/* Full-screen menu. Rendered as a SIBLING of <nav> (not a child) so it
+          escapes the nav's backdrop-filter — a filter/transform on an ancestor
+          would otherwise trap this position:fixed overlay inside the nav bar
+          instead of letting it cover the viewport. */}
       {mobileOpen &&
-        <div style={{
-          position: 'fixed', inset: 0, background: 'var(--cream)', zIndex: 60,
-          display: 'flex', flexDirection: 'column', padding: '24px 28px'
+        <div className="menu-overlay" style={{
+          position: 'fixed', inset: 0, background: 'var(--cream)', zIndex: 200,
+          display: 'flex', flexDirection: 'column',
+          padding: '20px 28px calc(26px + env(safe-area-inset-bottom))',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ color: 'var(--ink)' }}>
-              <Names size={20} />
+              <Names size={19} />
             </span>
-            <button onClick={() => setMobileOpen(false)} style={{
-              background: 'none', border: 'none', cursor: 'pointer', padding: '12px 6px', margin: '-12px 0',
-              fontFamily: 'Cinzel', fontSize: 11, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--ink)'
-            }}>Close</button>
+            <button onClick={() => setMobileOpen(false)} aria-label="Close menu" style={{
+              display: 'inline-flex', alignItems: 'center', gap: 9,
+              background: 'none', border: 'none', cursor: 'pointer',
+              padding: '12px 4px', margin: '-12px -4px', color: 'var(--ink)',
+              fontFamily: 'Cinzel', fontSize: 10.5, letterSpacing: '0.26em', textTransform: 'uppercase',
+            }}>
+              Close
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+                <path d="M1 1 L13 13 M13 1 L1 13" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+              </svg>
+            </button>
           </div>
 
-          <ul style={{ listStyle: 'none', padding: 0, margin: 'auto 0', display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {links.map((l) =>
-              <li key={l.id}>
-                <a href={`#${l.id}`} onClick={go(l.id)} className="serif nav-mobile-link" style={{
-                  textDecoration: 'none', color: 'var(--ink)', fontSize: 30, fontStyle: 'italic', fontWeight: 300
-                }}>{l.label}</a>
+          <ul style={{
+            listStyle: 'none', padding: 0, margin: 'auto 0',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
+          }}>
+            {links.map((l, i) =>
+              <li key={l.id} className="menu-item" style={{ animationDelay: `${0.05 + i * 0.045}s` }}>
+                <a href={`#${l.id}`} onClick={go(l.id)} style={{
+                  display: 'flex', alignItems: 'baseline', gap: 15, textDecoration: 'none',
+                  padding: '12px 8px',
+                  color: active === l.id ? 'var(--burgundy)' : 'var(--ink)',
+                }}>
+                  <span style={{
+                    fontFamily: 'Cinzel, Georgia, serif', fontSize: 11, fontWeight: 400,
+                    letterSpacing: '0.2em', color: 'var(--ink-mute)',
+                    minWidth: 22, textAlign: 'right',
+                  }}>{String(i + 1).padStart(2, '0')}</span>
+                  <span className="serif" style={{
+                    fontSize: 31, fontStyle: 'italic', fontWeight: 300, lineHeight: 1.2,
+                  }}>{l.label}</span>
+                </a>
               </li>
             )}
           </ul>
+
+          <div style={{ textAlign: 'center' }}>
+            <Ornament />
+            <div style={{
+              marginTop: 16,
+              fontFamily: 'Cinzel, Georgia, serif', fontSize: 10.5, fontWeight: 400,
+              letterSpacing: '0.26em', textTransform: 'uppercase',
+              color: 'var(--ink-mute)', textIndent: '0.26em',
+            }}>2 July 2027 &nbsp;·&nbsp; St Audries Park</div>
+          </div>
         </div>
       }
 
@@ -195,8 +240,15 @@ const Nav = ({ active }) => {
           .nav-mobile-toggle{ display:block !important; }
           .nav-guest{ display:none !important; }
         }
+        .menu-overlay{ animation: menuFade 0.34s ease both; }
+        .menu-item{ animation: menuRise 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+        @keyframes menuFade{ from{ opacity:0 } to{ opacity:1 } }
+        @keyframes menuRise{ from{ opacity:0; transform: translateY(12px) } to{ opacity:1; transform:none } }
+        @media (prefers-reduced-motion: reduce){
+          .menu-overlay, .menu-item{ animation: none !important; }
+        }
       `}</style>
-    </nav>
+    </>
   );
 };
 
