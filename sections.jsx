@@ -172,26 +172,26 @@ const Nav = ({ active }) => {
       </div>
     </nav>
 
-    {/* Floating square menu button — phones/tablets. Mirrors the RSVP button
-        (same ink square + shadow), paired on the opposite bottom corner. It
-        replaces the old top bar and fades in once past the hero, so nothing
-        ever sits over the hero video. Opens the full-screen menu below. */}
+    {/* Discreet menu — just three thin ink lines in the top corner, no box.
+        Generous invisible hit area for tapping; a whisper of cream halo keeps
+        the lines legible if they pass over a darker image. Fades in past the
+        hero so nothing sits over the video. Opens the full-screen menu below. */}
     <button onClick={() => setMobileOpen(true)} className="menu-fab" aria-label="Open menu" style={{
-      position: 'fixed', top: 'calc(14px + env(safe-area-inset-top))', right: 20, zIndex: 40,
-      width: 50, height: 50, display: 'none',
+      position: 'fixed', top: 'calc(12px + env(safe-area-inset-top))', right: 18, zIndex: 40,
+      width: 44, height: 44, display: 'none',
       alignItems: 'center', justifyContent: 'center',
-      background: 'var(--ink)', color: 'var(--cream)',
-      border: 'none', cursor: 'pointer',
-      boxShadow: '0 8px 24px -6px rgba(26,20,22,0.35), 0 2px 6px -2px rgba(26,20,22,0.2)',
+      background: 'none', border: 'none', cursor: 'pointer',
+      color: 'var(--ink)',
+      filter: 'drop-shadow(0 0 3px rgba(250,246,239,0.85))',
       opacity: pastHero ? 1 : 0,
-      transform: pastHero ? 'translateY(0)' : 'translateY(-12px)',
+      transform: pastHero ? 'translateY(0)' : 'translateY(-10px)',
       pointerEvents: pastHero ? 'auto' : 'none',
       transition: 'opacity 0.3s ease, transform 0.3s ease',
     }}>
-      <svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true">
-        <line x1="0" y1="1" x2="20" y2="1" stroke="currentColor" strokeWidth="1.3"/>
-        <line x1="0" y1="7" x2="20" y2="7" stroke="currentColor" strokeWidth="1.3"/>
-        <line x1="0" y1="13" x2="20" y2="13" stroke="currentColor" strokeWidth="1.3"/>
+      <svg width="23" height="12" viewBox="0 0 23 12" aria-hidden="true">
+        <line x1="0" y1="1" x2="23" y2="1" stroke="currentColor" strokeWidth="1.2"/>
+        <line x1="0" y1="6" x2="23" y2="6" stroke="currentColor" strokeWidth="1.2"/>
+        <line x1="0" y1="11" x2="23" y2="11" stroke="currentColor" strokeWidth="1.2"/>
       </svg>
     </button>
 
