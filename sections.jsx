@@ -347,14 +347,14 @@ const Hero = ({ showCountdown = true, onRsvp }) => {
         {household && (
           <div className="serif hero-anim-1" style={{
             fontSize: 'clamp(16px, 2vw, 20px)', fontStyle: 'italic', fontWeight: 400,
-            color: 'var(--blush)', marginBottom: 22,
+            color: 'rgba(244,237,228,0.92)', marginBottom: 22,
             textShadow: '0 1px 18px rgba(16,12,14,0.55)',
           }}>Dear {household},</div>
         )}
 
         {/* Tiny eyebrow — copy lifted from the invite */}
         <div className="label hero-anim-1" style={{
-          marginBottom: 96, color: 'var(--blush)',
+          marginBottom: 96, color: 'rgba(244,237,228,0.85)',
           textShadow: '0 1px 18px rgba(16,12,14,0.6)',
         }}>
           Please join us in celebrating the marriage of
@@ -410,7 +410,7 @@ const Hero = ({ showCountdown = true, onRsvp }) => {
         }
         {showCountdown && total === 0 &&
         <div className="serif hero-anim-5" style={{
-          marginTop: 62, fontSize: 18, fontStyle: 'italic', color: 'var(--blush)'
+          marginTop: 62, fontSize: 18, fontStyle: 'italic', color: 'rgba(244,237,228,0.92)'
         }}>today is the day</div>
         }
 
