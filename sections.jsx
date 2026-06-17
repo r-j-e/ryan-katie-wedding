@@ -87,10 +87,20 @@ const Reveal = ({ children, delay = 0, from = 'up', style }) => {
 // ============================================================
 const Nav = ({ active }) => {
   const [scrolled, setScrolled] = React.useState(false);
+  const [pastHero, setPastHero] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   React.useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 120);
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 120);
+      // On mobile the header is hidden over the hero and only slides in once
+      // the hero has scrolled away and the schedule meets the top — so nothing
+      // ever sits on top of the hero video.
+      const hero = document.getElementById('top');
+      const heroH = hero ? hero.offsetHeight : window.innerHeight;
+      setPastHero(y > heroH - 64);
+    };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -120,7 +130,7 @@ const Nav = ({ active }) => {
 
   return (
     <>
-    <nav style={{
+    <nav className={pastHero ? undefined : 'nav-prehero'} style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
       background: scrolled ? 'rgba(244,237,228,0.94)' : 'transparent',
       backdropFilter: scrolled ? 'blur(12px) saturate(1.05)' : 'none',
@@ -240,6 +250,10 @@ const Nav = ({ active }) => {
           .nav-desktop{ display:none !important; }
           .nav-mobile-toggle{ display:block !important; }
           .nav-guest{ display:none !important; }
+          /* Header is hidden while over the hero (no bar on the video); it
+             slides down into view once you reach the schedule. The nav's own
+             transition (all .35s) animates the reveal. */
+          .nav-prehero{ opacity:0 !important; transform:translateY(-100%) !important; pointer-events:none !important; }
         }
         .menu-overlay{ animation: menuFade 0.34s ease both; }
         .menu-item{ animation: menuRise 0.5s cubic-bezier(0.16,1,0.3,1) both; }
