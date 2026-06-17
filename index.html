@@ -153,6 +153,22 @@
     font-family:'Cinzel', Georgia, serif;
     z-index:9999; font-size:18px;
   }
+
+  /* ============ Mobile refinements ============
+     Most guests arrive via a QR code on a phone, so tighten the vertical
+     rhythm, keep tap targets generous, and keep iOS from zooming the page
+     when a form field is focused. */
+  html{ -webkit-text-size-adjust:100%; }
+  *{ -webkit-tap-highlight-color: rgba(74,26,44,0.10); }
+  /* Roomy tap targets for the full-screen mobile menu links. */
+  .nav-mobile-link{ display:inline-block; padding:14px 6px; }
+  @media (max-width: 600px){
+    /* The 160px desktop padding is too airy on a phone — close it up. */
+    .wsection{ padding-top:92px !important; padding-bottom:92px !important; }
+    .page-heading{ margin-bottom:52px !important; }
+    /* A 16px floor on form fields stops iOS Safari auto-zooming on focus. */
+    input, textarea, select{ font-size:16px !important; }
+  }
 </style>
 </head>
 <body>

@@ -153,7 +153,7 @@ const Nav = ({ active }) => {
         </ul>
 
         <button onClick={() => setMobileOpen(true)} className="nav-mobile-toggle" aria-label="Menu" style={{
-          background: 'none', border: 'none', cursor: 'pointer', padding: 8,
+          background: 'none', border: 'none', cursor: 'pointer', padding: 12, lineHeight: 0,
           display: 'none', color: scrolled ? 'var(--ink)' : 'rgba(244,237,228,0.95)',
           filter: scrolled ? 'none' : 'drop-shadow(0 1px 10px rgba(16,12,14,0.6))',
           position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)'
@@ -172,7 +172,7 @@ const Nav = ({ active }) => {
               <Names size={20} />
             </span>
             <button onClick={() => setMobileOpen(false)} style={{
-              background: 'none', border: 'none', cursor: 'pointer',
+              background: 'none', border: 'none', cursor: 'pointer', padding: '12px 6px', margin: '-12px -6px',
               fontFamily: 'Cinzel', fontSize: 11, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--ink)'
             }}>Close</button>
           </div>
@@ -180,7 +180,7 @@ const Nav = ({ active }) => {
           <ul style={{ listStyle: 'none', padding: 0, margin: 'auto 0', display: 'flex', flexDirection: 'column', gap: 8 }}>
             {links.map((l) =>
               <li key={l.id}>
-                <a href={`#${l.id}`} onClick={go(l.id)} className="serif" style={{
+                <a href={`#${l.id}`} onClick={go(l.id)} className="serif nav-mobile-link" style={{
                   textDecoration: 'none', color: 'var(--ink)', fontSize: 30, fontStyle: 'italic', fontWeight: 300
                 }}>{l.label}</a>
               </li>
@@ -246,7 +246,7 @@ const downloadIcs = () => {
 
 // Section container — single column, generous padding, centered.
 const Section = ({ id, tint = false, narrow = false, children, padTop = 160, padBottom = 160, style = {} }) =>
-<section id={id} style={{
+<section id={id} className="wsection" style={{
   padding: `${padTop}px 24px ${padBottom}px`,
   background: tint ? 'var(--cream-deep)' : 'var(--cream)',
   position: 'relative',
@@ -1392,8 +1392,21 @@ const Footer = () => (
 // SHARED HELPERS — heading, card primitives, action button
 // ============================================================
 
+// A small invite-style flourish — a hairline rule with a centred diamond,
+// echoing the hairline rules that flank the date on the printed invitation.
+// Sits under every section title to give each heading a finished edge.
+const Ornament = ({ tone = 'var(--burgundy)' }) => (
+  <div aria-hidden="true" style={{
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 11, marginTop: 26,
+  }}>
+    <span style={{ width: 46, height: 1, background: 'var(--rule)' }} />
+    <span style={{ width: 5, height: 5, transform: 'rotate(45deg)', background: tone, opacity: 0.62 }} />
+    <span style={{ width: 46, height: 1, background: 'var(--rule)' }} />
+  </div>
+);
+
 const PageHeading = ({ eyebrow, title, intro }) => (
-  <header style={{ textAlign: 'center', marginBottom: 80 }}>
+  <header className="page-heading" style={{ textAlign: 'center', marginBottom: 80 }}>
     <Reveal>
     {eyebrow && (
       <div style={{
@@ -1411,6 +1424,7 @@ const PageHeading = ({ eyebrow, title, intro }) => (
       fontWeight: 400, lineHeight: 1.15, color: 'var(--ink)',
       letterSpacing: '0.10em', textTransform: 'uppercase', textIndent: '0.10em',
     }}>{title}</h2>
+    <Ornament />
     {intro && (
       <p style={{
         margin: '32px auto 0', maxWidth: 560,
