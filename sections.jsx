@@ -137,7 +137,7 @@ const Nav = ({ active }) => {
       WebkitBackdropFilter: scrolled ? 'blur(12px) saturate(1.05)' : 'none',
       borderBottom: scrolled ? '1px solid var(--rule-soft)' : '1px solid transparent',
       transition: 'all 0.35s ease',
-      padding: 'calc(16px + env(safe-area-inset-top)) 28px 16px'
+      padding: '16px 28px'
     }}>
       <div style={{
         maxWidth: 1280, margin: '0 auto',
