@@ -284,15 +284,11 @@ const Heading = ({ children, eyebrow }) =>
 //
 // The deployed bundle (Workers Assets) caps any single file at 25MB, too
 // small for a high-bitrate 1080p master — so the full-quality videos are
-// hosted on Cloudflare R2 (media.katieandryan.co.uk, free egress). Each
-// <video> lists the R2 source first and the in-bundle file as an automatic
-// fallback: if R2 is unreachable the browser advances to the local <source>,
-// so the hero never breaks. Posters stay local (tiny) for instant paint.
+// hosted on Cloudflare R2 (media.katieandryan.co.uk, free egress). Posters
+// stay local (tiny) for instant paint and the reduced-motion fallback.
 // ============================================================
 const HERO_VIDEO_DESKTOP = 'https://media.katieandryan.co.uk/hero-desktop.mp4';
 const HERO_VIDEO_MOBILE  = 'https://media.katieandryan.co.uk/hero-mobile.mp4';
-const HERO_VIDEO_DESKTOP_FALLBACK = '/images/venue/hero-desktop.mp4';
-const HERO_VIDEO_MOBILE_FALLBACK  = '/images/venue/hero-mobile.mp4';
 
 const HeroVideo = () => {
   const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
@@ -307,7 +303,6 @@ const HeroVideo = () => {
   }, []);
 
   const src = m ? HERO_VIDEO_MOBILE : HERO_VIDEO_DESKTOP;
-  const fallbackSrc = m ? HERO_VIDEO_MOBILE_FALLBACK : HERO_VIDEO_DESKTOP_FALLBACK;
   const poster = m ? '/images/venue/hero-mobile-poster.jpg' : '/images/venue/hero-poster.jpg';
 
   return (
@@ -320,7 +315,6 @@ const HeroVideo = () => {
         <video key={src} autoPlay muted loop playsInline preload="auto" poster={poster}
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}>
           <source src={src} type="video/mp4" />
-          <source src={fallbackSrc} type="video/mp4" />
         </video>
       )}
       {/* Scrim — stronger top & bottom (nav, eyebrow, scroll cue), lighter
