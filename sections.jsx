@@ -608,10 +608,28 @@ const Schedule = () => {
     update();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
+
+    // Icon wake-up gestures are gated separately from the ink scrubbing:
+    // the ink line / dot bloom stay tied to scroll position, but the
+    // gesture fires from an IntersectionObserver when the icon is actually
+    // in view — so a fast scroll can't blow past the trigger point before
+    // the (slightly delayed) animation is visible. Removing .play when the
+    // icon leaves lets it replay on the way back.
+    // Observe the stable .schedule-img wrappers (the icon spans inside
+    // load asynchronously, so they may not exist yet at mount).
+    const cells = Array.from(list.querySelectorAll('.schedule-img'));
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        e.target.classList.toggle('play', e.isIntersecting && e.intersectionRatio >= 0.5);
+      }
+    }, { threshold: [0, 0.5, 1], rootMargin: '-8% 0px -8% 0px' });
+    cells.forEach((el) => io.observe(el));
+
     return () => {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
       if (raf) cancelAnimationFrame(raf);
+      io.disconnect();
     };
   }, []);
 
@@ -730,23 +748,23 @@ const Schedule = () => {
       @keyframes ico-knock{ 0%,100%{ transform:rotate(0); } 20%{ transform:rotate(-3deg); } 40%{ transform:rotate(0); } 60%{ transform:rotate(-3deg); } 80%{ transform:rotate(0); } }
       @keyframes ico-breath{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.012); } }
 
-      .schedule-row.lit .icon-drinks .ico-flute-l{ transform-origin:353px 1366px; animation: ico-clink-l 0.9s ease-in-out 0.25s 1; }
-      .schedule-row.lit .icon-drinks .ico-flute-r{ transform-origin:1005px 1405px; animation: ico-clink-r 0.9s ease-in-out 0.25s 1; }
-      .schedule-row.lit .icon-drinks .ico-sparks{ transform-origin:686px 212px; animation: ico-spark 0.8s ease-out 0.45s 1; }
-      .schedule-row.lit .icon-dance .ico-ball{ transform-origin:685px 238px; animation: ico-sway 2.2s ease-in-out 0.25s 1; }
-      .schedule-row.lit .icon-dance .ico-spk1{ transform-origin:1115px 441px; animation: ico-twinkle 0.9s ease 0.4s 1; }
-      .schedule-row.lit .icon-dance .ico-spk2{ transform-origin:1053px 576px; animation: ico-twinkle 0.9s ease 0.75s 1; }
-      .schedule-row.lit .icon-dance .ico-spk3{ transform-origin:241px 715px; animation: ico-twinkle 0.9s ease 0.55s 1; }
-      .schedule-row.lit .icon-dance .ico-spk4{ transform-origin:1108px 757px; animation: ico-twinkle 0.9s ease 0.95s 1; }
-      .schedule-row.lit .icon-breakfast .ico-fork{ transform-origin:259px 1231px; animation: ico-tilt-l 1s ease-in-out 0.3s 1; }
-      .schedule-row.lit .icon-breakfast .ico-knife{ transform-origin:1102px 1214px; animation: ico-tilt-r 1s ease-in-out 0.3s 1; }
-      .schedule-row.lit .icon-carriages svg{ animation: ico-bounce 0.9s ease-in-out 0.3s 1; }
-      .schedule-row.lit .icon-speeches svg{ transform-origin:50% 55%; animation: ico-knock 0.8s ease-in-out 0.3s 1; }
-      .schedule-row.lit .icon-ceremony svg{ transform-origin:50% 100%; animation: ico-breath 1.8s ease-in-out 0.3s 1; }
+      .schedule-img.play .icon-drinks .ico-flute-l{ transform-origin:353px 1366px; animation: ico-clink-l 0.9s ease-in-out 0.2s 1; }
+      .schedule-img.play .icon-drinks .ico-flute-r{ transform-origin:1005px 1405px; animation: ico-clink-r 0.9s ease-in-out 0.2s 1; }
+      .schedule-img.play .icon-drinks .ico-sparks{ transform-origin:686px 212px; animation: ico-spark 0.8s ease-out 0.4s 1; }
+      .schedule-img.play .icon-dance .ico-ball{ transform-origin:685px 238px; animation: ico-sway 2.2s ease-in-out 0.2s 1; }
+      .schedule-img.play .icon-dance .ico-spk1{ transform-origin:1115px 441px; animation: ico-twinkle 0.9s ease 0.35s 1; }
+      .schedule-img.play .icon-dance .ico-spk2{ transform-origin:1053px 576px; animation: ico-twinkle 0.9s ease 0.7s 1; }
+      .schedule-img.play .icon-dance .ico-spk3{ transform-origin:241px 715px; animation: ico-twinkle 0.9s ease 0.5s 1; }
+      .schedule-img.play .icon-dance .ico-spk4{ transform-origin:1108px 757px; animation: ico-twinkle 0.9s ease 0.9s 1; }
+      .schedule-img.play .icon-breakfast .ico-fork{ transform-origin:259px 1231px; animation: ico-tilt-l 1s ease-in-out 0.25s 1; }
+      .schedule-img.play .icon-breakfast .ico-knife{ transform-origin:1102px 1214px; animation: ico-tilt-r 1s ease-in-out 0.25s 1; }
+      .schedule-img.play .icon-carriages svg{ animation: ico-bounce 0.9s ease-in-out 0.25s 1; }
+      .schedule-img.play .icon-speeches svg{ transform-origin:50% 55%; animation: ico-knock 0.8s ease-in-out 0.25s 1; }
+      .schedule-img.play .icon-ceremony svg{ transform-origin:50% 100%; animation: ico-breath 1.8s ease-in-out 0.25s 1; }
 
       @media (prefers-reduced-motion: reduce){
-        .schedule-row.lit .schedule-icon svg,
-        .schedule-row.lit .schedule-icon g{ animation: none !important; }
+        .schedule-img.play .schedule-icon svg,
+        .schedule-img.play .schedule-icon g{ animation: none !important; }
       }
 
       .schedule-heading{
