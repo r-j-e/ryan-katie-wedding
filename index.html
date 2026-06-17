@@ -58,9 +58,15 @@
     color: transparent;
   }
   *{ box-sizing:border-box; -webkit-font-smoothing:antialiased; }
+  /* Base background is the dark hero colour, not cream. Every content section
+     paints its own cream background on top, so the page looks identical — but
+     this is the colour iOS Safari samples to tint its address bar / toolbar
+     (since this iOS ignores the theme-color hint), and the colour shown on
+     rubber-band overscroll. Dark here = the chrome blends into the hero. */
+  html{ background:#14100F; }
   html,body{
     margin:0; padding:0;
-    background:var(--cream); color:var(--ink);
+    background-color:#14100F; color:var(--ink);
     font-family:'Cinzel', Georgia, serif;
     font-weight:400;
   }
