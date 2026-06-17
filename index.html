@@ -9,13 +9,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Cormorant+Garamond:ital,wght@0,400;1,300;1,400&display=swap" rel="stylesheet" />
 <!-- Amoresa is critical for the names lockup in the hero (first paint).
-     Preload it so it isn't blocked behind the React bundle. -->
-<link rel="preload" href="fonts/Amoresa.ttf" as="font" type="font/ttf" crossorigin />
+     Subset to just the glyphs we use (K, R, &) and served as WOFF2 — a
+     ~250KB TTF reduced to <2KB. Preload so it isn't blocked behind React. -->
+<link rel="preload" href="fonts/Amoresa.subset.woff2" as="font" type="font/woff2" crossorigin />
 <style>
-  /* Amoresa — your licensed font, served from the project. */
+  /* Amoresa — your licensed font, subset to the names' glyphs (K R &). */
   @font-face {
     font-family: 'Amoresa';
-    src: url('fonts/Amoresa.ttf') format('truetype');
+    src: url('fonts/Amoresa.subset.woff2') format('woff2'),
+         url('fonts/Amoresa.subset.ttf') format('truetype');
     font-weight: 400;
     font-style: normal;
     font-display: swap;
