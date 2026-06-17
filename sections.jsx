@@ -1392,19 +1392,6 @@ const Footer = () => (
 // SHARED HELPERS — heading, card primitives, action button
 // ============================================================
 
-// Full-width line between sections — voice, not decoration.
-const Interstitial = ({ children }) => (
-  <div style={{ padding: '120px 24px', background: 'var(--cream)', textAlign: 'center' }}>
-    <Reveal>
-      <p className="serif" style={{
-        margin: '0 auto', maxWidth: 900,
-        fontSize: 'clamp(34px, 6vw, 64px)', fontStyle: 'normal', fontWeight: 300,
-        lineHeight: 1.15, letterSpacing: '-0.01em', color: 'var(--ink)',
-      }}>{children}</p>
-    </Reveal>
-  </div>
-);
-
 const PageHeading = ({ eyebrow, title, intro }) => (
   <header style={{ textAlign: 'center', marginBottom: 80 }}>
     <Reveal>
@@ -1576,6 +1563,6 @@ const FloatingRsvpCta = ({ onRsvp }) => {
 };
 
 Object.assign(window, {
-  Nav, Hero, Schedule, Venue, Travel, WeddingParty, Details, FAQ, Footer, FloatingRsvpCta, Reveal, Interstitial,
+  Nav, Hero, Schedule, Venue, Travel, WeddingParty, Details, FAQ, Footer, FloatingRsvpCta, Reveal,
   Section, Heading, PageHeading, Card, CardEyebrow, CardTitle, CardBody, CardDetail, ActionBtn, Names,
 });
