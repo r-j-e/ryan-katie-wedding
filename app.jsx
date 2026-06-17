@@ -31,8 +31,10 @@ const App = () => {
         <Hero onRsvp={openRsvp} />
         <Schedule />
         <Venue />
+        <Interstitial>See you in <span className="accent-gradient">Somerset</span>.</Interstitial>
         <Travel />
         <WeddingParty />
+        <Interstitial>Wear your <span className="accent-gradient">best</span>.</Interstitial>
         <Details />
         <FAQ />
         <RSVP onRsvp={openRsvp} />

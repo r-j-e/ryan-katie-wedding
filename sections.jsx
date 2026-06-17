@@ -584,10 +584,10 @@ const Schedule = () => {
   React.useEffect(() => {
     const list = listRef.current, ink = inkRef.current;
     if (!list || !ink) return;
-    const dots = Array.from(list.querySelectorAll('.schedule-dot'));
+    const rows = Array.from(list.querySelectorAll('.schedule-row'));
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       ink.style.height = '100%';
-      dots.forEach((d) => d.classList.add('lit'));
+      rows.forEach((r) => r.classList.add('lit'));
       return;
     }
     let raf = 0;
@@ -599,9 +599,9 @@ const Schedule = () => {
       const p = Math.min(1, Math.max(0, (penY - rect.top) / rect.height));
       ink.style.height = (p * 100).toFixed(2) + '%';
       const inkY = rect.top + p * rect.height;
-      for (const d of dots) {
-        const r = d.getBoundingClientRect();
-        d.classList.toggle('lit', r.top + r.height / 2 <= inkY);
+      for (const row of rows) {
+        const r = row.getBoundingClientRect();
+        row.classList.toggle('lit', r.top + r.height / 2 <= inkY);
       }
     };
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
@@ -705,8 +705,48 @@ const Schedule = () => {
         transform: scale(0.45); opacity: 0.35;
         transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
       }
-      .schedule-dot.lit span{
+      .schedule-row.lit .schedule-dot span{
         transform: scale(1); opacity: 1;
+      }
+
+      .schedule-icon{ display: inline-block; width: clamp(110px, 16vw, 170px); }
+      .schedule-icon svg{ display: block; width: 100%; height: auto; }
+      /* px transform-origins below are in viewBox units, so resolve them
+         against the viewBox, not each part's own bounding box. */
+      .schedule-icon [class^="ico-"]{ transform-box: view-box; }
+
+      /* ── Wake-up gestures ──
+         One characteristic move per icon, played once when the ink line
+         reaches the row. Pivots are in viewBox units (1357×1544),
+         measured from each part's actual geometry. */
+      @keyframes ico-clink-l{ 0%,100%{ transform:rotate(0); } 35%{ transform:rotate(3deg); } 65%{ transform:rotate(-0.8deg); } }
+      @keyframes ico-clink-r{ 0%,100%{ transform:rotate(0); } 35%{ transform:rotate(-3deg); } 65%{ transform:rotate(0.8deg); } }
+      @keyframes ico-spark{ 0%,100%{ opacity:1; transform:scale(1); } 30%{ opacity:0.15; transform:scale(0.6); } 65%{ opacity:1; transform:scale(1.3); } }
+      @keyframes ico-sway{ 0%,100%{ transform:rotate(0); } 25%{ transform:rotate(2.4deg); } 55%{ transform:rotate(-1.6deg); } 80%{ transform:rotate(0.7deg); } }
+      @keyframes ico-twinkle{ 0%,100%{ opacity:1; transform:scale(1); } 50%{ opacity:0.2; transform:scale(0.6); } }
+      @keyframes ico-tilt-l{ 0%,100%{ transform:rotate(0); } 40%{ transform:rotate(3.5deg); } 72%{ transform:rotate(-0.6deg); } }
+      @keyframes ico-tilt-r{ 0%,100%{ transform:rotate(0); } 40%{ transform:rotate(-3.5deg); } 72%{ transform:rotate(0.6deg); } }
+      @keyframes ico-bounce{ 0%,100%{ transform:translateY(0); } 30%{ transform:translateY(-1.6%); } 55%{ transform:translateY(0.4%); } 75%{ transform:translateY(-0.7%); } }
+      @keyframes ico-knock{ 0%,100%{ transform:rotate(0); } 20%{ transform:rotate(-3deg); } 40%{ transform:rotate(0); } 60%{ transform:rotate(-3deg); } 80%{ transform:rotate(0); } }
+      @keyframes ico-breath{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.012); } }
+
+      .schedule-row.lit .icon-drinks .ico-flute-l{ transform-origin:353px 1366px; animation: ico-clink-l 0.9s ease-in-out 0.25s 1; }
+      .schedule-row.lit .icon-drinks .ico-flute-r{ transform-origin:1005px 1405px; animation: ico-clink-r 0.9s ease-in-out 0.25s 1; }
+      .schedule-row.lit .icon-drinks .ico-sparks{ transform-origin:686px 212px; animation: ico-spark 0.8s ease-out 0.45s 1; }
+      .schedule-row.lit .icon-dance .ico-ball{ transform-origin:685px 238px; animation: ico-sway 2.2s ease-in-out 0.25s 1; }
+      .schedule-row.lit .icon-dance .ico-spk1{ transform-origin:1115px 441px; animation: ico-twinkle 0.9s ease 0.4s 1; }
+      .schedule-row.lit .icon-dance .ico-spk2{ transform-origin:1053px 576px; animation: ico-twinkle 0.9s ease 0.75s 1; }
+      .schedule-row.lit .icon-dance .ico-spk3{ transform-origin:241px 715px; animation: ico-twinkle 0.9s ease 0.55s 1; }
+      .schedule-row.lit .icon-dance .ico-spk4{ transform-origin:1108px 757px; animation: ico-twinkle 0.9s ease 0.95s 1; }
+      .schedule-row.lit .icon-breakfast .ico-fork{ transform-origin:259px 1231px; animation: ico-tilt-l 1s ease-in-out 0.3s 1; }
+      .schedule-row.lit .icon-breakfast .ico-knife{ transform-origin:1102px 1214px; animation: ico-tilt-r 1s ease-in-out 0.3s 1; }
+      .schedule-row.lit .icon-carriages svg{ animation: ico-bounce 0.9s ease-in-out 0.3s 1; }
+      .schedule-row.lit .icon-speeches svg{ transform-origin:50% 55%; animation: ico-knock 0.8s ease-in-out 0.3s 1; }
+      .schedule-row.lit .icon-ceremony svg{ transform-origin:50% 100%; animation: ico-breath 1.8s ease-in-out 0.3s 1; }
+
+      @media (prefers-reduced-motion: reduce){
+        .schedule-row.lit .schedule-icon svg,
+        .schedule-row.lit .schedule-icon g{ animation: none !important; }
       }
 
       .schedule-heading{
@@ -758,6 +798,7 @@ const Schedule = () => {
         .schedule-row.img-right .schedule-text{ order: 1; }
         .schedule-desc{ margin: 12px auto 0; }
         .schedule-img img,
+        .schedule-icon,
         .schedule-img-placeholder{ width: 96px; }
       }
     `}</style>
@@ -765,13 +806,36 @@ const Schedule = () => {
   );
 };
 
-// Renders an SVG / image only once it exists in the repo. If the file 404s
-// (still pending in /images/schedule/), the onError hides the broken-image
-// icon and shows a quiet dashed placeholder instead so the layout stays clean.
+// Schedule icon, inlined. Fetched as text and injected so CSS can reach
+// the parts inside (flutes, sparkles, fork…) for the wake-up gestures.
+// Falls back to the dashed placeholder if the file is missing.
+const ICON_CACHE = {};
 const ScheduleImage = ({ src, alt }) => {
+  const [svg, setSvg] = React.useState(() => ICON_CACHE[src] || null);
   const [missing, setMissing] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!src || ICON_CACHE[src]) return;
+    let dead = false;
+    fetch(src)
+      .then((r) => { if (!r.ok) throw new Error('404'); return r.text(); })
+      .then((t) => {
+        const m = t.match(/<svg[\s\S]*<\/svg>/);
+        if (!m) throw new Error('not svg');
+        ICON_CACHE[src] = m[0];
+        if (!dead) setSvg(m[0]);
+      })
+      .catch(() => { if (!dead) setMissing(true); });
+    return () => { dead = true; };
+  }, [src]);
+
   if (!src || missing) return <span className="schedule-img-placeholder" aria-label={alt} />;
-  return <img src={src} alt={alt} loading="lazy" onError={() => setMissing(true)} />;
+  if (!svg) return <span className="schedule-img-placeholder" aria-hidden="true" />;
+  const key = src.split('/').pop().replace('.svg', '');
+  return (
+    <span className={`schedule-icon icon-${key}`} role="img" aria-label={alt}
+      dangerouslySetInnerHTML={{ __html: svg }} />
+  );
 };
 
 // Venue hero photo. Landscape (3:2) framed inside the 2-column grid; falls
@@ -1238,6 +1302,19 @@ const Footer = () => (
 // SHARED HELPERS — heading, card primitives, action button
 // ============================================================
 
+// Full-width italic line between sections — voice, not decoration.
+const Interstitial = ({ children }) => (
+  <div style={{ padding: '120px 24px', background: 'var(--cream)', textAlign: 'center' }}>
+    <Reveal>
+      <p className="serif" style={{
+        margin: '0 auto', maxWidth: 900,
+        fontSize: 'clamp(34px, 6vw, 64px)', fontStyle: 'italic', fontWeight: 300,
+        lineHeight: 1.15, letterSpacing: '-0.01em', color: 'var(--ink)',
+      }}>{children}</p>
+    </Reveal>
+  </div>
+);
+
 const PageHeading = ({ eyebrow, title, intro }) => (
   <header style={{ textAlign: 'center', marginBottom: 80 }}>
     <Reveal>
@@ -1409,6 +1486,6 @@ const FloatingRsvpCta = ({ onRsvp }) => {
 };
 
 Object.assign(window, {
-  Nav, Hero, Schedule, Venue, Travel, WeddingParty, Details, FAQ, Footer, FloatingRsvpCta, Reveal,
+  Nav, Hero, Schedule, Venue, Travel, WeddingParty, Details, FAQ, Footer, FloatingRsvpCta, Reveal, Interstitial,
   Section, Heading, PageHeading, Card, CardEyebrow, CardTitle, CardBody, CardDetail, ActionBtn, Names,
 });
