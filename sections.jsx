@@ -172,7 +172,7 @@ const Nav = ({ active }) => {
               <Names size={20} />
             </span>
             <button onClick={() => setMobileOpen(false)} style={{
-              background: 'none', border: 'none', cursor: 'pointer', padding: '12px 6px', margin: '-12px -6px',
+              background: 'none', border: 'none', cursor: 'pointer', padding: '12px 6px', margin: '-12px 0',
               fontFamily: 'Cinzel', fontSize: 11, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--ink)'
             }}>Close</button>
           </div>
@@ -361,7 +361,7 @@ const Hero = ({ showCountdown = true, onRsvp }) => {
         )}
 
         {/* Tiny eyebrow — copy lifted from the invite */}
-        <div className="label hero-anim-1" style={{
+        <div className="label hero-anim-1 hero-eyebrow" style={{
           marginBottom: 96, color: 'rgba(244,237,228,0.85)',
           textShadow: '0 1px 18px rgba(16,12,14,0.6)',
         }}>
@@ -380,10 +380,10 @@ const Hero = ({ showCountdown = true, onRsvp }) => {
         </h1>
 
         {/* Date band — Friday · JUL 02 2027 · 1 o'clock — like the invite */}
-        <DateBand className="hero-anim-4" />
+        <DateBand className="hero-anim-4 hero-dateband" />
 
         {/* Venue line, caps */}
-        <div className="hero-anim-4" style={{
+        <div className="hero-anim-4 hero-venue-line" style={{
           marginTop: 23,
           fontFamily: 'Cinzel, Georgia, serif',
           fontSize: 'clamp(11px, 1.4vw, 13px)',

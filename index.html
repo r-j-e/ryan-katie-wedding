@@ -55,7 +55,11 @@
     font-family:'Cinzel', Georgia, serif;
     font-weight:400;
   }
-  body{ overflow-x:hidden; }
+  /* Contain any sub-pixel horizontal overflow. overflow-x:hidden on <body>
+     alone doesn't hold on iOS Safari (the <html> element still scrolls), so
+     clip both. clip can't be scrolled past — no exposed white margin. */
+  html, body{ overflow-x:hidden; }
+  @supports (overflow:clip){ html, body{ overflow-x:clip; } }
   /* Paper grain — a whisper of texture over everything, like the
      stock the invitations were printed on. Pure CSS, one tiled
      SVG noise texture, sits above all content but ignores the mouse. */
@@ -168,6 +172,20 @@
     .page-heading{ margin-bottom:52px !important; }
     /* A 16px floor on form fields stops iOS Safari auto-zooming on focus. */
     input, textarea, select{ font-size:16px !important; }
+
+    /* ---- Hero: make it sit like a landing page on a phone ----
+       100svh = the SMALL viewport height (toolbar showing), so the whole
+       title card fits the visible area instead of running under Safari's
+       bottom bar. Tighten the big desktop margins so the stack reads as
+       one composed panel, not a long column. */
+    .hero-on-video{
+      min-height:100svh !important;
+      padding-top:88px !important; padding-bottom:48px !important;
+    }
+    .hero-eyebrow{ margin-bottom:44px !important; }
+    .hero-dateband{ column-gap:14px !important; }
+    .hero-venue-line{ letter-spacing:0.16em !important; }
+    .hero-countdown{ margin-top:38px !important; gap:12px !important; }
   }
 </style>
 </head>
