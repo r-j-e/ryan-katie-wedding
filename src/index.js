@@ -68,7 +68,25 @@ export default {
       }
 
       // ─── Static site ──────────────────────────────────────────────
-      return env.ASSETS.fetch(request);
+      // Serve the static asset, but force the HTML document and the JS
+      // bundles to revalidate on every request. They have fixed filenames
+      // (index.html, dist/*.js), so without this a phone can keep showing a
+      // stale index.html for hours after a deploy — which is why edits like
+      // viewport-fit / theme-color appeared to "do nothing". `no-cache` still
+      // allows the cache, but requires a conditional request first, so an
+      // unchanged file is a cheap 304 and a changed one is fetched fresh.
+      const assetRes = await env.ASSETS.fetch(request);
+      const ct = assetRes.headers.get('content-type') || '';
+      if (ct.includes('text/html') || ct.includes('javascript')) {
+        const headers = new Headers(assetRes.headers);
+        headers.set('Cache-Control', 'no-cache, must-revalidate');
+        return new Response(assetRes.body, {
+          status: assetRes.status,
+          statusText: assetRes.statusText,
+          headers,
+        });
+      }
+      return assetRes;
     } catch (err) {
       return json({ ok: false, error: 'unhandled', detail: err.message }, 500);
     }
