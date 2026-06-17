@@ -177,14 +177,14 @@ const Nav = ({ active }) => {
         replaces the old top bar and fades in once past the hero, so nothing
         ever sits over the hero video. Opens the full-screen menu below. */}
     <button onClick={() => setMobileOpen(true)} className="menu-fab" aria-label="Open menu" style={{
-      position: 'fixed', bottom: 20, left: 20, zIndex: 40,
+      position: 'fixed', top: 'calc(14px + env(safe-area-inset-top))', right: 20, zIndex: 40,
       width: 50, height: 50, display: 'none',
       alignItems: 'center', justifyContent: 'center',
       background: 'var(--ink)', color: 'var(--cream)',
       border: 'none', cursor: 'pointer',
       boxShadow: '0 8px 24px -6px rgba(26,20,22,0.35), 0 2px 6px -2px rgba(26,20,22,0.2)',
       opacity: pastHero ? 1 : 0,
-      transform: pastHero ? 'translateY(0)' : 'translateY(20px)',
+      transform: pastHero ? 'translateY(0)' : 'translateY(-12px)',
       pointerEvents: pastHero ? 'auto' : 'none',
       transition: 'opacity 0.3s ease, transform 0.3s ease',
     }}>
