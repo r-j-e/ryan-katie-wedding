@@ -126,7 +126,8 @@ const Nav = ({ active }) => {
       backdropFilter: scrolled ? 'blur(12px) saturate(1.05)' : 'none',
       WebkitBackdropFilter: scrolled ? 'blur(12px) saturate(1.05)' : 'none',
       borderBottom: scrolled ? '1px solid var(--rule-soft)' : '1px solid transparent',
-      transition: 'all 0.35s ease', padding: '16px 28px'
+      transition: 'all 0.35s ease',
+      padding: 'calc(16px + env(safe-area-inset-top)) 28px 16px'
     }}>
       <div style={{
         maxWidth: 1280, margin: '0 auto',
@@ -179,7 +180,7 @@ const Nav = ({ active }) => {
         <div className="menu-overlay" style={{
           position: 'fixed', inset: 0, background: 'var(--cream)', zIndex: 200,
           display: 'flex', flexDirection: 'column',
-          padding: '20px 28px calc(26px + env(safe-area-inset-bottom))',
+          padding: 'calc(20px + env(safe-area-inset-top)) 28px calc(26px + env(safe-area-inset-bottom))',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ color: 'var(--ink)' }}>

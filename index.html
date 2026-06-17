@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- viewport-fit=cover lets the page fill the whole device screen, including
+     behind the status bar / Dynamic Island and home indicator. Without it iOS
+     letterboxes the page inside the safe area and fills those bands with the
+     background colour — which looks like dead space top and bottom. We then
+     pad content back in with env(safe-area-inset-*) so nothing hides. -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="robots" content="noindex, nofollow" />
 <title>Ryan &amp; Katie · 2 July 2027</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -181,7 +186,8 @@
        panel, not a long column. */
     .hero-on-video{
       min-height:100dvh !important;
-      padding-top:76px !important; padding-bottom:40px !important;
+      padding-top: calc(72px + env(safe-area-inset-top)) !important;
+      padding-bottom: calc(36px + env(safe-area-inset-bottom)) !important;
     }
     .hero-eyebrow{ margin-bottom:44px !important; }
     .hero-dateband{ column-gap:14px !important; }
