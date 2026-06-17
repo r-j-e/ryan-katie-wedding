@@ -1384,13 +1384,13 @@ const Footer = () => (
 // SHARED HELPERS — heading, card primitives, action button
 // ============================================================
 
-// Full-width italic line between sections — voice, not decoration.
+// Full-width line between sections — voice, not decoration.
 const Interstitial = ({ children }) => (
   <div style={{ padding: '120px 24px', background: 'var(--cream)', textAlign: 'center' }}>
     <Reveal>
       <p className="serif" style={{
         margin: '0 auto', maxWidth: 900,
-        fontSize: 'clamp(34px, 6vw, 64px)', fontStyle: 'italic', fontWeight: 300,
+        fontSize: 'clamp(34px, 6vw, 64px)', fontStyle: 'normal', fontWeight: 300,
         lineHeight: 1.15, letterSpacing: '-0.01em', color: 'var(--ink)',
       }}>{children}</p>
     </Reveal>
