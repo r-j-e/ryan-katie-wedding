@@ -281,7 +281,15 @@ const Heading = ({ children, eyebrow }) =>
 // matching file downloads). A poster frame shows instantly and is the
 // sole visual for reduced-motion / blocked-autoplay (iOS Low Power).
 // A gradient scrim keeps the cream type legible over any frame.
+//
+// The deployed bundle (Workers Assets) caps any single file at 25MB, too
+// small for a high-bitrate 1080p master — so the videos are hosted on
+// Cloudflare R2. Point these at the bucket's public URLs; posters stay
+// local (tiny) for instant paint. Fall back to in-bundle files if unset.
 // ============================================================
+const HERO_VIDEO_DESKTOP = '/images/venue/hero-desktop.mp4';
+const HERO_VIDEO_MOBILE  = '/images/venue/hero-mobile.mp4';
+
 const HeroVideo = () => {
   const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
   const [m, setM] = React.useState(isMobile);
@@ -294,7 +302,7 @@ const HeroVideo = () => {
     return () => mq.removeEventListener('change', on);
   }, []);
 
-  const src = m ? '/images/venue/hero-mobile.mp4' : '/images/venue/hero-desktop.mp4';
+  const src = m ? HERO_VIDEO_MOBILE : HERO_VIDEO_DESKTOP;
   const poster = m ? '/images/venue/hero-mobile-poster.jpg' : '/images/venue/hero-poster.jpg';
 
   return (
