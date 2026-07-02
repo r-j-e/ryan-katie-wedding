@@ -32,17 +32,21 @@ const lookupGuest = async (raw) => {
 const MEAL_OPTIONS = {
   starter: [
     { id:'s1', name:'Chargrilled chicken salad', note:'cos lettuce, croutons, caesar dressing, parmesan shavings' },
-    { id:'s2', name:'Feta &amp; watermelon salad', note:'toasted walnuts, mint dressing' },
+    { id:'s2', name:'Feta & watermelon salad', note:'toasted walnuts, mint dressing' },
   ],
   main: [
     { id:'m1', name:'Roast sirloin of British beef', note:'herb Yorkshire pudding, buttery mash, rich roast gravy' },
-    { id:'m2', name:'Pan-fried potato gnocchi',      note:'roasted squash, lemon &amp; cracked pepper, wilted rocket' },
+    { id:'m2', name:'Pan-fried potato gnocchi',      note:'roasted squash, lemon & cracked pepper, wilted rocket' },
   ],
   pudding: [
     { id:'p1', name:'Chocolate caramel brownie',          note:'vanilla ice cream, dark chocolate sauce' },
     { id:'p2', name:'Cinnamon spiced apple crumble tart', note:'vegan custard' },
   ],
 };
+
+// The wizard tracks picks by option id; the submitted reply carries the dish
+// name so the admin table and the caterer's CSV read "Roast sirloin…", not "m1".
+const mealName = (course, id) => MEAL_OPTIONS[course].find(o => o.id === id)?.name || '';
 
 const blankGuest = (name = '') => ({ name, attending:'yes', starter:'', main:'', pudding:'', dietary:'' });
 
@@ -95,12 +99,33 @@ const RsvpModal = ({ onClose }) => {
     try { return JSON.parse(localStorage.getItem(TOKEN_KEY) || 'null'); } catch (e) { return null; }
   });
 
+  const dialogRef = React.useRef(null);
+
   React.useEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    const dialog = dialogRef.current;
+    const opener = document.activeElement;   // restore focus here on close
+    if (dialog) dialog.focus();
+    const onKey = (e) => {
+      if (e.key === 'Escape') { onClose(); return; }
+      // Keep Tab cycling inside the dialog while it's open.
+      if (e.key !== 'Tab' || !dialog) return;
+      const focusables = dialog.querySelectorAll(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled])'
+      );
+      if (!focusables.length) return;
+      const first = focusables[0], last = focusables[focusables.length - 1];
+      const current = document.activeElement;
+      if (e.shiftKey && (current === first || current === dialog)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && current === last) { e.preventDefault(); first.focus(); }
+    };
     window.addEventListener('keydown', onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+      if (opener && opener.focus) opener.focus();
+    };
   }, [onClose]);
 
   const onUnlock = (g) => {
@@ -114,7 +139,7 @@ const RsvpModal = ({ onClose }) => {
 
   return (
     <div className="rsvp-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="rsvp-dialog" role="dialog" aria-modal="true" aria-label="Reply to your invitation">
+      <div ref={dialogRef} tabIndex={-1} className="rsvp-dialog" role="dialog" aria-modal="true" aria-label="Reply to your invitation" style={{ outline:'none' }}>
         <button className="rsvp-dialog-close" onClick={onClose} aria-label="Close">&times;</button>
         <div className="rsvp-dialog-body">
           {guest
@@ -249,6 +274,7 @@ const RsvpWizard = ({ guest, onChangeCode, onDone }) => {
   const [step, setStep]   = React.useState(0);
   const [guests, setGuests] = React.useState(() => seedGuests(guest));
   const [message, setMessage] = React.useState('');
+  const [songs, setSongs] = React.useState('');
   const [submitted, setSubmitted] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
   const [submitError, setSubmitError] = React.useState(null);
@@ -263,7 +289,16 @@ const RsvpWizard = ({ guest, onChangeCode, onDone }) => {
     setSubmitting(true);
     setSubmitError(null);
 
-    const payload = { code: guest?.code, household: guest?.household, message, guests };
+    const payload = {
+      code: guest?.code, household: guest?.household, message, songs,
+      // Meal picks live in state as option ids; send the dish names.
+      guests: guests.map(g => ({
+        ...g,
+        starter: mealName('starter', g.starter),
+        main:    mealName('main',    g.main),
+        pudding: mealName('pudding', g.pudding),
+      })),
+    };
 
     try {
       const res = await fetch('/api/rsvp', {
@@ -347,6 +382,7 @@ const RsvpWizard = ({ guest, onChangeCode, onDone }) => {
           <StepConfirm
             guests={guests} anyAttending={anyAttending}
             message={message} setMessage={setMessage}
+            songs={songs} setSongs={setSongs}
             onBack={() => setStep(1)}
             submitting={submitting} submitError={submitError}
           />
@@ -432,11 +468,10 @@ const StepMeals = ({ guests, update, onBack, onNext }) => (
                       border:`1px solid ${on ? 'var(--burgundy)' : 'var(--rule)'}`,
                       padding:'16px 18px', cursor:'pointer', transition:'all 0.2s',
                     }}>
-                      <div className="serif" style={{ fontSize:18, fontWeight:400, fontStyle:'italic', lineHeight:1.25 }}
-                        dangerouslySetInnerHTML={{ __html: opt.name }}/>
+                      <div className="serif" style={{ fontSize:18, fontWeight:400, fontStyle:'italic', lineHeight:1.25 }}>{opt.name}</div>
                       <div className="serif" style={{
                         fontSize:13, fontStyle:'italic', marginTop:4, lineHeight:1.45, fontWeight:400, opacity:0.7,
-                      }} dangerouslySetInnerHTML={{ __html: opt.note }}/>
+                      }}>{opt.note}</div>
                     </button>
                   );
                 })}
@@ -477,18 +512,23 @@ const StepRegrets = ({ message, setMessage, onBack, onNext }) => (
 );
 
 // ============ STEP 3: CONFIRM ============
-const StepConfirm = ({ guests, anyAttending, message, setMessage, onBack, submitting, submitError }) => (
+const StepConfirm = ({ guests, anyAttending, message, setMessage, songs, setSongs, onBack, submitting, submitError }) => (
   <div>
     <p className="serif" style={{
       margin:'0 auto 32px', textAlign:'center', maxWidth:440,
       fontSize:17, fontStyle:'italic', fontWeight:400, color:'var(--ink-mute)', lineHeight:1.65,
     }}>
-      {anyAttending ? 'A message for the two of us, if you’d like.' : 'Please check the details below before sending.'}
+      {anyAttending ? 'One last thing or two, if you’d like.' : 'Please check the details below before sending.'}
     </p>
 
     {anyAttending && (
-      <Field label="A message for the two of us" value={message} onChange={setMessage}
-        placeholder="anything you'd like to say" multiline />
+      <>
+        <Field label="Song request" value={songs} onChange={setSongs}
+          placeholder="the song that will get you on the dancefloor" />
+        <div style={{ height:28 }} />
+        <Field label="A message for the two of us" value={message} onChange={setMessage}
+          placeholder="anything you'd like to say" multiline />
+      </>
     )}
 
     <div style={{ marginTop:36, padding:'22px 24px', background:'rgba(74,26,44,0.04)', border:'1px solid var(--rule)' }}>

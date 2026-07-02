@@ -405,7 +405,9 @@ const HeroVideo = () => {
 };
 
 const Hero = ({ showCountdown = true, onRsvp }) => {
-  const { days, hours, minutes, seconds, total } = useCountdown('2027-07-02T13:00:00');
+  // Explicit +01:00 offset pins the target to UK time (BST in July), so
+  // guests abroad count down to the actual ceremony moment, not 1pm local.
+  const { days, hours, minutes, seconds, total } = useCountdown('2027-07-02T13:00:00+01:00');
 
   // Once a guest has entered their invitation code (rsvp.jsx stores it
   // under rk_guest_v1), the hero greets their household by name. Read
@@ -1356,7 +1358,8 @@ const FAQ = () => {
               borderBottom: '1px solid var(--rule)',
               textAlign: 'left',
             }}>
-              <button onClick={() => setOpen(isOpen ? -1 : i)} style={{
+              <button onClick={() => setOpen(isOpen ? -1 : i)}
+                aria-expanded={isOpen} aria-controls={`faq-panel-${i}`} style={{
                 width: '100%', background: 'none', border: 'none',
                 padding: '24px 4px', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
@@ -1380,7 +1383,7 @@ const FAQ = () => {
                   </svg>
                 </span>
               </button>
-              <div style={{
+              <div id={`faq-panel-${i}`} style={{
                 maxHeight: isOpen ? 400 : 0, overflow: 'hidden',
                 transition: 'max-height 0.5s ease, opacity 0.4s ease',
                 opacity: isOpen ? 1 : 0,

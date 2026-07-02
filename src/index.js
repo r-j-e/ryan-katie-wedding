@@ -170,16 +170,25 @@ async function handleLookup(request, env) {
   });
 }
 
+// Ceiling on guests per reply — parties are pre-defined by the invitation
+// code, so anything past this is not a real household.
+const MAX_GUESTS = 12;
+
 async function handleRsvpPost(request, env) {
   let data;
   try { data = await request.json(); } catch { return json({ ok: false, error: 'invalid_json' }, 400); }
   const { code, household, email, songs, message, guests } = data;
-  if (!code || !Array.isArray(guests) || guests.length === 0) {
+  if (!code || !Array.isArray(guests) || guests.length === 0 || guests.length > MAX_GUESTS) {
     return json({ ok: false, error: 'missing_fields' }, 400);
   }
 
   await ready(env);
-  const codeKey = String(code);
+  const codeKey = String(code).trim().toLowerCase();
+
+  // Only accept replies against a real invitation code — the lookup step
+  // enforces this in the UI, but the endpoint is public.
+  const known = await env.DB.prepare('SELECT code FROM guest_codes WHERE code = ?').bind(codeKey).first();
+  if (!known) return json({ ok: false, error: 'invalid_code' }, 404);
 
   // One reply per code — if this code has already replied, throw away the
   // previous submission (and its guest rows) before inserting the new one.
@@ -198,14 +207,14 @@ async function handleRsvpPost(request, env) {
   const ins = await env.DB.prepare(
     'INSERT INTO rsvps (submitted_at, code, household, email, songs, message) VALUES (?, ?, ?, ?, ?, ?)'
   ).bind(
-    submittedAt, codeKey, s(household), s(email), s(songs), s(message)
+    submittedAt, codeKey, s(household), s(email), s(songs), s(message, 2000)
   ).run();
   const rsvpId = ins.meta.last_row_id;
 
   const stmts = guests.map((g) =>
     env.DB.prepare(
       'INSERT INTO rsvp_guests (rsvp_id, name, attending, starter, "main", pudding, dietary) VALUES (?, ?, ?, ?, ?, ?, ?)'
-    ).bind(rsvpId, s(g.name), s(g.attending) || 'no', s(g.starter), s(g.main), s(g.pudding), s(g.dietary))
+    ).bind(rsvpId, s(g.name), g.attending === 'yes' ? 'yes' : 'no', s(g.starter), s(g.main), s(g.pudding), s(g.dietary, 1000))
   );
   if (stmts.length) await env.DB.batch(stmts);
 
@@ -304,7 +313,7 @@ async function handleRsvpsList(env) {
     const arr = byRsvp.get(g.rsvp_id) || [];
     arr.push({
       id: g.id, name: g.name, attending: g.attending,
-      starter: g.starter, main: g.course_main, pudding: g.pudding, dietary: g.dietary,
+      starter: mealLabel(g.starter), main: mealLabel(g.course_main), pudding: mealLabel(g.pudding), dietary: g.dietary,
     });
     byRsvp.set(g.rsvp_id, arr);
   }
@@ -367,7 +376,8 @@ async function handleCsvExport(env) {
   const header = ['submitted_at','code','household','email','name','attending','starter','main','pudding','dietary'];
   const csv = [header.join(',')]
     .concat(rows.results.map((r) => header.map((h) => {
-      const v = h === 'main' ? r.course_main : r[h];
+      let v = h === 'main' ? r.course_main : r[h];
+      if (h === 'starter' || h === 'main' || h === 'pudding') v = mealLabel(v);
       return csvCell(v);
     }).join(',')))
     .join('\n');
@@ -941,7 +951,18 @@ function formatDate(iso) {
 // Tiny helpers
 // ──────────────────────────────────────────────────────────────────────────
 function safeParseArray(s) { try { const v = JSON.parse(s); return Array.isArray(v) ? v : []; } catch { return []; } }
-function s(v) { return v == null ? '' : String(v); }
+// Stringify + clamp. The public endpoints accept arbitrary JSON, so every
+// stored field gets a sane ceiling; 400 chars covers any honest answer.
+function s(v, max = 400) { return v == null ? '' : String(v).slice(0, max); }
+
+// Meal picks are stored as dish names. Early test replies stored the wizard's
+// option ids instead — map those back to names wherever meals are read out.
+const MEAL_LABELS = {
+  s1: 'Chargrilled chicken salad', s2: 'Feta & watermelon salad',
+  m1: 'Roast sirloin of British beef', m2: 'Pan-fried potato gnocchi',
+  p1: 'Chocolate caramel brownie', p2: 'Cinnamon spiced apple crumble tart',
+};
+function mealLabel(v) { return MEAL_LABELS[v] || v; }
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
 }
